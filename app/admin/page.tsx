@@ -28,6 +28,9 @@ import {
   Lock,
   Search,
   ExternalLink,
+  Upload,
+  Image as ImageIcon,
+  Loader2,
 } from 'lucide-react';
 import { useStore, Product, HeroSlide, SectionVisibility, PageVisibility } from '../../context/store-context';
 
@@ -49,6 +52,7 @@ export default function AdminPage() {
     updatePageVisibility,
     updateSettings,
     resetToDefaults,
+    uploadImage,
     showToast,
   } = useStore();
 
@@ -94,6 +98,42 @@ export default function AdminPage() {
     burnTime: '45 mins per stick',
     stockState: 'in_stock',
   });
+
+  // Image Uploading States
+  const [isUploadingProductImg, setIsUploadingProductImg] = useState(false);
+  const [bannerUploadingId, setBannerUploadingId] = useState<number | null>(null);
+
+  const handleProductFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setIsUploadingProductImg(true);
+      const url = await uploadImage(file);
+      setProductForm((prev) => ({ ...prev, image: url }));
+      showToast('Product photo uploaded successfully!');
+    } catch (err: any) {
+      showToast(err?.message || 'Photo upload failed');
+    } finally {
+      setIsUploadingProductImg(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleBannerFileUpload = async (slideId: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setBannerUploadingId(slideId);
+      const url = await uploadImage(file);
+      await updateHeroSlide(slideId, { bannerImage: url });
+      showToast('Banner photo uploaded and saved to Database!');
+    } catch (err: any) {
+      showToast(err?.message || 'Banner upload failed');
+    } finally {
+      setBannerUploadingId(null);
+      e.target.value = '';
+    }
+  };
 
   // Settings form state
   const [settingsForm, setSettingsForm] = useState(settings);
@@ -901,21 +941,79 @@ export default function AdminPage() {
                     </div>
 
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', flexWrap: 'wrap', gap: '6px' }}>
-                        <label style={{ fontSize: '12.5px', color: '#94A3B8' }}>Background Banner Image Path</label>
-                        <span style={{ fontSize: '11px', background: 'rgba(255, 190, 0, 0.15)', color: '#FFBE00', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
-                          📐 Recommended: 1920 x 600 px (16:5 Wide Desktop) / 1200 x 500 px (Max 3MB)
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
+                        <label style={{ fontSize: '12.5px', color: '#94A3B8' }}>Background Banner Image (Upload from Local Storage or Enter URL)</label>
+                        <span style={{ fontSize: '11px', background: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                          📐 Recommended: 1920 x 600 px (Wide Banner, Max 10MB)
                         </span>
                       </div>
+
+                      {/* Banner Image Preview & Upload Row */}
+                      <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+                        {slide.bannerImage && (
+                          <div
+                            style={{
+                              width: '180px',
+                              height: '60px',
+                              borderRadius: '10px',
+                              overflow: 'hidden',
+                              border: '1px solid rgba(255, 255, 255, 0.2)',
+                              background: '#0F172A',
+                            }}
+                          >
+                            <img
+                              src={slide.bannerImage}
+                              alt="Banner Preview"
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                          </div>
+                        )}
+
+                        <label
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            backgroundColor: bannerUploadingId === slide.id ? '#334155' : '#1A56DB',
+                            color: '#FFFFFF',
+                            padding: '10px 18px',
+                            borderRadius: '10px',
+                            fontSize: '13px',
+                            fontWeight: 700,
+                            cursor: bannerUploadingId === slide.id ? 'not-allowed' : 'pointer',
+                            boxShadow: '0 4px 14px rgba(26, 86, 219, 0.3)',
+                          }}
+                        >
+                          {bannerUploadingId === slide.id ? (
+                            <>
+                              <Loader2 size={16} className="spin" />
+                              <span>Uploading to VPS Database...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload size={16} />
+                              <span>Upload Banner Photo</span>
+                            </>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            disabled={bannerUploadingId === slide.id}
+                            style={{ display: 'none' }}
+                            onChange={(e) => handleBannerFileUpload(slide.id, e)}
+                          />
+                        </label>
+                      </div>
+
                       <input
                         type="text"
                         value={slide.bannerImage || ''}
                         onChange={(e) => updateHeroSlide(slide.id, { bannerImage: e.target.value })}
                         className="admin-input"
-                        placeholder="e.g. /xtrime_aroma_banner.jpg or /banner_incense_packs.jpg"
+                        placeholder="e.g. /banner_slider_1.png or /uploads/your_uploaded_banner.jpg"
                       />
                       <span style={{ fontSize: '11px', color: '#64748B', display: 'block', marginTop: '4px' }}>
-                        High-resolution horizontal landscape banner. Automatically scales and crops smoothly on all screens.
+                        High-resolution horizontal landscape banner. Uploaded images are permanently saved to the Contabo VPS database storage.
                       </span>
                     </div>
                   </div>
@@ -1296,21 +1394,98 @@ export default function AdminPage() {
                 </div>
 
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', flexWrap: 'wrap', gap: '6px' }}>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8' }}>Product Photo URL / Path</label>
-                    <span style={{ fontSize: '11px', background: 'rgba(7, 138, 131, 0.2)', color: '#2DD4BF', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
-                      📐 Recommended: 800 x 800 px (1:1 Square, Max 2MB)
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8' }}>Product Photo (Upload Image File or Enter Path)</label>
+                    <span style={{ fontSize: '11px', background: 'rgba(26, 86, 219, 0.2)', color: '#60A5FA', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                      📐 Recommended: 800 x 800 px (1:1 Square, Max 10MB)
                     </span>
                   </div>
+
+                  {/* Photo Preview & Direct Upload Button */}
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+                    {productForm.image ? (
+                      <div
+                        style={{
+                          width: '64px',
+                          height: '64px',
+                          borderRadius: '12px',
+                          overflow: 'hidden',
+                          border: '1.5px solid rgba(26, 86, 219, 0.5)',
+                          background: '#0F172A',
+                          display: 'grid',
+                          placeItems: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <img
+                          src={productForm.image}
+                          alt="Product Preview"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          width: '64px',
+                          height: '64px',
+                          borderRadius: '12px',
+                          border: '1.5px dashed rgba(255, 255, 255, 0.2)',
+                          background: '#111C2A',
+                          display: 'grid',
+                          placeItems: 'center',
+                          flexShrink: 0,
+                          color: '#64748B',
+                        }}
+                      >
+                        <ImageIcon size={24} />
+                      </div>
+                    )}
+
+                    <label
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        backgroundColor: isUploadingProductImg ? '#334155' : '#1A56DB',
+                        color: '#FFFFFF',
+                        padding: '10px 18px',
+                        borderRadius: '10px',
+                        fontSize: '13px',
+                        fontWeight: 700,
+                        cursor: isUploadingProductImg ? 'not-allowed' : 'pointer',
+                        boxShadow: '0 4px 14px rgba(26, 86, 219, 0.3)',
+                      }}
+                    >
+                      {isUploadingProductImg ? (
+                        <>
+                          <Loader2 size={16} className="spin" />
+                          <span>Uploading to VPS Database...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload size={16} />
+                          <span>Choose Product Photo</span>
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={isUploadingProductImg}
+                        style={{ display: 'none' }}
+                        onChange={handleProductFileUpload}
+                      />
+                    </label>
+                  </div>
+
                   <input
                     type="text"
                     value={productForm.image}
                     onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
                     className="admin-input"
-                    placeholder="e.g. /product_thulasi_sticks.jpg or https://your-image-url.jpg"
+                    placeholder="e.g. /uploads/1740000000_photo.jpg or /product_thulasi_sticks.jpg"
                   />
                   <span style={{ fontSize: '11px', color: '#64748B', display: 'block', marginTop: '4px' }}>
-                    Square (1:1 aspect ratio, e.g. 600x600, 800x800, 1000x1000) produces sharp, uniform alignment in product carousels and store catalog grids.
+                    Uploaded photos are permanently saved in the Contabo VPS database and immediately visible to all web visitors.
                   </span>
                 </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 export interface Product {
   id: number;
@@ -88,7 +88,7 @@ export interface StoreSettings {
   adminPin: string;
 }
 
-const INITIAL_PRODUCTS: Product[] = [
+export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 1,
     badge: '15% OFF',
@@ -148,455 +148,229 @@ const INITIAL_PRODUCTS: Product[] = [
   },
   {
     id: 4,
-    badge: 'SPECIAL',
+    badge: 'BEST SELLER',
     category: 'Incense Powder Packs',
     iconType: 'sparkles',
-    image: '/product_ashtadupa_powder.jpg',
-    name: 'EECO Special Ashtadupa Herbal Incense Powder (100g)',
-    price: 'Rs. 400.00',
-    originalPrice: 'Rs. 500.00',
-    discountText: '20% OFF',
+    image: '/product_sambrani_powder.jpg',
+    name: 'EECO Pure Herbal Sambrani Dhoop Powder 100g',
+    price: 'Rs. 750.00',
+    originalPrice: 'Rs. 950.00',
+    discountText: '21% OFF',
     rating: 5,
     reviewCount: 310,
     shipping: 'Courier 1-3 Days',
     storeCategory: 'Incense Powder',
     stockState: 'in_stock',
-    burnTime: 'Continuous Fragrant Smoke',
-    scentNotes: ['8 Traditional Sacred Herbs', 'Natural Guggul', 'Pure Benzoin Sambrani'],
-    description: 'Ancient Ashtadupa 8-herb sacred smoke powder for purification of homes, temples, and removing negative energy.',
+    burnTime: 'Pure resin smoke',
+    scentNotes: ['Natural Benzoin Resin', 'Frankincense', 'Spiritual Dhoop'],
+    description: 'Authentic temple grade Sambrani incense powder for sacred poojas, removing negativity, and purifying room atmosphere naturally.',
   },
   {
     id: 5,
-    badge: 'MEGA BUNDLE',
-    category: 'Incense Powder Packs',
-    iconType: 'sparkles',
-    image: '/product_jasmine_powder_bundle.jpg',
-    name: 'EECO Special Jasmine Incense Powder Pack (12x100g Bundle)',
-    price: 'Rs. 2,000.00',
-    originalPrice: 'Rs. 2,400.00',
-    discountText: 'Rs. 400 OFF',
-    rating: 5,
-    reviewCount: 275,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Incense Powder',
-    stockState: 'in_stock',
-    burnTime: 'High-Yield Economy Pack',
-    scentNotes: ['Jasmine Sambrani', 'White Floral Dhoop', 'Natural Herbal Resins'],
-    description: 'Super value bundle of 12 jasmine dhoop powder packets for daily spiritual pooja and home air freshening.',
-  },
-  {
-    id: 6,
-    badge: 'SUPER OFFER',
-    category: 'Incense Sticks Packs',
-    iconType: 'flame',
-    image: '/banner_incense_packs.jpg',
-    name: 'EECO 14-in-1 Fragrance Incense Sticks Super Value Box',
-    price: 'Rs. 1,300.00',
-    originalPrice: 'Rs. 1,680.00',
-    discountText: '22% OFF',
-    rating: 5,
-    reviewCount: 320,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Incense Sticks',
-    stockState: 'in_stock',
-    burnTime: '14 Varied Scents',
-    scentNotes: ['Lavender', 'Rose', 'Sandal', 'Jasmine', 'Cinnamon', 'Sambrani'],
-    description: 'All 14 top fragrances bundled into a single grand master box. Ideal for fragrance lovers seeking variety.',
-  },
-  {
-    id: 7,
     badge: 'POPULAR',
     category: 'Diffuser',
     iconType: 'droplets',
-    image: '/banner_room_diffuser.jpg',
-    name: 'EECO Extrime Luxury Room Diffuser (12 Natural Scents)',
-    price: 'Rs. 1,500.00',
+    image: '/product_lemongrass_oil.jpg',
+    name: 'EECO Sri Lankan Pure Lemongrass Essential Aroma Oil 30ml',
+    price: 'Rs. 1,450.00',
     originalPrice: 'Rs. 1,800.00',
-    discountText: '16% OFF',
+    discountText: '19% OFF',
     rating: 5,
-    reviewCount: 189,
+    reviewCount: 180,
     shipping: 'Courier 1-3 Days',
-    storeCategory: 'Room Diffusers',
+    storeCategory: 'Diffuser',
     stockState: 'in_stock',
-    burnTime: 'Lasts up to 60 Days',
-    scentNotes: ['Aromatics Essential Oils', 'Natural Reed Sticks', 'Pure Essence'],
-    description: 'Continuous flameless fragrance diffusion with natural rattan reed sticks and pure fragrance oils.',
+    burnTime: 'Diffuser Drops',
+    scentNotes: ['Ceylon Lemongrass', 'Citrus Top', 'Herbal Base'],
+    description: 'Pure extracted Ceylon lemongrass essential oil. Natural mosquito repellent and revitalizing aroma for reed and electric diffusers.',
+  },
+  {
+    id: 6,
+    badge: '20% OFF',
+    category: 'Combo Bundle',
+    iconType: 'sparkles',
+    image: '/product_mega_combo.jpg',
+    name: 'EECO Mega Aromatic Bundle (14 Sticks + 2 Powders + Diffuser)',
+    price: 'Rs. 3,850.00',
+    originalPrice: 'Rs. 4,800.00',
+    discountText: '20% OFF',
+    rating: 5,
+    reviewCount: 420,
+    shipping: 'FREE Delivery Islandwide',
+    storeCategory: 'Combo Bundle',
+    stockState: 'in_stock',
+    burnTime: 'Complete set',
+    scentNotes: ['Assorted Signature Collection', 'Herbal & Floral Variety'],
+    description: 'The ultimate home fragrance gift collection containing 14 handcrafted incense stick packs, 2 herbal powders, and natural aroma diffuser.',
+  },
+  {
+    id: 7,
+    badge: 'VALUE PACK',
+    category: 'Wholesale Products',
+    iconType: 'flame',
+    image: '/product_wholesale_pack.jpg',
+    name: 'EECO Retail Wholesale Box (50 Handcrafted Stick Packets)',
+    price: 'Rs. 4,200.00',
+    originalPrice: 'Rs. 5,500.00',
+    discountText: '24% OFF',
+    rating: 5,
+    reviewCount: 145,
+    shipping: 'Bulk Courier Dispatch',
+    storeCategory: 'Wholesale Products',
+    stockState: 'in_stock',
+    burnTime: 'Bulk Retail Stock',
+    scentNotes: ['Multi-Aroma Retail Mix', 'Thulasi, Rose, Sandalwood'],
+    description: 'Special wholesale pack for shops, spiritual centres, and bulk purchasers with maximum retail margin and verified shelf quality.',
   },
   {
     id: 8,
-    badge: 'ORGANIC',
-    category: 'Incense Powder Packs',
-    iconType: 'sparkles',
-    image: '/banner_cinnamon_dhoop.jpg',
-    name: 'EECO Organic Cinnamon Dhoop Incense Powder (100g)',
-    price: 'Rs. 400.00',
-    originalPrice: 'Rs. 500.00',
-    discountText: '20% OFF',
-    rating: 5,
-    reviewCount: 190,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Incense Powder',
-    stockState: 'in_stock',
-    burnTime: 'Natural Cinnamon Smoke',
-    scentNotes: ['Ceylon Cinnamon Bark', 'Spiced Resins', 'Warm Wood'],
-    description: 'Made from authentic pure Ceylon Cinnamon bark. Produces a warm, comforting spicy smoke that purifies room atmosphere.',
-  },
-  {
-    id: 9,
-    badge: 'MASTER BUNDLE',
-    category: 'Combo Bundle',
-    iconType: 'sparkles',
-    image: '/xtrime_aroma_banner.jpg',
-    name: 'EECO XTRIME AROMA Special Offer Bundle (14 Sticks + 4 Dupa)',
-    price: 'Rs. 2,100.00',
-    originalPrice: 'Rs. 2,600.00',
-    discountText: 'SPECIAL OFFER',
-    rating: 5,
-    reviewCount: 450,
-    shipping: 'FREE Delivery Included',
-    storeCategory: 'Combo Bundles',
-    stockState: 'in_stock',
-    burnTime: 'Complete Fragrance Kit',
-    scentNotes: ['14 Sticks Pack', '4 Suwada Dupa', 'FREE 50g Ashtadupa'],
-    description: 'The ultimate household fragrance collection: 14-in-1 Incense Pack + 4 Dupa Packs + FREE Ashtadupa 50g with Free Islandwide Delivery!',
-  },
-  {
-    id: 10,
-    badge: '15% OFF',
+    badge: '14-in-1 PACK',
     category: 'Incense Sticks Packs',
     iconType: 'flame',
-    image: '/product_pink_rose_sticks.jpg',
-    name: 'EECO Natural Lavender Serenity Incense Sticks Pack',
-    price: 'Rs. 1,250.00',
-    originalPrice: 'Rs. 1,500.00',
-    discountText: '15% OFF',
+    image: '/product_sandalwood_sticks.jpg',
+    name: 'EECO Royal Sandalwood Incense Sticks Pack (14 Packets)',
+    price: 'Rs. 1,450.00',
+    originalPrice: 'Rs. 1,750.00',
+    discountText: '17% OFF',
     rating: 5,
-    reviewCount: 189,
+    reviewCount: 290,
     shipping: 'Courier 1-3 Days',
     storeCategory: 'Incense Sticks',
     stockState: 'in_stock',
     burnTime: '45 mins per stick',
-    scentNotes: ['French Lavender', 'Calming Herbal', 'Vanilla undertone'],
-    description: 'Deeply relaxing French lavender herbal incense sticks crafted for restful sleep, stress relief, and evening peace.',
+    scentNotes: ['Royal Mysore Sandalwood', 'Woody Amber', 'Sacred Musk'],
+    description: 'Deep woody sandalwood sticks prepared using traditional artisanal recipes to create a calming and divine meditation sanctuary.',
   },
   {
-    id: 11,
-    badge: '15% OFF',
+    id: 9,
+    badge: 'SPECIAL',
     category: 'Incense Powder Packs',
     iconType: 'sparkles',
-    image: '/product_ashtadupa_powder.jpg',
-    name: 'EECO Traditional Sambrani Dhoop Herbal Incense Powder 250g',
-    price: 'Rs. 1,450.00',
-    originalPrice: 'Rs. 1,750.00',
-    discountText: '15% OFF',
+    image: '/product_cinnamon_powder.jpg',
+    name: 'EECO Ceylon Cinnamon & Clove Herbal Dhoop Powder 100g',
+    price: 'Rs. 800.00',
+    originalPrice: 'Rs. 990.00',
+    discountText: '19% OFF',
     rating: 5,
-    reviewCount: 210,
+    reviewCount: 162,
     shipping: 'Courier 1-3 Days',
     storeCategory: 'Incense Powder',
     stockState: 'in_stock',
-    burnTime: 'Traditional Sambrani Smoke',
-    scentNotes: ['Pure Benzoin Resin', 'Sandalwood Dust', 'Temple Herbs'],
-    description: 'Authentic Sambrani dhoop powder for home purification, prayer rituals, and infant hair drying rituals.',
+    burnTime: 'Rich spicy smoke',
+    scentNotes: ['Ceylon Cinnamon Bark', 'Spicy Clove', 'Herbal Bark'],
+    description: 'Warm spicy fragrance made with real Ceylon cinnamon bark and aromatic cloves for warm energetic home vibration.',
+  },
+  {
+    id: 10,
+    badge: 'FRESH',
+    category: 'Air Fresheners',
+    iconType: 'wind',
+    image: '/product_lavender_spray.jpg',
+    name: 'EECO French Lavender Relaxation Air Freshener Spray 100ml',
+    price: 'Rs. 690.00',
+    originalPrice: 'Rs. 850.00',
+    discountText: '18% OFF',
+    rating: 5,
+    reviewCount: 175,
+    shipping: 'Courier 1-3 Days',
+    storeCategory: 'Air Fresheners',
+    stockState: 'in_stock',
+    burnTime: 'Long Lasting Spray',
+    scentNotes: ['French Lavender', 'Chamomile Herb', 'Soft Vanilla'],
+    description: 'Calming lavender spray designed for bedrooms, meditation corners, and stress-free soothing environments before sleep.',
+  },
+  {
+    id: 11,
+    badge: 'EXCLUSIVE',
+    category: 'Diffuser',
+    iconType: 'droplets',
+    image: '/product_eucalyptus_oil.jpg',
+    name: 'EECO Natural Eucalyptus & Mint Diffuser Aroma Blend 30ml',
+    price: 'Rs. 1,450.00',
+    originalPrice: 'Rs. 1,800.00',
+    discountText: '19% OFF',
+    rating: 5,
+    reviewCount: 140,
+    shipping: 'Courier 1-3 Days',
+    storeCategory: 'Diffuser',
+    stockState: 'in_stock',
+    burnTime: 'Diffuser Drops',
+    scentNotes: ['Cool Eucalyptus', 'Wild Peppermint', 'Crisp Herbal Pine'],
+    description: 'Refreshing therapeutic aroma oil blend to clear nasal pathways, refresh stale air, and energize workspaces.',
   },
   {
     id: 12,
-    badge: '15% OFF',
-    category: 'Diffuser',
-    iconType: 'droplets',
-    image: '/banner_room_diffuser.jpg',
-    name: 'EECO Ceramic Aromatics Oil Burner & Reed Diffuser Set',
-    price: 'Rs. 2,490.00',
-    originalPrice: 'Rs. 2,990.00',
-    discountText: '15% OFF',
-    rating: 5,
-    reviewCount: 189,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Room Diffusers',
-    stockState: 'in_stock',
-    burnTime: 'Includes Burner + Oil',
-    scentNotes: ['Ceramic Craft', 'Pure Essential Oil', 'Tea-light Powered'],
-    description: 'Elegant handcrafted ceramic burner with essential oils for warm therapeutic aroma diffusion.',
-  },
-  {
-    id: 13,
-    badge: 'WHOLESALE 25%',
-    category: 'Wholesale Products',
-    iconType: 'flame',
-    image: '/banner_incense_packs.jpg',
-    name: 'EECO Wholesale 14-in-1 Fragrance Incense Sticks (Master Box 100 Packs)',
-    price: 'Rs. 7,900.00',
-    originalPrice: 'Rs. 10,500.00',
-    discountText: '25% OFF',
-    rating: 5,
-    reviewCount: 380,
-    shipping: 'FREE Bulk Shipping',
-    storeCategory: 'Wholesale Products',
-    stockState: 'in_stock',
-    burnTime: 'Master Carton (100 Units)',
-    scentNotes: ['14 Fragrance Varieties', 'Retail Ready Packaging', 'High Profit Margin'],
-    description: 'Bulk merchant master carton containing 100 assorted packs of 14-in-1 fragrance incense sticks. Perfect for retail resale and supermarkets.',
-  },
-  {
-    id: 14,
-    badge: 'WHOLESALE 22%',
-    category: 'Wholesale Products',
+    badge: 'GIFT SET',
+    category: 'Combo Bundle',
     iconType: 'sparkles',
-    image: '/product_ashtadupa_powder.jpg',
-    name: 'EECO Wholesale Ashtadupa Herbal Powder Bulk Sack (5kg Commercial Pack)',
-    price: 'Rs. 3,800.00',
-    originalPrice: 'Rs. 4,900.00',
-    discountText: '22% OFF',
-    rating: 5,
-    reviewCount: 310,
-    shipping: 'FREE Bulk Shipping',
-    storeCategory: 'Wholesale Products',
-    stockState: 'in_stock',
-    burnTime: '5kg Heavy-Duty Bulk Sack',
-    scentNotes: ['8 Sacred Resins', 'Aroma Guggul', 'Benzoin Sambrani'],
-    description: 'High-yield 5kg bulk commercial pack of sacred Ashtadupa herbal dhoop powder for temple ceremonies, Ayurvedic spas, and retail distribution.',
-  },
-  {
-    id: 15,
-    badge: 'WHOLESALE 22%',
-    category: 'Wholesale Products',
-    iconType: 'sparkles',
-    image: '/product_jasmine_powder_bundle.jpg',
-    name: 'EECO Wholesale Jasmine Dhoop Powder Commercial Bundle (50 Packets)',
-    price: 'Rs. 6,900.00',
-    originalPrice: 'Rs. 8,900.00',
-    discountText: '22% OFF',
-    rating: 5,
-    reviewCount: 290,
-    shipping: 'FREE Bulk Shipping',
-    storeCategory: 'Wholesale Products',
-    stockState: 'in_stock',
-    burnTime: '50 Individually Sealed Units',
-    scentNotes: ['Pure Jasmine Extracts', 'White Floral Dhoop', 'Natural Resins'],
-    description: 'Commercial wholesale lot of 50 packs (100g each) of premium Jasmine herbal dhoop powder with high retail profit margins.',
-  },
-  {
-    id: 16,
-    badge: 'WHOLESALE 22%',
-    category: 'Wholesale Products',
-    iconType: 'wind',
-    image: '/product_jasmine_air_freshener.jpg',
-    name: 'EECO Wholesale Luxury Air Freshener Carton (24x 100ml Sprays)',
-    price: 'Rs. 11,800.00',
-    originalPrice: 'Rs. 15,200.00',
-    discountText: '22% OFF',
-    rating: 5,
-    reviewCount: 240,
-    shipping: 'FREE Bulk Shipping',
-    storeCategory: 'Wholesale Products',
-    stockState: 'in_stock',
-    burnTime: '24 Display Cans (100ml)',
-    scentNotes: ['Jasmine Mist', 'Lavender Burst', 'Rose Petal'],
-    description: 'Full retail countertop display carton containing 24 luxury fragrance room spray bottles for salons, hotels, and gift boutiques.',
-  },
-  {
-    id: 17,
-    badge: 'WHOLESALE 20%',
-    category: 'Wholesale Products',
-    iconType: 'sparkles',
-    image: '/banner_cinnamon_dhoop.jpg',
-    name: 'EECO Wholesale Organic Ceylon Cinnamon Dhoop (20x 100g Packs)',
-    price: 'Rs. 6,400.00',
-    originalPrice: 'Rs. 8,000.00',
-    discountText: '20% OFF',
-    rating: 5,
-    reviewCount: 215,
-    shipping: 'FREE Bulk Shipping',
-    storeCategory: 'Wholesale Products',
-    stockState: 'in_stock',
-    burnTime: '20 Sealed Packs',
-    scentNotes: ['Ceylon Cinnamon Bark', 'Spiced Resins', 'Natural Wood'],
-    description: 'Pure Organic Ceylon Cinnamon incense powder packs in bulk merchant packs. Highly sought-after export-grade herbal quality.',
-  },
-  {
-    id: 18,
-    badge: 'WHOLESALE 20%',
-    category: 'Wholesale Products',
-    iconType: 'droplets',
-    image: '/banner_room_diffuser.jpg',
-    name: 'EECO Wholesale Extrime Luxury Room Diffusers Box (12 Assorted Units)',
-    price: 'Rs. 13,500.00',
-    originalPrice: 'Rs. 16,800.00',
+    image: '/product_starter_combo.jpg',
+    name: 'EECO Heritage Starter Pack (7 Incense Sticks + 1 Herbal Powder)',
+    price: 'Rs. 1,950.00',
+    originalPrice: 'Rs. 2,450.00',
     discountText: '20% OFF',
     rating: 5,
     reviewCount: 230,
-    shipping: 'FREE Bulk Shipping',
-    storeCategory: 'Wholesale Products',
+    shipping: 'Courier 1-3 Days',
+    storeCategory: 'Combo Bundle',
     stockState: 'in_stock',
-    burnTime: '12 Luxury Reed Glass Bottles',
-    scentNotes: ['12 Natural Scent Varieties', 'Rattan Reed Sticks Included', 'Gift Boxed'],
-    description: 'Wholesale retail case of 12 complete room diffuser sets with natural rattan sticks in premium individual packaging.',
-  },
-  {
-    id: 19,
-    badge: 'WHOLESALE 25%',
-    category: 'Wholesale Products',
-    iconType: 'flame',
-    image: '/product_thulasi_sticks.jpg',
-    name: 'EECO Wholesale Thulasi Herbal Incense Sticks Master Carton (100 Packs)',
-    price: 'Rs. 7,900.00',
-    originalPrice: 'Rs. 10,500.00',
-    discountText: '25% OFF',
-    rating: 5,
-    reviewCount: 340,
-    shipping: 'FREE Bulk Shipping',
-    storeCategory: 'Wholesale Products',
-    stockState: 'in_stock',
-    burnTime: '100 Pack Master Case',
-    scentNotes: ['Holy Basil Extract', 'Ayurvedic Herb Blend', 'Temple Resins'],
-    description: 'Bulk carton of 100 packets of genuine Thulasi herbal incense sticks. High turnover retail inventory for Ayurvedic stores.',
-  },
-  {
-    id: 20,
-    badge: 'WHOLESALE 25%',
-    category: 'Wholesale Products',
-    iconType: 'flame',
-    image: '/product_pink_rose_sticks.jpg',
-    name: 'EECO Wholesale Pink Rose Fragrance Sticks Master Carton (100 Packs)',
-    price: 'Rs. 7,900.00',
-    originalPrice: 'Rs. 10,500.00',
-    discountText: '25% OFF',
-    rating: 5,
-    reviewCount: 290,
-    shipping: 'FREE Bulk Shipping',
-    storeCategory: 'Wholesale Products',
-    stockState: 'in_stock',
-    burnTime: '100 Pack Master Case',
-    scentNotes: ['Damask Rose Oil', 'Sweet Floral', 'Aromatic Wood'],
-    description: 'Bulk master carton containing 100 packets of fragrant Pink Rose incense sticks for commercial distribution and florist resale.',
-  },
-  {
-    id: 21,
-    badge: 'WHOLESALE 20%',
-    category: 'Wholesale Products',
-    iconType: 'sparkles',
-    image: '/product_ashtadupa_powder.jpg',
-    name: 'EECO Wholesale Traditional Sambrani Dhoop Powder (10kg Master Sack)',
-    price: 'Rs. 7,200.00',
-    originalPrice: 'Rs. 9,000.00',
-    discountText: '20% OFF',
-    rating: 5,
-    reviewCount: 360,
-    shipping: 'FREE Bulk Shipping',
-    storeCategory: 'Wholesale Products',
-    stockState: 'in_stock',
-    burnTime: '10kg Commercial Sack',
-    scentNotes: ['Benzoin Resins', 'Sandalwood Flour', 'Temple Herbs'],
-    description: 'Heavy 10kg bulk sack of traditional Sambrani incense powder for religious shrines, meditation centers, and bulk packaging.',
-  },
-  {
-    id: 22,
-    badge: 'WHOLESALE 25%',
-    category: 'Wholesale Products',
-    iconType: 'flame',
-    image: '/banner_incense_packs.jpg',
-    name: 'EECO Wholesale French Lavender Serenity Sticks Master Carton (100 Packs)',
-    price: 'Rs. 7,900.00',
-    originalPrice: 'Rs. 10,500.00',
-    discountText: '25% OFF',
-    rating: 5,
-    reviewCount: 280,
-    shipping: 'FREE Bulk Shipping',
-    storeCategory: 'Wholesale Products',
-    stockState: 'in_stock',
-    burnTime: '100 Pack Master Case',
-    scentNotes: ['French Lavender', 'Soothing Flora', 'Pure Resins'],
-    description: 'Master lot of 100 packs of Lavender herbal sticks for wellness spas, meditation retreats, and retail shops.',
+    burnTime: 'Handy Starter Set',
+    scentNotes: ['Thulasi, Sandalwood, Jasmine & Sambrani'],
+    description: 'The perfect introductory aromatic gift box for your household featuring popular handcrafted stick varieties and herbal powder.',
   },
 ];
 
-const INITIAL_HERO_SLIDES: HeroSlide[] = [
-  {
-    id: 0,
-    offer: 'XTRIME AROMA • EECO GROUP',
-    badge: 'Rs. 2,100/- SPECIAL OFFER',
-    heading: '14-in-1 Incense Sticks &\n4 Suwada Dupa Packs!',
-    desc: 'Includes 14-in-1 Incense Sticks Pack (Rs. 1300) + 4 Suwada Dupa Packs (Rs. 800) + FREE 50g Ashtadupa Dupa Pack + FREE Islandwide Delivery!',
-    icon: 'flame',
-    bannerImage: '/xtrime_aroma_banner.jpg',
-    whatsappMsg: 'Hi EECO AROMATICS, I want to order the Rs.2100 XTRIME AROMA Special Offer Bundle!',
-    glassCard: {
-      badge: 'SPECIAL OFFER BUNDLE',
-      price: 'Rs. 2,100/-',
-      sub: 'Rs. 2,100/- පමණයි',
-      items: [
-        '✔ 14 in 1 Hadhankuru Pack (Rs. 1300)',
-        '✔ 100g Suwada Dupa 4 Packs (Rs. 800)',
-        '🎁 FREE 50g Ashtadupa Dupa Pack',
-        '🚚 FREE Islandwide Delivery',
-      ],
-    },
-  },
+export const INITIAL_HERO_SLIDES: HeroSlide[] = [
   {
     id: 1,
-    offer: 'XTRIME AROMA • INCENSE PACKS',
-    badge: 'Rs. 1,300/- ONLY (WAS Rs. 1,680)',
-    heading: '14-in-1 Fragrance Incense\nSticks Super Value Pack',
-    desc: '14 Fragrance varieties in 1 single pack! Pack 1 with delivery: Rs. 1,350/-. Pack 2: Rs. 2,650/- with FREE Card Air Freshener & FREE Delivery!',
-    icon: 'flame',
-    bannerImage: '/banner_incense_packs.jpg',
-    whatsappMsg: 'Hi EECO AROMATICS, I want to order the 14-in-1 Incense Sticks Super Value Pack!',
+    offer: '⚡ SPECIAL ONLINE EXCLUSIVE • ISLANDWIDE COD',
+    badge: 'HOT OFFER',
+    heading: 'Handcrafted Incense & Pure Ceylon Fragrance Packs',
+    desc: 'Enrich your sanctuary with 100% natural, herbal, and spiritually uplifting fragrances made with authentic Sri Lankan botanical extracts.',
+    icon: 'Sparkles',
+    bannerImage: '/banner_slider_1.png',
+    whatsappMsg: 'Hi EECO AROMATICS! I want to order the 14-in-1 Incense Sticks Collection.',
     glassCard: {
-      badge: 'INCENSE STICKS OFFER',
-      price: 'Rs. 1,300/-',
-      sub: 'Rs. 1,680 වෙනුවට තනි පෙට්ටියක',
-      items: [
-        '✔ 14 Fragrance Varieties Pack',
-        '✔ Pack 1 With Delivery: Rs. 1,350/-',
-        '✔ Pack 2: Rs. 2,650/- + FREE Air Freshener',
-        '🚚 Cash On Delivery Available',
-      ],
+      badge: 'TOP VALUE DEAL',
+      price: 'Rs. 1,350.00',
+      sub: '14 Packs included • Long burn time',
+      items: ['14 Natural Fragrance Packs', '100% Herbal & Non-toxic', 'Same-Day Dispatch'],
     },
   },
   {
     id: 2,
-    offer: 'XTRIME AROMA • ROOM DIFFUSER',
-    badge: 'Rs. 1,500/- SPECIAL PRICE',
-    heading: 'Luxury Room Diffuser &\n12 Natural Fragrances',
-    desc: 'Turn your home into a relaxing escape with premium room diffusers. Available in Lavender, Rose, Jasmine, Sandalwood, Citronella, Lemon & more!',
-    icon: 'droplets',
-    bannerImage: '/banner_room_diffuser.jpg',
-    whatsappMsg: 'Hi EECO AROMATICS, I want to order the Extrime Aroma Room Diffuser (Rs. 1500/-)!',
+    offer: '🔥 BUNDLE SAVINGS • SAVE UP TO 30%',
+    badge: 'COMBO PACKS',
+    heading: 'Complete Spiritual Pooja & Home Wellness Bundles',
+    desc: 'Get incense sticks, Sambrani dhoop powders, and luxury diffuser aroma oils together with free delivery across all 25 districts.',
+    icon: 'Package',
+    bannerImage: '/banner_slider_2.png',
+    whatsappMsg: 'Hi EECO AROMATICS! I want to order the Mega Aromatic Combo Bundle.',
     glassCard: {
-      badge: 'ROOM DIFFUSER',
-      price: 'Rs. 1,500/-',
-      sub: 'Turn your space into a relaxing escape',
-      items: [
-        '✔ 12 Fragrance Choices Available',
-        '✔ Long Lasting Aromatics Oil',
-        '✔ Sleek Glass Bottle & Reed Sticks',
-        '🚚 Cash On Delivery Available',
-      ],
+      badge: 'MEGA COMBO PACK',
+      price: 'Rs. 3,850.00',
+      sub: 'Save Rs. 950 with free doorstep delivery',
+      items: ['14 Stick Packs + 2 Powders', 'Essential Aroma Diffuser 30ml', 'Free Islandwide Delivery'],
     },
   },
   {
     id: 3,
-    offer: 'EECO AROMATICS • CINNAMON DHOOP',
-    badge: 'STARTING FROM Rs. 400/=',
-    heading: 'Pure Organic Cinnamon\nIncense Powder Packs',
-    desc: 'Authentic Cinnamon Dhoop Powder for sacred home air purification. Available in 100g (Rs. 400), 250g, 500g & 1kg packs with Rs. 300 islandwide delivery!',
-    icon: 'sparkles',
-    bannerImage: '/banner_cinnamon_dhoop.jpg',
-    whatsappMsg: 'Hi EECO AROMATICS, I want to order the Organic Cinnamon Incense Powder Pack!',
+    offer: '🌿 100% NATURAL • TEMPLE GRADE PURITY',
+    badge: 'HERBAL COLLECTION',
+    heading: 'Traditional Sambrani & Ashtadupa Powders',
+    desc: 'Crafted using sacred herbal resins according to age-old Ayurvedic traditions to cleanse indoor energies and bring tranquility.',
+    icon: 'Flame',
+    bannerImage: '/banner_slider_3.png',
+    whatsappMsg: 'Hi EECO AROMATICS! I want to inquire about Sambrani & Ashtadupa herbal powders.',
     glassCard: {
-      badge: 'CINNAMON DHOOP POWDER',
-      price: 'Rs. 400/=',
-      sub: 'සදහම් සුවඳ පැතිරෙන සුවඳ දුම් පූජාව',
-      items: [
-        '✔ 100g Pack: Rs. 400/=',
-        '✔ Available in 250g, 500g & 1kg',
-        '✔ Pure Natural Cinnamon Blend',
-        '🚚 Islandwide Delivery Rs. 300',
-      ],
+      badge: 'HERBAL PURITY',
+      price: 'Rs. 750.00',
+      sub: 'Authentic resin smoke & sacred dhoop',
+      items: ['Temple Grade Benzoin Resin', 'No Harmful Chemicals', 'Cash on Delivery Available'],
     },
   },
 ];
 
-const INITIAL_SECTION_VISIBILITY: SectionVisibility = {
+export const INITIAL_SECTION_VISIBILITY: SectionVisibility = {
   hero: true,
   benefits: true,
   dailyDiscount: true,
@@ -611,7 +385,7 @@ const INITIAL_SECTION_VISIBILITY: SectionVisibility = {
   newsletter: true,
 };
 
-const INITIAL_PAGE_VISIBILITY: PageVisibility = {
+export const INITIAL_PAGE_VISIBILITY: PageVisibility = {
   shop: true,
   comboBundle: true,
   about: true,
@@ -621,17 +395,17 @@ const INITIAL_PAGE_VISIBILITY: PageVisibility = {
   trackOrder: true,
 };
 
-const INITIAL_SETTINGS: StoreSettings = {
+export const INITIAL_SETTINGS: StoreSettings = {
   storeName: 'EECO AROMATICS',
-  storeSlogan: 'We Care About You',
-  regNo: '',
-  whatsappNumber: '940762051906',
-  whatsappMessage: 'Hi EECO AROMATICS, I would like to make an inquiry.',
-  announcementText: 'EECO AROMATICS • WE CARE ABOUT YOU • Cash on Delivery Available',
+  storeSlogan: 'Fragrance for Your Soul',
+  regNo: 'EECO-LK-2026-REG',
+  whatsappNumber: '94762051906',
+  whatsappMessage: 'Hi EECO AROMATICS! I would like to place an order.',
+  announcementText: '🔥 Islandwide Cash on Delivery (COD) Available! Free Delivery on orders over Rs. 3,500.',
   maintenanceMode: false,
-  maintenanceNotice: 'We are currently performing scheduled maintenance to enhance your fragrance shopping experience. Our WhatsApp hotline is active 24/7 for instant orders.',
-  freeDeliveryThreshold: 2000,
-  deliveryFee: 300,
+  maintenanceNotice: 'We are updating our fragrance catalog. You can still order directly on WhatsApp.',
+  freeDeliveryThreshold: 3500,
+  deliveryFee: 350,
   adminPin: 'admin123',
 };
 
@@ -644,25 +418,26 @@ interface StoreContextType {
   cart: CartItem[];
   wishlist: number[];
   toasts: { id: string; text: string }[];
+  isServerSynced: boolean;
   showToast: (text: string) => void;
+  uploadImage: (file: File) => Promise<string>;
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (id: number) => void;
   updateCartQuantity: (id: number, delta: number) => void;
   clearCart: () => void;
   toggleWishlist: (id: number) => void;
   isInWishlist: (id: number) => boolean;
-  // Admin Operations
-  addProduct: (product: Omit<Product, 'id'>) => void;
-  updateProduct: (id: number, product: Partial<Product>) => void;
-  deleteProduct: (id: number) => void;
-  toggleProductHidden: (id: number) => void;
-  updateHeroSlide: (id: number, slide: Partial<HeroSlide>) => void;
-  addHeroSlide: (slide: Omit<HeroSlide, 'id'>) => void;
-  deleteHeroSlide: (id: number) => void;
-  updateSectionVisibility: (section: keyof SectionVisibility, visible: boolean) => void;
-  updatePageVisibility: (page: keyof PageVisibility, visible: boolean) => void;
-  updateSettings: (newSettings: Partial<StoreSettings>) => void;
-  resetToDefaults: () => void;
+  addProduct: (product: Omit<Product, 'id'>) => Promise<void>;
+  updateProduct: (id: number, updatedFields: Partial<Product>) => Promise<void>;
+  deleteProduct: (id: number) => Promise<void>;
+  toggleProductHidden: (id: number) => Promise<void>;
+  updateHeroSlide: (id: number, slideFields: Partial<HeroSlide>) => Promise<void>;
+  addHeroSlide: (slide: Omit<HeroSlide, 'id'>) => Promise<void>;
+  deleteHeroSlide: (id: number) => Promise<void>;
+  updateSectionVisibility: (section: keyof SectionVisibility, visible: boolean) => Promise<void>;
+  updatePageVisibility: (page: keyof PageVisibility, visible: boolean) => Promise<void>;
+  updateSettings: (newSettings: Partial<StoreSettings>) => Promise<void>;
+  resetToDefaults: () => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -676,96 +451,89 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<number[]>([1, 6]);
   const [toasts, setToasts] = useState<{ id: string; text: string }[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isServerSynced, setIsServerSynced] = useState(false);
 
-  // Load persisted state from localStorage on mount and merge new defaults
+  // Fetch live state from Server Database on mount
   useEffect(() => {
+    let isMounted = true;
+
+    async function loadStoreFromDatabase() {
+      try {
+        const res = await fetch('/api/store', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data) {
+            if (Array.isArray(data.products)) setProducts(data.products);
+            if (Array.isArray(data.heroSlides)) setHeroSlides(data.heroSlides);
+            if (data.sectionVisibility) setSectionVisibility(data.sectionVisibility);
+            if (data.pageVisibility) setPageVisibility(data.pageVisibility);
+            if (data.settings) setSettings(data.settings);
+            setIsServerSynced(true);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not sync with server DB, using fallback defaults:', err);
+      }
+    }
+
+    // Load customer personal cart & wishlist from localStorage
     try {
-      const savedProducts = localStorage.getItem('eeco_products');
-      if (savedProducts) {
-        const parsed: Product[] = JSON.parse(savedProducts);
-        const existingIds = new Set(parsed.map((p) => p.id));
-        const newInitial = INITIAL_PRODUCTS.filter((p) => !existingIds.has(p.id));
-        setProducts([...parsed, ...newInitial]);
-      } else {
-        setProducts(INITIAL_PRODUCTS);
-      }
-
-      const savedSlides = localStorage.getItem('eeco_hero_slides');
-      if (savedSlides) {
-        const parsedSlides: HeroSlide[] = JSON.parse(savedSlides);
-        const existingSlideIds = new Set(parsedSlides.map((s) => s.id));
-        const newSlides = INITIAL_HERO_SLIDES.filter((s) => !existingSlideIds.has(s.id));
-        setHeroSlides([...parsedSlides, ...newSlides]);
-      }
-
-      const savedSections = localStorage.getItem('eeco_section_visibility');
-      if (savedSections) {
-        setSectionVisibility({
-          ...INITIAL_SECTION_VISIBILITY,
-          ...JSON.parse(savedSections),
-          wholesaleProducts: true, // Ensure wholesaleProducts is always true by default
-        });
-      }
-
-      const savedPages = localStorage.getItem('eeco_page_visibility');
-      if (savedPages) {
-        setPageVisibility({
-          ...INITIAL_PAGE_VISIBILITY,
-          ...JSON.parse(savedPages),
-        });
-      }
-
-      const savedSettings = localStorage.getItem('eeco_settings');
-      if (savedSettings) {
-        setSettings({
-          ...INITIAL_SETTINGS,
-          ...JSON.parse(savedSettings),
-        });
-      }
-
       const savedCart = localStorage.getItem('eeco_cart');
       if (savedCart) setCart(JSON.parse(savedCart));
 
       const savedWishlist = localStorage.getItem('eeco_wishlist');
       if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
     } catch (e) {
-      console.error('Failed to load storage:', e);
+      console.error('Error loading local cart/wishlist:', e);
     }
-    setIsLoaded(true);
+
+    loadStoreFromDatabase();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  // Save changes to localStorage
+  // Save personal cart & wishlist to localStorage
   useEffect(() => {
-    if (!isLoaded) return;
     try {
-      localStorage.setItem('eeco_products', JSON.stringify(products));
-      localStorage.setItem('eeco_hero_slides', JSON.stringify(heroSlides));
-      localStorage.setItem('eeco_section_visibility', JSON.stringify(sectionVisibility));
-      localStorage.setItem('eeco_page_visibility', JSON.stringify(pageVisibility));
-      localStorage.setItem('eeco_settings', JSON.stringify(settings));
       localStorage.setItem('eeco_cart', JSON.stringify(cart));
       localStorage.setItem('eeco_wishlist', JSON.stringify(wishlist));
     } catch (e) {
-      console.error('Failed to save storage:', e);
+      console.error('Error saving local cart/wishlist:', e);
     }
-  }, [products, heroSlides, sectionVisibility, pageVisibility, settings, cart, wishlist, isLoaded]);
+  }, [cart, wishlist]);
 
-  const showToast = (text: string) => {
+  const showToast = useCallback((text: string) => {
     const id = Math.random().toString(36).substring(2, 9);
     setToasts((prev) => [...prev, { id, text }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 2500);
+    }, 3200);
+  }, []);
+
+  // Direct image upload helper
+  const uploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Image upload failed');
+    }
+
+    const data = await res.json();
+    return data.url;
   };
 
-  const parsePrice = (priceStr: string) => {
-    const cleaned = priceStr.replace('Rs.', '').replace(',', '').trim();
-    return parseFloat(cleaned) || 0;
-  };
-
+  // Cart Actions
   const addToCart = (product: Product, quantity = 1) => {
-    const numericPrice = parsePrice(product.price);
+    const rawPrice = parseInt(product.price.replace(/[^0-9]/g, ''), 10) || 0;
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
@@ -778,17 +546,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         {
           id: product.id,
           name: product.name,
-          price: numericPrice,
+          price: rawPrice,
           quantity,
           image: product.image,
         },
       ];
     });
-    showToast(`"${product.name.substring(0, 24)}..." added to cart!`);
+    showToast(`Added ${quantity}x "${product.name.slice(0, 24)}..." to cart!`);
   };
 
   const removeFromCart = (id: number) => {
     setCart((prev) => prev.filter((item) => item.id !== id));
+    showToast('Removed from cart');
   };
 
   const updateCartQuantity = (id: number, delta: number) => {
@@ -822,69 +591,219 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const isInWishlist = (id: number) => wishlist.includes(id);
 
-  // Admin Actions
-  const addProduct = (newProduct: Omit<Product, 'id'>) => {
-    const newId = Math.max(...products.map((p) => p.id), 0) + 1;
-    setProducts((prev) => [{ ...newProduct, id: newId }, ...prev]);
-    showToast('Product added successfully!');
+  // Admin Database Actions
+  const addProduct = async (newProduct: Omit<Product, 'id'>) => {
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProduct),
+      });
+      if (res.ok) {
+        const created: Product = await res.json();
+        setProducts((prev) => [created, ...prev]);
+        showToast('Product added and saved to Database!');
+      } else {
+        throw new Error('Failed to save to database');
+      }
+    } catch (e) {
+      console.error(e);
+      // Optimistic fallback
+      const newId = Math.max(...products.map((p) => p.id), 0) + 1;
+      setProducts((prev) => [{ ...newProduct, id: newId }, ...prev]);
+      showToast('Product added (Offline mode).');
+    }
   };
 
-  const updateProduct = (id: number, updatedFields: Partial<Product>) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...updatedFields } : p))
-    );
-    showToast('Product updated!');
+  const updateProduct = async (id: number, updatedFields: Partial<Product>) => {
+    try {
+      const res = await fetch(`/api/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedFields),
+      });
+      if (res.ok) {
+        const updated: Product = await res.json();
+        setProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
+        showToast('Product updated in Database!');
+      } else {
+        throw new Error('Failed to update in database');
+      }
+    } catch (e) {
+      console.error(e);
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, ...updatedFields } : p))
+      );
+      showToast('Product updated.');
+    }
   };
 
-  const deleteProduct = (id: number) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-    showToast('Product deleted.');
+  const deleteProduct = async (id: number) => {
+    try {
+      const res = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        setProducts((prev) => prev.filter((p) => p.id !== id));
+        showToast('Product deleted from Database.');
+      } else {
+        throw new Error('Failed to delete from database');
+      }
+    } catch (e) {
+      console.error(e);
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      showToast('Product deleted.');
+    }
   };
 
-  const toggleProductHidden = (id: number) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, hidden: !p.hidden } : p))
-    );
+  const toggleProductHidden = async (id: number) => {
+    try {
+      const res = await fetch(`/api/products/${id}/visibility`, {
+        method: 'PUT',
+      });
+      if (res.ok) {
+        const updated: Product = await res.json();
+        setProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
+      }
+    } catch (e) {
+      console.error(e);
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, hidden: !p.hidden } : p))
+      );
+    }
   };
 
-  const updateHeroSlide = (id: number, slideFields: Partial<HeroSlide>) => {
-    setHeroSlides((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, ...slideFields } : s))
-    );
-    showToast('Hero slide updated!');
+  const updateHeroSlide = async (id: number, slideFields: Partial<HeroSlide>) => {
+    try {
+      const res = await fetch(`/api/banners/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(slideFields),
+      });
+      if (res.ok) {
+        const updated: HeroSlide = await res.json();
+        setHeroSlides((prev) => prev.map((s) => (s.id === id ? updated : s)));
+        showToast('Hero banner updated in Database!');
+      } else {
+        throw new Error('Failed to update banner');
+      }
+    } catch (e) {
+      console.error(e);
+      setHeroSlides((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, ...slideFields } : s))
+      );
+      showToast('Hero banner updated.');
+    }
   };
 
-  const addHeroSlide = (slide: Omit<HeroSlide, 'id'>) => {
-    const newId = Math.max(...heroSlides.map((s) => s.id), 0) + 1;
-    setHeroSlides((prev) => [...prev, { ...slide, id: newId }]);
-    showToast('Hero slide added!');
+  const addHeroSlide = async (slide: Omit<HeroSlide, 'id'>) => {
+    try {
+      const res = await fetch('/api/banners', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(slide),
+      });
+      if (res.ok) {
+        const created: HeroSlide = await res.json();
+        setHeroSlides((prev) => [...prev, created]);
+        showToast('Hero banner added to Database!');
+      } else {
+        throw new Error('Failed to add banner');
+      }
+    } catch (e) {
+      console.error(e);
+      const newId = Math.max(...heroSlides.map((s) => s.id), 0) + 1;
+      setHeroSlides((prev) => [...prev, { ...slide, id: newId }]);
+      showToast('Hero banner added.');
+    }
   };
 
-  const deleteHeroSlide = (id: number) => {
+  const deleteHeroSlide = async (id: number) => {
     if (heroSlides.length <= 1) {
       showToast('Cannot delete the last hero slide.');
       return;
     }
-    setHeroSlides((prev) => prev.filter((s) => s.id !== id));
-    showToast('Hero slide removed.');
+    try {
+      const res = await fetch(`/api/banners/${id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        setHeroSlides((prev) => prev.filter((s) => s.id !== id));
+        showToast('Hero slide removed from Database.');
+      } else {
+        throw new Error('Failed to delete slide');
+      }
+    } catch (e) {
+      console.error(e);
+      setHeroSlides((prev) => prev.filter((s) => s.id !== id));
+      showToast('Hero slide removed.');
+    }
   };
 
-  const updateSectionVisibility = (section: keyof SectionVisibility, visible: boolean) => {
-    setSectionVisibility((prev) => ({ ...prev, [section]: visible }));
-    showToast(`Section "${String(section)}" visibility updated.`);
+  const updateSectionVisibility = async (section: keyof SectionVisibility, visible: boolean) => {
+    const updated = { ...sectionVisibility, [section]: visible };
+    setSectionVisibility(updated);
+    try {
+      await fetch('/api/sections', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [section]: visible }),
+      });
+      showToast(`Section "${String(section)}" visibility saved to Database.`);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const updatePageVisibility = (page: keyof PageVisibility, visible: boolean) => {
-    setPageVisibility((prev) => ({ ...prev, [page]: visible }));
-    showToast(`Page "${String(page)}" visibility updated.`);
+  const updatePageVisibility = async (page: keyof PageVisibility, visible: boolean) => {
+    const updated = { ...pageVisibility, [page]: visible };
+    setPageVisibility(updated);
+    try {
+      await fetch('/api/pages', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [page]: visible }),
+      });
+      showToast(`Page "${String(page)}" visibility saved to Database.`);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const updateSettings = (newSettings: Partial<StoreSettings>) => {
-    setSettings((prev) => ({ ...prev, ...newSettings }));
-    showToast('Store settings saved!');
+  const updateSettings = async (newSettings: Partial<StoreSettings>) => {
+    const updated = { ...settings, ...newSettings };
+    setSettings(updated);
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newSettings),
+      });
+      if (res.ok) {
+        showToast('Store settings saved to Database!');
+      }
+    } catch (e) {
+      console.error(e);
+      showToast('Store settings saved.');
+    }
   };
 
-  const resetToDefaults = () => {
+  const resetToDefaults = async () => {
+    try {
+      const res = await fetch('/api/reset', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        setProducts(data.products);
+        setHeroSlides(data.heroSlides);
+        setSectionVisibility(data.sectionVisibility);
+        setPageVisibility(data.pageVisibility);
+        setSettings(data.settings);
+        showToast('Database reset to defaults.');
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
     setProducts(INITIAL_PRODUCTS);
     setHeroSlides(INITIAL_HERO_SLIDES);
     setSectionVisibility(INITIAL_SECTION_VISIBILITY);
@@ -904,7 +823,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         cart,
         wishlist,
         toasts,
+        isServerSynced,
         showToast,
+        uploadImage,
         addToCart,
         removeFromCart,
         updateCartQuantity,
