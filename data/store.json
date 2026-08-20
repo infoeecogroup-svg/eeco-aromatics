@@ -371,5 +371,104 @@
     "deliveryFee": 350,
     "adminPin": "admin123"
   },
-  "updatedAt": "2026-08-20T17:53:45.464Z"
+  "updatedAt": "2026-08-20T17:53:45.464Z",
+  "combos": [
+    {
+      "id": 1,
+      "title": "Supreme Pooja & Home Wellness Combo Pack",
+      "badge": "BEST VALUE",
+      "savings": "SAVE RS. 950",
+      "price": "Rs. 3,850.00",
+      "regularValue": "Rs. 4,800.00",
+      "image": "/product_mega_combo.jpg",
+      "inclusions": [
+        "14-in-1 Natural Incense Sticks (14 Packets)",
+        "Pure Herbal Sambrani Dhoop Powder (100g)",
+        "Ceylon Cinnamon & Clove Herbal Powder (100g)",
+        "Pure Ceylon Lemongrass Aroma Diffuser Oil (30ml)",
+        "FREE Islandwide Doorstep Courier Delivery"
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Aroma Starter Bundle (7 Incense Sticks + Powder)",
+      "badge": "STARTER PACK",
+      "savings": "SAVE RS. 500",
+      "price": "Rs. 1,950.00",
+      "regularValue": "Rs. 2,450.00",
+      "image": "/product_starter_combo.jpg",
+      "inclusions": [
+        "7x Handcrafted Incense Sticks Packets (Assorted Scents)",
+        "1x Pure Herbal Sambrani Incense Powder (100g)",
+        "Same-Day Dispatch & Islandwide COD"
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Luxury Aroma Diffuser Essential Trio (3x 30ml)",
+      "badge": "EXCLUSIVE TRIO",
+      "savings": "SAVE RS. 1,100",
+      "price": "Rs. 3,300.00",
+      "regularValue": "Rs. 4,400.00",
+      "image": "/product_lemongrass_oil.jpg",
+      "inclusions": [
+        "Pure Lemongrass Essential Aroma Oil (30ml)",
+        "Eucalyptus & Mint Therapeutic Aroma Oil (30ml)",
+        "Lavender Night Relaxation Aroma Oil (30ml)",
+        "FREE Islandwide Cash on Delivery (COD)"
+      ]
+    }
+  ],
+  "faqs": [
+    {
+      "id": 1,
+      "q": "How long does delivery take across Sri Lanka?",
+      "a": "We dispatch all orders via prompt courier services. Deliveries to Western Province take 1-2 business days, and all other 24 districts take 2-3 business days. Cash on Delivery is available islandwide.",
+      "category": "Delivery"
+    },
+    {
+      "id": 2,
+      "q": "Are EECO incense sticks and powders 100% natural and non-toxic?",
+      "a": "Yes! All EECO Aromatics products are handcrafted in Sri Lanka using pure Ayurvedic resins, natural herbs, essential oils, and botanical wood powders without harmful synthetic charcoal or heavy chemicals.",
+      "category": "Product Quality"
+    },
+    {
+      "id": 3,
+      "q": "Can I order directly through WhatsApp?",
+      "a": "Absolutely! You can click any WhatsApp button across our website or message our hotline at 076 205 1906 with your desired items and delivery address for instant confirmation.",
+      "category": "Ordering"
+    },
+    {
+      "id": 4,
+      "q": "Do you offer Wholesale and Bulk Supply for shops or temples?",
+      "a": "Yes, we supply bulk wholesale cartons to retailers, spiritual centers, Ayurvedic spas, and hotels across Sri Lanka at special discounted trade rates. Contact us on WhatsApp for catalog and quotes.",
+      "category": "Wholesale"
+    }
+  ],
+  "benefits": [
+    {
+      "id": 1,
+      "title": "100% Pure & Herbal",
+      "description": "Natural ingredients, temple-grade purity & zero toxic chemicals",
+      "icon": "ShieldCheck"
+    },
+    {
+      "id": 2,
+      "title": "Islandwide Cash on Delivery",
+      "description": "Fast doorstep courier delivery across all 25 districts",
+      "icon": "Truck"
+    },
+    {
+      "id": 3,
+      "title": "Guaranteed Authentic",
+      "description": "Traditional Sri Lankan artisanal recipes & supreme aroma",
+      "icon": "Award"
+    },
+    {
+      "id": 4,
+      "title": "24/7 WhatsApp Ordering",
+      "description": "Direct customer assistance and instant order booking",
+      "icon": "Headphones"
+    }
+  ]
 }

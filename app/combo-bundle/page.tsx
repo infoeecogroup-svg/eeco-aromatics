@@ -20,79 +20,11 @@ import { Header } from '../../components/header';
 import { Navigation } from '../../components/navigation';
 import { Footer } from '../../components/footer';
 import { CartDrawer } from '../../components/cart-drawer';
-import { AnimatedSection, AnimatedGrid, fadeUpVariant, cardHoverProps } from '../../components/animations';
+import { AnimatedGrid, fadeUpVariant } from '../../components/animations';
 
 export default function ComboBundlePage() {
-  const { settings, addToCart, products } = useStore();
+  const { settings, addToCart, combos } = useStore();
   const [cartOpen, setCartOpen] = useState(false);
-
-  const BUNDLES = [
-    {
-      id: 9,
-      badge: '🔥 BEST VALUE COMBO',
-      title: 'XTRIME AROMA 14-in-1 Master Combo Bundle',
-      price: 'Rs. 2,100.00',
-      regularValue: 'Rs. 2,900.00',
-      savings: 'SAVE Rs. 800',
-      image: '/xtrime_aroma_banner.jpg',
-      inclusions: [
-        '14-in-1 Fragrance Incense Sticks Full Pack (Rs. 1,300 Value)',
-        '4x 100g Suwada Dupa Incense Powder Packs (Rs. 800 Value)',
-        '🎁 FREE 50g Special Ashtadupa Smoke Powder Pack',
-        '🚚 FREE Doorstep Delivery Islandwide Included',
-        '💵 Cash on Delivery Available',
-      ],
-      whatsappMsg: 'Hi EECO AROMATICS, I want to order the Rs. 2,100 XTRIME AROMA 14-in-1 Master Combo Bundle with Free Delivery!',
-    },
-    {
-      id: 6,
-      badge: 'DUAL PACK SPECIAL',
-      title: '14-in-1 Incense Sticks Double Pack + FREE Air Freshener',
-      price: 'Rs. 2,650.00',
-      regularValue: 'Rs. 3,360.00',
-      savings: 'SAVE Rs. 710',
-      image: '/banner_incense_packs.jpg',
-      inclusions: [
-        '2x Complete 14-in-1 Incense Sticks Boxes (28 Fragrances)',
-        '🎁 FREE EECO Card Fragrance Air Freshener',
-        '🚚 FREE Islandwide Courier Delivery',
-        '🌿 100% Organic Scented Bamboo Sticks',
-      ],
-      whatsappMsg: 'Hi EECO AROMATICS, I want to order the 14-in-1 Incense Sticks Dual Pack (Rs. 2,650) with Free Air Freshener!',
-    },
-    {
-      id: 5,
-      badge: 'WHOLESALE ECONOMY',
-      title: '12x 100g Jasmine Incense Powder Master Box',
-      price: 'Rs. 2,000.00',
-      regularValue: 'Rs. 2,400.00',
-      savings: 'SAVE Rs. 400',
-      image: '/product_jasmine_powder_bundle.jpg',
-      inclusions: [
-        '12 Packets of 100g Pure Jasmine Dhoop Powder (1.2kg Total)',
-        'Pure White Benzoin & Jasmine Oil Infusion',
-        'Sacred temple smoke for daily pooja & meditation',
-        '🚚 Islandwide Courier Delivery',
-      ],
-      whatsappMsg: 'Hi EECO AROMATICS, I want to order the 12x 100g Jasmine Incense Powder Master Box (Rs. 2,000)!',
-    },
-    {
-      id: 7,
-      badge: 'LUXURY HOME SET',
-      title: 'EECO Extrime Reed Diffuser & Room Spray Duo',
-      price: 'Rs. 2,190.00',
-      regularValue: 'Rs. 2,650.00',
-      savings: 'SAVE Rs. 460',
-      image: '/banner_room_diffuser.jpg',
-      inclusions: [
-        '1x Extrime Luxury Reed Diffuser (Choice of 12 Scents)',
-        '1x 100ml Luxury Room Air Freshener Spray',
-        '60 Days continuous flame-free room freshening',
-        '🚚 Islandwide Courier Delivery',
-      ],
-      whatsappMsg: 'Hi EECO AROMATICS, I want to order the Luxury Reed Diffuser & Room Spray Duo (Rs. 2,190)!',
-    },
-  ];
 
   return (
     <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -167,8 +99,8 @@ export default function ComboBundlePage() {
         </div>
 
         {/* Bundles Grid */}
-        <AnimatedGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '30px' }}>
-          {BUNDLES.map((bundle) => (
+        <AnimatedGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '30px' }}>
+          {combos.map((bundle) => (
             <motion.div
               key={bundle.id}
               style={{
@@ -225,7 +157,7 @@ export default function ComboBundlePage() {
                 }}
               >
                 <img
-                  src={bundle.image}
+                  src={bundle.image || '/product_mega_combo.jpg'}
                   alt={bundle.title}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
@@ -237,7 +169,7 @@ export default function ComboBundlePage() {
 
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px' }}>
                 <span style={{ fontSize: '28px', fontWeight: 800, color: '#1A56DB' }}>{bundle.price}</span>
-                <del style={{ fontSize: '15px', color: '#9CA3AF' }}>{bundle.regularValue}</del>
+                {bundle.regularValue && <del style={{ fontSize: '15px', color: '#9CA3AF' }}>{bundle.regularValue}</del>}
               </div>
 
               {/* Inclusions */}
@@ -248,7 +180,7 @@ export default function ComboBundlePage() {
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13.5px', color: '#4B5563' }}>
                   {bundle.inclusions.map((inc, i) => (
                     <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
-                      <span>✔</span>
+                      <span style={{ color: '#059669', fontWeight: 700 }}>✔</span>
                       <span>{inc}</span>
                     </li>
                   ))}
@@ -276,7 +208,10 @@ export default function ComboBundlePage() {
                   }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.96 }}
-                  onClick={() => window.open(`https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent(bundle.whatsappMsg)}`, '_blank')}
+                  onClick={() => {
+                    const msg = `Hi EECO AROMATICS! I want to order the "${bundle.title}" (${bundle.price}).`;
+                    window.open(`https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+                  }}
                 >
                   <MessageCircle size={18} />
                   <span>Order Bundle on WhatsApp</span>
@@ -285,7 +220,7 @@ export default function ComboBundlePage() {
                 <motion.button
                   style={{
                     width: '100%',
-                    backgroundColor: 'var(--primary-teal)',
+                    backgroundColor: '#1A56DB',
                     color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '999px',
@@ -297,8 +232,12 @@ export default function ComboBundlePage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={() => {
-                    const prod = products.find((p) => p.id === bundle.id) || products[0];
-                    addToCart(prod);
+                    addToCart({
+                      id: bundle.id,
+                      name: bundle.title,
+                      price: bundle.price,
+                      image: bundle.image,
+                    });
                   }}
                 >
                   Add Bundle to Cart

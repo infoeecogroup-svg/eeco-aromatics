@@ -24,33 +24,10 @@ import { CartDrawer } from '../../components/cart-drawer';
 import { AnimatedSection, AnimatedGrid, fadeUpVariant } from '../../components/animations';
 
 export default function ContactPage() {
-  const { settings, showToast } = useStore();
+  const { settings, faqs, showToast } = useStore();
   const [cartOpen, setCartOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', phone: '', message: '', subject: 'Product Inquiry' });
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-
-  const FAQS = [
-    {
-      q: 'How can I place an order?',
-      a: 'You can easily order directly through our website by adding items to your cart, or click any "Order on WhatsApp" button to place your order with our friendly team in seconds.',
-    },
-    {
-      q: 'Do you offer Cash on Delivery (COD)?',
-      a: 'Yes! We provide Cash on Delivery across all 25 districts of Sri Lanka. You only pay when the courier safely delivers your parcel to your doorstep.',
-    },
-    {
-      q: 'How long does delivery take?',
-      a: 'Western Province deliveries typically take 1 to 2 working days. All other provinces and outstation districts arrive within 2 to 3 working days.',
-    },
-    {
-      q: 'Are your incense products 100% natural?',
-      a: 'Yes, all EECO AROMATICS incense sticks and powder blends are crafted using pure natural botanicals, Ceylon cinnamon, sambrani resins, and non-toxic extracts.',
-    },
-    {
-      q: 'Can I purchase bulk wholesale quantities for shops or temples?',
-      a: 'Absolutely. We offer special discounted wholesale rates for retailers, distributors, and temple organizations. Message our WhatsApp helpdesk for custom wholesale quotation.',
-    },
-  ];
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -310,7 +287,7 @@ export default function ContactPage() {
             </h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {FAQS.map((faq, idx) => (
+              {faqs.map((faq, idx) => (
                 <div
                   key={idx}
                   style={{

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { updateHeroSlide, deleteHeroSlide, verifyAdminPin } from '@/lib/db';
+import { updateComboBundle, deleteComboBundle, verifyAdminPin } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,19 +16,19 @@ export async function PUT(
     const resolvedParams = await params;
     const id = parseInt(resolvedParams.id, 10);
     if (isNaN(id)) {
-      return NextResponse.json({ error: 'Invalid slide ID' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid combo ID' }, { status: 400 });
     }
 
     const updates = await request.json();
-    const updated = updateHeroSlide(id, updates);
+    const updated = updateComboBundle(id, updates);
     if (!updated) {
-      return NextResponse.json({ error: 'Hero slide not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Combo bundle not found' }, { status: 404 });
     }
 
     return NextResponse.json(updated);
   } catch (error) {
-    console.error('Error updating hero slide:', error);
-    return NextResponse.json({ error: 'Failed to update hero slide' }, { status: 500 });
+    console.error('Error updating combo bundle:', error);
+    return NextResponse.json({ error: 'Failed to update combo bundle' }, { status: 500 });
   }
 }
 
@@ -45,17 +45,17 @@ export async function DELETE(
     const resolvedParams = await params;
     const id = parseInt(resolvedParams.id, 10);
     if (isNaN(id)) {
-      return NextResponse.json({ error: 'Invalid slide ID' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid combo ID' }, { status: 400 });
     }
 
-    const success = deleteHeroSlide(id);
+    const success = deleteComboBundle(id);
     if (!success) {
-      return NextResponse.json({ error: 'Cannot delete hero slide (minimum 1 slide required or not found)' }, { status: 400 });
+      return NextResponse.json({ error: 'Combo bundle not found' }, { status: 404 });
     }
 
     return NextResponse.json({ success: true, id });
   } catch (error) {
-    console.error('Error deleting hero slide:', error);
-    return NextResponse.json({ error: 'Failed to delete hero slide' }, { status: 500 });
+    console.error('Error deleting combo bundle:', error);
+    return NextResponse.json({ error: 'Failed to delete combo bundle' }, { status: 500 });
   }
 }

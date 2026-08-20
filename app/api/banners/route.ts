@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getStoreData, addHeroSlide } from '@/lib/db';
+import { getStoreData, addHeroSlide, verifyAdminPin } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +14,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const pin = request.headers.get('x-admin-pin');
+    if (!verifyAdminPin(pin)) {
+      return NextResponse.json({ error: 'Unauthorized: Invalid Admin PIN' }, { status: 401 });
+    }
+
     const body = await request.json();
     if (!body.heading || !body.offer) {
       return NextResponse.json({ error: 'Heading and offer are required' }, { status: 400 });

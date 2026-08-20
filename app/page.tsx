@@ -17,6 +17,8 @@ import {
   Wind,
   Droplets,
   MessageCircle,
+  ShieldCheck,
+  Award,
 } from 'lucide-react';
 import {
   AnimatedSection,
@@ -86,6 +88,7 @@ const FILTER_CATEGORIES = [
 export default function Home() {
   const {
     products,
+    benefits,
     sectionVisibility,
     settings,
     addToCart,
@@ -239,8 +242,13 @@ export default function Home() {
       {sectionVisibility.benefits && (
         <AnimatedSection className="benefits-section-wrap layout-max-width">
           <AnimatedGrid className="benefits-grid">
-            {BENEFIT_CARDS.map((card) => {
-              const IconComponent = card.icon;
+            {benefits.map((card) => {
+              let IconComponent = ShieldCheck;
+              if (card.icon === 'Truck') IconComponent = Truck;
+              else if (card.icon === 'Headphones') IconComponent = Headphones;
+              else if (card.icon === 'PackageCheck') IconComponent = PackageCheck;
+              else if (card.icon === 'Award') IconComponent = Award;
+
               return (
                 <motion.div
                   className="benefit-card-spec"

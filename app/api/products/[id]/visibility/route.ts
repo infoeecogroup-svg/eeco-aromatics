@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { toggleProductHidden } from '@/lib/db';
+import { toggleProductHidden, verifyAdminPin } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,6 +8,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
   try {
+    const pin = request.headers.get('x-admin-pin');
+    if (!verifyAdminPin(pin)) {
+      return NextResponse.json({ error: 'Unauthorized: Invalid Admin PIN' }, { status: 401 });
+    }
+
     const resolvedParams = await params;
     const id = parseInt(resolvedParams.id, 10);
     if (isNaN(id)) {

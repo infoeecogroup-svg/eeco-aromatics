@@ -1,45 +1,26 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import {
+  Product,
+  HeroSlide,
+  ComboBundle,
+  FaqItem,
+  BenefitCard,
+  SectionVisibility,
+  PageVisibility,
+  StoreSettings,
+  INITIAL_PRODUCTS,
+  INITIAL_HERO_SLIDES,
+  INITIAL_COMBOS,
+  INITIAL_FAQS,
+  INITIAL_BENEFITS,
+  INITIAL_SECTION_VISIBILITY,
+  INITIAL_PAGE_VISIBILITY,
+  INITIAL_SETTINGS,
+} from '@/lib/types';
 
-export interface Product {
-  id: number;
-  badge?: string;
-  category: 'Incense Sticks Packs' | 'Incense Powder Packs' | 'Air Fresheners' | 'Diffuser' | 'Combo Bundle' | 'Wholesale Products';
-  name: string;
-  price: string;
-  originalPrice: string;
-  discountText?: string;
-  rating: number;
-  reviewCount: number;
-  wishlistActive?: boolean;
-  shipping?: string;
-  storeCategory?: string;
-  stockState?: 'in_stock' | 'out_of_stock' | 'notified';
-  iconType: 'flame' | 'sparkles' | 'wind' | 'droplets';
-  image?: string;
-  description?: string;
-  burnTime?: string;
-  scentNotes?: string[];
-  hidden?: boolean;
-}
-
-export interface HeroSlide {
-  id: number;
-  offer: string;
-  badge: string;
-  heading: string;
-  desc: string;
-  icon: string;
-  bannerImage?: string;
-  whatsappMsg?: string;
-  glassCard?: {
-    badge: string;
-    price: string;
-    sub: string;
-    items: string[];
-  };
-}
+export type { Product, HeroSlide, ComboBundle, FaqItem, BenefitCard, SectionVisibility, PageVisibility, StoreSettings };
 
 export interface CartItem {
   id: number;
@@ -49,369 +30,12 @@ export interface CartItem {
   image?: string;
 }
 
-export interface SectionVisibility {
-  hero: boolean;
-  benefits: boolean;
-  dailyDiscount: boolean;
-  bestSelling: boolean;
-  categories: boolean;
-  topSelling: boolean;
-  ourProducts: boolean;
-  wholesaleProducts: boolean;
-  promoBanners: boolean;
-  newlyLaunched: boolean;
-  hotDeals: boolean;
-  newsletter: boolean;
-}
-
-export interface PageVisibility {
-  shop: boolean;
-  comboBundle: boolean;
-  about: boolean;
-  contact: boolean;
-  wishlist: boolean;
-  cart: boolean;
-  trackOrder: boolean;
-}
-
-export interface StoreSettings {
-  storeName: string;
-  storeSlogan: string;
-  regNo: string;
-  whatsappNumber: string;
-  whatsappMessage: string;
-  announcementText: string;
-  maintenanceMode: boolean;
-  maintenanceNotice: string;
-  freeDeliveryThreshold: number;
-  deliveryFee: number;
-  adminPin: string;
-}
-
-export const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: 1,
-    badge: '15% OFF',
-    category: 'Incense Sticks Packs',
-    iconType: 'flame',
-    image: '/product_thulasi_sticks.jpg',
-    name: 'EECO Thulasi Herbal Incense Sticks Pack (14 Packets)',
-    price: 'Rs. 1,350.00',
-    originalPrice: 'Rs. 1,600.00',
-    discountText: '15% OFF',
-    rating: 5,
-    reviewCount: 240,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Incense Sticks',
-    stockState: 'in_stock',
-    burnTime: '45 mins per stick',
-    scentNotes: ['Holy Basil (Thulasi)', 'Ayurvedic Herbal Blend', 'Sacred Sandal'],
-    description: 'Authentic handcrafted Thulasi herbal incense sticks for meditation, prayer, and refreshing living spaces with sacred herbal aroma.',
-  },
-  {
-    id: 2,
-    badge: '15% OFF',
-    category: 'Incense Sticks Packs',
-    iconType: 'flame',
-    image: '/product_pink_rose_sticks.jpg',
-    name: 'EECO Pink Rose Fragrance Incense Sticks Pack (14 Packets)',
-    price: 'Rs. 1,350.00',
-    originalPrice: 'Rs. 1,600.00',
-    discountText: '15% OFF',
-    rating: 5,
-    reviewCount: 215,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Incense Sticks',
-    stockState: 'in_stock',
-    burnTime: '45 mins per stick',
-    scentNotes: ['Sweet Damask Rose', 'Floral Essence', 'Subtle Amber'],
-    description: 'Delicate floral aroma of fresh blooming pink roses crafted to bring tranquility, romance, and peaceful ambiance to your home.',
-  },
-  {
-    id: 3,
-    badge: 'HOT',
-    category: 'Air Fresheners',
-    iconType: 'wind',
-    image: '/product_jasmine_air_freshener.jpg',
-    name: 'EECO Jasmine Luxury Air Freshener Spray 100ml',
-    price: 'Rs. 690.00',
-    originalPrice: 'Rs. 850.00',
-    discountText: '18% OFF',
-    rating: 5,
-    reviewCount: 198,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Air Fresheners',
-    stockState: 'in_stock',
-    burnTime: 'Long Lasting Spray',
-    scentNotes: ['Pure Jasmine Blossoms', 'Morning Dew', 'Gentle Citrus'],
-    description: 'Instant room freshness with natural Jasmine extract. Neutralizes odor and envelops rooms in refreshing floral elegance.',
-  },
-  {
-    id: 4,
-    badge: 'BEST SELLER',
-    category: 'Incense Powder Packs',
-    iconType: 'sparkles',
-    image: '/product_sambrani_powder.jpg',
-    name: 'EECO Pure Herbal Sambrani Dhoop Powder 100g',
-    price: 'Rs. 750.00',
-    originalPrice: 'Rs. 950.00',
-    discountText: '21% OFF',
-    rating: 5,
-    reviewCount: 310,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Incense Powder',
-    stockState: 'in_stock',
-    burnTime: 'Pure resin smoke',
-    scentNotes: ['Natural Benzoin Resin', 'Frankincense', 'Spiritual Dhoop'],
-    description: 'Authentic temple grade Sambrani incense powder for sacred poojas, removing negativity, and purifying room atmosphere naturally.',
-  },
-  {
-    id: 5,
-    badge: 'POPULAR',
-    category: 'Diffuser',
-    iconType: 'droplets',
-    image: '/product_lemongrass_oil.jpg',
-    name: 'EECO Sri Lankan Pure Lemongrass Essential Aroma Oil 30ml',
-    price: 'Rs. 1,450.00',
-    originalPrice: 'Rs. 1,800.00',
-    discountText: '19% OFF',
-    rating: 5,
-    reviewCount: 180,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Diffuser',
-    stockState: 'in_stock',
-    burnTime: 'Diffuser Drops',
-    scentNotes: ['Ceylon Lemongrass', 'Citrus Top', 'Herbal Base'],
-    description: 'Pure extracted Ceylon lemongrass essential oil. Natural mosquito repellent and revitalizing aroma for reed and electric diffusers.',
-  },
-  {
-    id: 6,
-    badge: '20% OFF',
-    category: 'Combo Bundle',
-    iconType: 'sparkles',
-    image: '/product_mega_combo.jpg',
-    name: 'EECO Mega Aromatic Bundle (14 Sticks + 2 Powders + Diffuser)',
-    price: 'Rs. 3,850.00',
-    originalPrice: 'Rs. 4,800.00',
-    discountText: '20% OFF',
-    rating: 5,
-    reviewCount: 420,
-    shipping: 'FREE Delivery Islandwide',
-    storeCategory: 'Combo Bundle',
-    stockState: 'in_stock',
-    burnTime: 'Complete set',
-    scentNotes: ['Assorted Signature Collection', 'Herbal & Floral Variety'],
-    description: 'The ultimate home fragrance gift collection containing 14 handcrafted incense stick packs, 2 herbal powders, and natural aroma diffuser.',
-  },
-  {
-    id: 7,
-    badge: 'VALUE PACK',
-    category: 'Wholesale Products',
-    iconType: 'flame',
-    image: '/product_wholesale_pack.jpg',
-    name: 'EECO Retail Wholesale Box (50 Handcrafted Stick Packets)',
-    price: 'Rs. 4,200.00',
-    originalPrice: 'Rs. 5,500.00',
-    discountText: '24% OFF',
-    rating: 5,
-    reviewCount: 145,
-    shipping: 'Bulk Courier Dispatch',
-    storeCategory: 'Wholesale Products',
-    stockState: 'in_stock',
-    burnTime: 'Bulk Retail Stock',
-    scentNotes: ['Multi-Aroma Retail Mix', 'Thulasi, Rose, Sandalwood'],
-    description: 'Special wholesale pack for shops, spiritual centres, and bulk purchasers with maximum retail margin and verified shelf quality.',
-  },
-  {
-    id: 8,
-    badge: '14-in-1 PACK',
-    category: 'Incense Sticks Packs',
-    iconType: 'flame',
-    image: '/product_sandalwood_sticks.jpg',
-    name: 'EECO Royal Sandalwood Incense Sticks Pack (14 Packets)',
-    price: 'Rs. 1,450.00',
-    originalPrice: 'Rs. 1,750.00',
-    discountText: '17% OFF',
-    rating: 5,
-    reviewCount: 290,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Incense Sticks',
-    stockState: 'in_stock',
-    burnTime: '45 mins per stick',
-    scentNotes: ['Royal Mysore Sandalwood', 'Woody Amber', 'Sacred Musk'],
-    description: 'Deep woody sandalwood sticks prepared using traditional artisanal recipes to create a calming and divine meditation sanctuary.',
-  },
-  {
-    id: 9,
-    badge: 'SPECIAL',
-    category: 'Incense Powder Packs',
-    iconType: 'sparkles',
-    image: '/product_cinnamon_powder.jpg',
-    name: 'EECO Ceylon Cinnamon & Clove Herbal Dhoop Powder 100g',
-    price: 'Rs. 800.00',
-    originalPrice: 'Rs. 990.00',
-    discountText: '19% OFF',
-    rating: 5,
-    reviewCount: 162,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Incense Powder',
-    stockState: 'in_stock',
-    burnTime: 'Rich spicy smoke',
-    scentNotes: ['Ceylon Cinnamon Bark', 'Spicy Clove', 'Herbal Bark'],
-    description: 'Warm spicy fragrance made with real Ceylon cinnamon bark and aromatic cloves for warm energetic home vibration.',
-  },
-  {
-    id: 10,
-    badge: 'FRESH',
-    category: 'Air Fresheners',
-    iconType: 'wind',
-    image: '/product_lavender_spray.jpg',
-    name: 'EECO French Lavender Relaxation Air Freshener Spray 100ml',
-    price: 'Rs. 690.00',
-    originalPrice: 'Rs. 850.00',
-    discountText: '18% OFF',
-    rating: 5,
-    reviewCount: 175,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Air Fresheners',
-    stockState: 'in_stock',
-    burnTime: 'Long Lasting Spray',
-    scentNotes: ['French Lavender', 'Chamomile Herb', 'Soft Vanilla'],
-    description: 'Calming lavender spray designed for bedrooms, meditation corners, and stress-free soothing environments before sleep.',
-  },
-  {
-    id: 11,
-    badge: 'EXCLUSIVE',
-    category: 'Diffuser',
-    iconType: 'droplets',
-    image: '/product_eucalyptus_oil.jpg',
-    name: 'EECO Natural Eucalyptus & Mint Diffuser Aroma Blend 30ml',
-    price: 'Rs. 1,450.00',
-    originalPrice: 'Rs. 1,800.00',
-    discountText: '19% OFF',
-    rating: 5,
-    reviewCount: 140,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Diffuser',
-    stockState: 'in_stock',
-    burnTime: 'Diffuser Drops',
-    scentNotes: ['Cool Eucalyptus', 'Wild Peppermint', 'Crisp Herbal Pine'],
-    description: 'Refreshing therapeutic aroma oil blend to clear nasal pathways, refresh stale air, and energize workspaces.',
-  },
-  {
-    id: 12,
-    badge: 'GIFT SET',
-    category: 'Combo Bundle',
-    iconType: 'sparkles',
-    image: '/product_starter_combo.jpg',
-    name: 'EECO Heritage Starter Pack (7 Incense Sticks + 1 Herbal Powder)',
-    price: 'Rs. 1,950.00',
-    originalPrice: 'Rs. 2,450.00',
-    discountText: '20% OFF',
-    rating: 5,
-    reviewCount: 230,
-    shipping: 'Courier 1-3 Days',
-    storeCategory: 'Combo Bundle',
-    stockState: 'in_stock',
-    burnTime: 'Handy Starter Set',
-    scentNotes: ['Thulasi, Sandalwood, Jasmine & Sambrani'],
-    description: 'The perfect introductory aromatic gift box for your household featuring popular handcrafted stick varieties and herbal powder.',
-  },
-];
-
-export const INITIAL_HERO_SLIDES: HeroSlide[] = [
-  {
-    id: 1,
-    offer: '⚡ SPECIAL ONLINE EXCLUSIVE • ISLANDWIDE COD',
-    badge: 'HOT OFFER',
-    heading: 'Handcrafted Incense & Pure Ceylon Fragrance Packs',
-    desc: 'Enrich your sanctuary with 100% natural, herbal, and spiritually uplifting fragrances made with authentic Sri Lankan botanical extracts.',
-    icon: 'Sparkles',
-    bannerImage: '/banner_slider_1.png',
-    whatsappMsg: 'Hi EECO AROMATICS! I want to order the 14-in-1 Incense Sticks Collection.',
-    glassCard: {
-      badge: 'TOP VALUE DEAL',
-      price: 'Rs. 1,350.00',
-      sub: '14 Packs included • Long burn time',
-      items: ['14 Natural Fragrance Packs', '100% Herbal & Non-toxic', 'Same-Day Dispatch'],
-    },
-  },
-  {
-    id: 2,
-    offer: '🔥 BUNDLE SAVINGS • SAVE UP TO 30%',
-    badge: 'COMBO PACKS',
-    heading: 'Complete Spiritual Pooja & Home Wellness Bundles',
-    desc: 'Get incense sticks, Sambrani dhoop powders, and luxury diffuser aroma oils together with free delivery across all 25 districts.',
-    icon: 'Package',
-    bannerImage: '/banner_slider_2.png',
-    whatsappMsg: 'Hi EECO AROMATICS! I want to order the Mega Aromatic Combo Bundle.',
-    glassCard: {
-      badge: 'MEGA COMBO PACK',
-      price: 'Rs. 3,850.00',
-      sub: 'Save Rs. 950 with free doorstep delivery',
-      items: ['14 Stick Packs + 2 Powders', 'Essential Aroma Diffuser 30ml', 'Free Islandwide Delivery'],
-    },
-  },
-  {
-    id: 3,
-    offer: '🌿 100% NATURAL • TEMPLE GRADE PURITY',
-    badge: 'HERBAL COLLECTION',
-    heading: 'Traditional Sambrani & Ashtadupa Powders',
-    desc: 'Crafted using sacred herbal resins according to age-old Ayurvedic traditions to cleanse indoor energies and bring tranquility.',
-    icon: 'Flame',
-    bannerImage: '/banner_slider_3.png',
-    whatsappMsg: 'Hi EECO AROMATICS! I want to inquire about Sambrani & Ashtadupa herbal powders.',
-    glassCard: {
-      badge: 'HERBAL PURITY',
-      price: 'Rs. 750.00',
-      sub: 'Authentic resin smoke & sacred dhoop',
-      items: ['Temple Grade Benzoin Resin', 'No Harmful Chemicals', 'Cash on Delivery Available'],
-    },
-  },
-];
-
-export const INITIAL_SECTION_VISIBILITY: SectionVisibility = {
-  hero: true,
-  benefits: true,
-  dailyDiscount: true,
-  bestSelling: true,
-  categories: true,
-  topSelling: true,
-  ourProducts: true,
-  wholesaleProducts: true,
-  promoBanners: true,
-  newlyLaunched: true,
-  hotDeals: true,
-  newsletter: true,
-};
-
-export const INITIAL_PAGE_VISIBILITY: PageVisibility = {
-  shop: true,
-  comboBundle: true,
-  about: true,
-  contact: true,
-  wishlist: true,
-  cart: true,
-  trackOrder: true,
-};
-
-export const INITIAL_SETTINGS: StoreSettings = {
-  storeName: 'EECO AROMATICS',
-  storeSlogan: 'Fragrance for Your Soul',
-  regNo: 'EECO-LK-2026-REG',
-  whatsappNumber: '94762051906',
-  whatsappMessage: 'Hi EECO AROMATICS! I would like to place an order.',
-  announcementText: '🔥 Islandwide Cash on Delivery (COD) Available! Free Delivery on orders over Rs. 3,500.',
-  maintenanceMode: false,
-  maintenanceNotice: 'We are updating our fragrance catalog. You can still order directly on WhatsApp.',
-  freeDeliveryThreshold: 3500,
-  deliveryFee: 350,
-  adminPin: 'admin123',
-};
-
 interface StoreContextType {
   products: Product[];
   heroSlides: HeroSlide[];
+  combos: ComboBundle[];
+  faqs: FaqItem[];
+  benefits: BenefitCard[];
   sectionVisibility: SectionVisibility;
   pageVisibility: PageVisibility;
   settings: StoreSettings;
@@ -419,9 +43,10 @@ interface StoreContextType {
   wishlist: number[];
   toasts: { id: string; text: string }[];
   isServerSynced: boolean;
+  lastUpdatedTime: string;
   showToast: (text: string) => void;
   uploadImage: (file: File) => Promise<string>;
-  addToCart: (product: Product, quantity?: number) => void;
+  addToCart: (product: Product | { id: number; name: string; price: string; image?: string }, quantity?: number) => void;
   removeFromCart: (id: number) => void;
   updateCartQuantity: (id: number, delta: number) => void;
   clearCart: () => void;
@@ -434,6 +59,13 @@ interface StoreContextType {
   updateHeroSlide: (id: number, slideFields: Partial<HeroSlide>) => Promise<void>;
   addHeroSlide: (slide: Omit<HeroSlide, 'id'>) => Promise<void>;
   deleteHeroSlide: (id: number) => Promise<void>;
+  addCombo: (combo: Omit<ComboBundle, 'id'>) => Promise<void>;
+  updateCombo: (id: number, comboFields: Partial<ComboBundle>) => Promise<void>;
+  deleteCombo: (id: number) => Promise<void>;
+  addFaq: (faq: Omit<FaqItem, 'id'>) => Promise<void>;
+  updateFaq: (id: number, faqFields: Partial<FaqItem>) => Promise<void>;
+  deleteFaq: (id: number) => Promise<void>;
+  saveBenefits: (newBenefits: BenefitCard[]) => Promise<void>;
   updateSectionVisibility: (section: keyof SectionVisibility, visible: boolean) => Promise<void>;
   updatePageVisibility: (page: keyof PageVisibility, visible: boolean) => Promise<void>;
   updateSettings: (newSettings: Partial<StoreSettings>) => Promise<void>;
@@ -445,6 +77,9 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(INITIAL_HERO_SLIDES);
+  const [combos, setCombos] = useState<ComboBundle[]>(INITIAL_COMBOS);
+  const [faqs, setFaqs] = useState<FaqItem[]>(INITIAL_FAQS);
+  const [benefits, setBenefits] = useState<BenefitCard[]>(INITIAL_BENEFITS);
   const [sectionVisibility, setSectionVisibility] = useState<SectionVisibility>(INITIAL_SECTION_VISIBILITY);
   const [pageVisibility, setPageVisibility] = useState<PageVisibility>(INITIAL_PAGE_VISIBILITY);
   const [settings, setSettings] = useState<StoreSettings>(INITIAL_SETTINGS);
@@ -452,57 +87,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [wishlist, setWishlist] = useState<number[]>([1, 6]);
   const [toasts, setToasts] = useState<{ id: string; text: string }[]>([]);
   const [isServerSynced, setIsServerSynced] = useState(false);
+  const [lastUpdatedTime, setLastUpdatedTime] = useState<string>('');
 
-  // Fetch live state from Server Database on mount
-  useEffect(() => {
-    let isMounted = true;
+  const lastSyncTimestampRef = useRef<string>('');
 
-    async function loadStoreFromDatabase() {
-      try {
-        const res = await fetch('/api/store', { cache: 'no-store' });
-        if (res.ok) {
-          const data = await res.json();
-          if (isMounted && data) {
-            if (Array.isArray(data.products)) setProducts(data.products);
-            if (Array.isArray(data.heroSlides)) setHeroSlides(data.heroSlides);
-            if (data.sectionVisibility) setSectionVisibility(data.sectionVisibility);
-            if (data.pageVisibility) setPageVisibility(data.pageVisibility);
-            if (data.settings) setSettings(data.settings);
-            setIsServerSynced(true);
-          }
-        }
-      } catch (err) {
-        console.warn('Could not sync with server DB, using fallback defaults:', err);
-      }
+  const getAdminPin = () => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('eeco_admin_pin') || 'admin123';
     }
-
-    // Load customer personal cart & wishlist from localStorage
-    try {
-      const savedCart = localStorage.getItem('eeco_cart');
-      if (savedCart) setCart(JSON.parse(savedCart));
-
-      const savedWishlist = localStorage.getItem('eeco_wishlist');
-      if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
-    } catch (e) {
-      console.error('Error loading local cart/wishlist:', e);
-    }
-
-    loadStoreFromDatabase();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  // Save personal cart & wishlist to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('eeco_cart', JSON.stringify(cart));
-      localStorage.setItem('eeco_wishlist', JSON.stringify(wishlist));
-    } catch (e) {
-      console.error('Error saving local cart/wishlist:', e);
-    }
-  }, [cart, wishlist]);
+    return 'admin123';
+  };
 
   const showToast = useCallback((text: string) => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -512,19 +106,81 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, 3200);
   }, []);
 
-  // Direct image upload helper
+  // Fetch live store database
+  const syncStore = useCallback(async (isInitial = false) => {
+    try {
+      const res = await fetch('/api/store', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.updatedAt !== lastSyncTimestampRef.current) {
+          lastSyncTimestampRef.current = data.updatedAt || new Date().toISOString();
+          setLastUpdatedTime(lastSyncTimestampRef.current);
+
+          if (Array.isArray(data.products)) setProducts(data.products);
+          if (Array.isArray(data.heroSlides)) setHeroSlides(data.heroSlides);
+          if (Array.isArray(data.combos)) setCombos(data.combos);
+          if (Array.isArray(data.faqs)) setFaqs(data.faqs);
+          if (Array.isArray(data.benefits)) setBenefits(data.benefits);
+          if (data.sectionVisibility) setSectionVisibility(data.sectionVisibility);
+          if (data.pageVisibility) setPageVisibility(data.pageVisibility);
+          if (data.settings) setSettings(data.settings);
+          if (isInitial) setIsServerSynced(true);
+        }
+      }
+    } catch (err) {
+      if (isInitial) {
+        console.warn('Could not sync with server DB, using cached template defaults:', err);
+      }
+    }
+  }, []);
+
+  // Initial load + Real-time Background Polling (every 4 seconds)
+  useEffect(() => {
+    try {
+      const savedCart = localStorage.getItem('eeco_cart');
+      if (savedCart) setCart(JSON.parse(savedCart));
+
+      const savedWishlist = localStorage.getItem('eeco_wishlist');
+      if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+    } catch (e) {
+      console.error('Error reading personal cart/wishlist:', e);
+    }
+
+    syncStore(true);
+
+    const interval = setInterval(() => {
+      syncStore(false);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [syncStore]);
+
+  // Save personal cart & wishlist
+  useEffect(() => {
+    try {
+      localStorage.setItem('eeco_cart', JSON.stringify(cart));
+      localStorage.setItem('eeco_wishlist', JSON.stringify(wishlist));
+    } catch (e) {
+      console.error('Error saving personal cart/wishlist:', e);
+    }
+  }, [cart, wishlist]);
+
+  // Upload image helper with PIN security
   const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('file', file);
 
     const res = await fetch('/api/upload', {
       method: 'POST',
+      headers: {
+        'x-admin-pin': getAdminPin(),
+      },
       body: formData,
     });
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.error || 'Image upload failed');
+      throw new Error(errorData.error || 'Image upload failed. Check Admin PIN authorization.');
     }
 
     const data = await res.json();
@@ -532,7 +188,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   // Cart Actions
-  const addToCart = (product: Product, quantity = 1) => {
+  const addToCart = (product: Product | { id: number; name: string; price: string; image?: string }, quantity = 1) => {
     const rawPrice = parseInt(product.price.replace(/[^0-9]/g, ''), 10) || 0;
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
@@ -591,12 +247,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const isInWishlist = (id: number) => wishlist.includes(id);
 
-  // Admin Database Actions
+  // Products CRUD
   const addProduct = async (newProduct: Omit<Product, 'id'>) => {
     try {
       const res = await fetch('/api/products', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
         body: JSON.stringify(newProduct),
       });
       if (res.ok) {
@@ -604,14 +263,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setProducts((prev) => [created, ...prev]);
         showToast('Product added and saved to Database!');
       } else {
-        throw new Error('Failed to save to database');
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to save to database');
       }
-    } catch (e) {
-      console.error(e);
-      // Optimistic fallback
-      const newId = Math.max(...products.map((p) => p.id), 0) + 1;
-      setProducts((prev) => [{ ...newProduct, id: newId }, ...prev]);
-      showToast('Product added (Offline mode).');
+    } catch (e: any) {
+      showToast(e?.message || 'Error saving product');
     }
   };
 
@@ -619,7 +275,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await fetch(`/api/products/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
         body: JSON.stringify(updatedFields),
       });
       if (res.ok) {
@@ -627,14 +286,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
         showToast('Product updated in Database!');
       } else {
-        throw new Error('Failed to update in database');
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to update');
       }
-    } catch (e) {
-      console.error(e);
-      setProducts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, ...updatedFields } : p))
-      );
-      showToast('Product updated.');
+    } catch (e: any) {
+      showToast(e?.message || 'Error updating product');
     }
   };
 
@@ -642,17 +298,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await fetch(`/api/products/${id}`, {
         method: 'DELETE',
+        headers: {
+          'x-admin-pin': getAdminPin(),
+        },
       });
       if (res.ok) {
         setProducts((prev) => prev.filter((p) => p.id !== id));
         showToast('Product deleted from Database.');
       } else {
-        throw new Error('Failed to delete from database');
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to delete');
       }
-    } catch (e) {
-      console.error(e);
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-      showToast('Product deleted.');
+    } catch (e: any) {
+      showToast(e?.message || 'Error deleting product');
     }
   };
 
@@ -660,6 +318,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await fetch(`/api/products/${id}/visibility`, {
         method: 'PUT',
+        headers: {
+          'x-admin-pin': getAdminPin(),
+        },
       });
       if (res.ok) {
         const updated: Product = await res.json();
@@ -667,17 +328,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     } catch (e) {
       console.error(e);
-      setProducts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, hidden: !p.hidden } : p))
-      );
     }
   };
 
+  // Hero Slides CRUD
   const updateHeroSlide = async (id: number, slideFields: Partial<HeroSlide>) => {
     try {
       const res = await fetch(`/api/banners/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
         body: JSON.stringify(slideFields),
       });
       if (res.ok) {
@@ -685,14 +347,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setHeroSlides((prev) => prev.map((s) => (s.id === id ? updated : s)));
         showToast('Hero banner updated in Database!');
       } else {
-        throw new Error('Failed to update banner');
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to update banner');
       }
-    } catch (e) {
-      console.error(e);
-      setHeroSlides((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, ...slideFields } : s))
-      );
-      showToast('Hero banner updated.');
+    } catch (e: any) {
+      showToast(e?.message || 'Error updating banner');
     }
   };
 
@@ -700,7 +359,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await fetch('/api/banners', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
         body: JSON.stringify(slide),
       });
       if (res.ok) {
@@ -708,13 +370,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setHeroSlides((prev) => [...prev, created]);
         showToast('Hero banner added to Database!');
       } else {
-        throw new Error('Failed to add banner');
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to add banner');
       }
-    } catch (e) {
-      console.error(e);
-      const newId = Math.max(...heroSlides.map((s) => s.id), 0) + 1;
-      setHeroSlides((prev) => [...prev, { ...slide, id: newId }]);
-      showToast('Hero banner added.');
+    } catch (e: any) {
+      showToast(e?.message || 'Error adding banner');
     }
   };
 
@@ -726,17 +386,177 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await fetch(`/api/banners/${id}`, {
         method: 'DELETE',
+        headers: {
+          'x-admin-pin': getAdminPin(),
+        },
       });
       if (res.ok) {
         setHeroSlides((prev) => prev.filter((s) => s.id !== id));
         showToast('Hero slide removed from Database.');
       } else {
-        throw new Error('Failed to delete slide');
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to delete slide');
       }
-    } catch (e) {
-      console.error(e);
-      setHeroSlides((prev) => prev.filter((s) => s.id !== id));
-      showToast('Hero slide removed.');
+    } catch (e: any) {
+      showToast(e?.message || 'Error deleting banner');
+    }
+  };
+
+  // Combo Bundles CRUD
+  const addCombo = async (combo: Omit<ComboBundle, 'id'>) => {
+    try {
+      const res = await fetch('/api/combos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
+        body: JSON.stringify(combo),
+      });
+      if (res.ok) {
+        const created: ComboBundle = await res.json();
+        setCombos((prev) => [...prev, created]);
+        showToast('Combo Bundle added to Database!');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to add combo');
+      }
+    } catch (e: any) {
+      showToast(e?.message || 'Error adding combo bundle');
+    }
+  };
+
+  const updateCombo = async (id: number, comboFields: Partial<ComboBundle>) => {
+    try {
+      const res = await fetch(`/api/combos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
+        body: JSON.stringify(comboFields),
+      });
+      if (res.ok) {
+        const updated: ComboBundle = await res.json();
+        setCombos((prev) => prev.map((c) => (c.id === id ? updated : c)));
+        showToast('Combo Bundle updated in Database!');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to update combo');
+      }
+    } catch (e: any) {
+      showToast(e?.message || 'Error updating combo bundle');
+    }
+  };
+
+  const deleteCombo = async (id: number) => {
+    try {
+      const res = await fetch(`/api/combos/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'x-admin-pin': getAdminPin(),
+        },
+      });
+      if (res.ok) {
+        setCombos((prev) => prev.filter((c) => c.id !== id));
+        showToast('Combo Bundle removed from Database.');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to delete combo');
+      }
+    } catch (e: any) {
+      showToast(e?.message || 'Error deleting combo bundle');
+    }
+  };
+
+  // FAQs CRUD
+  const addFaq = async (faq: Omit<FaqItem, 'id'>) => {
+    try {
+      const res = await fetch('/api/faqs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
+        body: JSON.stringify(faq),
+      });
+      if (res.ok) {
+        const created: FaqItem = await res.json();
+        setFaqs((prev) => [...prev, created]);
+        showToast('FAQ added to Database!');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to add FAQ');
+      }
+    } catch (e: any) {
+      showToast(e?.message || 'Error adding FAQ');
+    }
+  };
+
+  const updateFaq = async (id: number, faqFields: Partial<FaqItem>) => {
+    try {
+      const res = await fetch(`/api/faqs/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
+        body: JSON.stringify(faqFields),
+      });
+      if (res.ok) {
+        const updated: FaqItem = await res.json();
+        setFaqs((prev) => prev.map((f) => (f.id === id ? updated : f)));
+        showToast('FAQ updated in Database!');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to update FAQ');
+      }
+    } catch (e: any) {
+      showToast(e?.message || 'Error updating FAQ');
+    }
+  };
+
+  const deleteFaq = async (id: number) => {
+    try {
+      const res = await fetch(`/api/faqs/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'x-admin-pin': getAdminPin(),
+        },
+      });
+      if (res.ok) {
+        setFaqs((prev) => prev.filter((f) => f.id !== id));
+        showToast('FAQ removed from Database.');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to delete FAQ');
+      }
+    } catch (e: any) {
+      showToast(e?.message || 'Error deleting FAQ');
+    }
+  };
+
+  // Benefits
+  const saveBenefits = async (newBenefits: BenefitCard[]) => {
+    try {
+      const res = await fetch('/api/benefits', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
+        body: JSON.stringify(newBenefits),
+      });
+      if (res.ok) {
+        const updated: BenefitCard[] = await res.json();
+        setBenefits(updated);
+        showToast('Service Benefits saved to Database!');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to save benefits');
+      }
+    } catch (e: any) {
+      showToast(e?.message || 'Error saving benefits');
     }
   };
 
@@ -746,7 +566,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       await fetch('/api/sections', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
         body: JSON.stringify({ [section]: visible }),
       });
       showToast(`Section "${String(section)}" visibility saved to Database.`);
@@ -761,7 +584,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       await fetch('/api/pages', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
         body: JSON.stringify({ [page]: visible }),
       });
       showToast(`Page "${String(page)}" visibility saved to Database.`);
@@ -776,7 +602,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await fetch('/api/settings', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
         body: JSON.stringify(newSettings),
       });
       if (res.ok) {
@@ -790,11 +619,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const resetToDefaults = async () => {
     try {
-      const res = await fetch('/api/reset', { method: 'POST' });
+      const res = await fetch('/api/reset', {
+        method: 'POST',
+        headers: {
+          'x-admin-pin': getAdminPin(),
+        },
+      });
       if (res.ok) {
         const data = await res.json();
         setProducts(data.products);
         setHeroSlides(data.heroSlides);
+        setCombos(data.combos || INITIAL_COMBOS);
+        setFaqs(data.faqs || INITIAL_FAQS);
+        setBenefits(data.benefits || INITIAL_BENEFITS);
         setSectionVisibility(data.sectionVisibility);
         setPageVisibility(data.pageVisibility);
         setSettings(data.settings);
@@ -806,6 +643,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
     setProducts(INITIAL_PRODUCTS);
     setHeroSlides(INITIAL_HERO_SLIDES);
+    setCombos(INITIAL_COMBOS);
+    setFaqs(INITIAL_FAQS);
+    setBenefits(INITIAL_BENEFITS);
     setSectionVisibility(INITIAL_SECTION_VISIBILITY);
     setPageVisibility(INITIAL_PAGE_VISIBILITY);
     setSettings(INITIAL_SETTINGS);
@@ -817,6 +657,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       value={{
         products,
         heroSlides,
+        combos,
+        faqs,
+        benefits,
         sectionVisibility,
         pageVisibility,
         settings,
@@ -824,6 +667,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         wishlist,
         toasts,
         isServerSynced,
+        lastUpdatedTime,
         showToast,
         uploadImage,
         addToCart,
@@ -839,6 +683,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updateHeroSlide,
         addHeroSlide,
         deleteHeroSlide,
+        addCombo,
+        updateCombo,
+        deleteCombo,
+        addFaq,
+        updateFaq,
+        deleteFaq,
+        saveBenefits,
         updateSectionVisibility,
         updatePageVisibility,
         updateSettings,

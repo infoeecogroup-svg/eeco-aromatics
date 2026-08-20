@@ -7,13 +7,15 @@ import {
   LayoutDashboard,
   Package,
   Sliders,
+  Gift,
+  HelpCircle,
+  ShieldCheck,
   Eye,
   EyeOff,
   Plus,
   Trash2,
   Edit,
   Save,
-  ShieldCheck,
   Wrench,
   Settings,
   Flame,
@@ -31,16 +33,37 @@ import {
   Upload,
   Image as ImageIcon,
   Loader2,
+  Tag,
+  Truck,
+  DollarSign,
+  Layers,
+  HelpCircle as FaqIcon,
+  Award,
+  Headphones,
 } from 'lucide-react';
-import { useStore, Product, HeroSlide, SectionVisibility, PageVisibility } from '../../context/store-context';
+import {
+  useStore,
+  Product,
+  HeroSlide,
+  ComboBundle,
+  FaqItem,
+  BenefitCard,
+  SectionVisibility,
+  PageVisibility,
+  StoreSettings,
+} from '../../context/store-context';
 
 export default function AdminPage() {
   const {
     products,
     heroSlides,
+    combos,
+    faqs,
+    benefits,
     sectionVisibility,
     pageVisibility,
     settings,
+    lastUpdatedTime,
     addProduct,
     updateProduct,
     deleteProduct,
@@ -48,6 +71,13 @@ export default function AdminPage() {
     updateHeroSlide,
     addHeroSlide,
     deleteHeroSlide,
+    addCombo,
+    updateCombo,
+    deleteCombo,
+    addFaq,
+    updateFaq,
+    deleteFaq,
+    saveBenefits,
     updateSectionVisibility,
     updatePageVisibility,
     updateSettings,
@@ -61,18 +91,22 @@ export default function AdminPage() {
   const [pinInput, setPinInput] = useState('');
   const [pinError, setPinError] = useState(false);
 
-  // Active Tab
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'banners' | 'visibility' | 'settings'>('dashboard');
+  // Active Navigation Tab
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'products' | 'banners' | 'combos' | 'faqs' | 'benefits' | 'visibility' | 'settings' | 'danger'
+  >('overview');
 
-  // Search in products
+  // Filters & Search for Products
   const [productSearch, setProductSearch] = useState('');
   const [selectedProductCategory, setSelectedProductCategory] = useState('All');
+  const [selectedStockFilter, setSelectedStockFilter] = useState<'All' | 'in_stock' | 'out_of_stock'>('All');
 
-  // Modals
+  // Product Modal State
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isUploadingProductImg, setIsUploadingProductImg] = useState(false);
+  const [scentNoteInput, setScentNoteInput] = useState('');
 
-  // New/Edit Product Form State
   const [productForm, setProductForm] = useState<{
     name: string;
     category: Product['category'];
@@ -84,6 +118,7 @@ export default function AdminPage() {
     image: string;
     description: string;
     burnTime: string;
+    scentNotes: string[];
     stockState: 'in_stock' | 'out_of_stock';
   }>({
     name: '',
@@ -96,13 +131,90 @@ export default function AdminPage() {
     image: '',
     description: '',
     burnTime: '45 mins per stick',
+    scentNotes: ['Natural Aroma', 'Herbal Extracts'],
     stockState: 'in_stock',
   });
 
-  // Image Uploading States
-  const [isUploadingProductImg, setIsUploadingProductImg] = useState(false);
+  // Combo Modal State
+  const [comboModalOpen, setComboModalOpen] = useState(false);
+  const [editingCombo, setEditingCombo] = useState<ComboBundle | null>(null);
+  const [isUploadingComboImg, setIsUploadingComboImg] = useState(false);
+  const [inclusionInput, setInclusionInput] = useState('');
+
+  const [comboForm, setComboForm] = useState<{
+    title: string;
+    badge: string;
+    savings: string;
+    price: string;
+    regularValue: string;
+    image: string;
+    inclusions: string[];
+  }>({
+    title: '',
+    badge: 'BEST VALUE',
+    savings: 'SAVE RS. 800',
+    price: 'Rs. 2,500.00',
+    regularValue: 'Rs. 3,300.00',
+    image: '/product_mega_combo.jpg',
+    inclusions: ['14-in-1 Incense Sticks Pack', 'Pure Herbal Sambrani Powder 100g', 'Free Islandwide Delivery'],
+  });
+
+  // FAQ Modal State
+  const [faqModalOpen, setFaqModalOpen] = useState(false);
+  const [editingFaq, setEditingFaq] = useState<FaqItem | null>(null);
+  const [faqForm, setFaqForm] = useState<{ q: string; a: string; category: string }>({
+    q: '',
+    a: '',
+    category: 'General',
+  });
+
+  // Benefits Form State (4 cards)
+  const [benefitsForm, setBenefitsForm] = useState<BenefitCard[]>(benefits);
+  useEffect(() => {
+    if (benefits && benefits.length > 0) setBenefitsForm(benefits);
+  }, [benefits]);
+
+  // Uploading state for Hero Banners
   const [bannerUploadingId, setBannerUploadingId] = useState<number | null>(null);
 
+  // Settings form state
+  const [settingsForm, setSettingsForm] = useState(settings);
+  useEffect(() => {
+    setSettingsForm(settings);
+  }, [settings]);
+
+  // Session Authentication Check
+  useEffect(() => {
+    const authSession = sessionStorage.getItem('eeco_admin_auth');
+    if (authSession === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const validPins = [settings.adminPin, 'admin123', 'eeco2026'];
+    if (validPins.includes(pinInput)) {
+      setIsAuthenticated(true);
+      sessionStorage.setItem('eeco_admin_auth', 'true');
+      sessionStorage.setItem('eeco_admin_pin', pinInput);
+      setPinError(false);
+      showToast('Admin access authorized successfully!');
+    } else {
+      setPinError(true);
+      showToast('Incorrect PIN. Default PIN is admin123');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('eeco_admin_auth');
+    sessionStorage.removeItem('eeco_admin_pin');
+    setPinInput('');
+    showToast('Logged out of Admin Panel.');
+  };
+
+  // Product Image Upload
   const handleProductFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -119,6 +231,24 @@ export default function AdminPage() {
     }
   };
 
+  // Combo Image Upload
+  const handleComboFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setIsUploadingComboImg(true);
+      const url = await uploadImage(file);
+      setComboForm((prev) => ({ ...prev, image: url }));
+      showToast('Combo bundle image uploaded successfully!');
+    } catch (err: any) {
+      showToast(err?.message || 'Image upload failed');
+    } finally {
+      setIsUploadingComboImg(false);
+      e.target.value = '';
+    }
+  };
+
+  // Banner Image Upload
   const handleBannerFileUpload = async (slideId: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -135,42 +265,8 @@ export default function AdminPage() {
     }
   };
 
-  // Settings form state
-  const [settingsForm, setSettingsForm] = useState(settings);
-
-  useEffect(() => {
-    setSettingsForm(settings);
-  }, [settings]);
-
-  // Check session storage for existing auth
-  useEffect(() => {
-    const authSession = sessionStorage.getItem('eeco_admin_auth');
-    if (authSession === 'true') {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (pinInput === settings.adminPin || pinInput === 'admin123' || pinInput === 'eeco2026') {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('eeco_admin_auth', 'true');
-      setPinError(false);
-      showToast('Admin access unlocked!');
-    } else {
-      setPinError(true);
-      showToast('Incorrect PIN. Default is admin123');
-    }
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    sessionStorage.removeItem('eeco_admin_auth');
-    setPinInput('');
-    showToast('Logged out of Admin Panel.');
-  };
-
-  const openAddProduct = () => {
+  // Product CRUD Modal Handlers
+  const handleOpenNewProduct = () => {
     setEditingProduct(null);
     setProductForm({
       name: '',
@@ -183,91 +279,165 @@ export default function AdminPage() {
       image: '',
       description: '',
       burnTime: '45 mins per stick',
+      scentNotes: ['Natural Herbal Blend', 'Holy Basil'],
       stockState: 'in_stock',
     });
     setProductModalOpen(true);
   };
 
-  const openEditProduct = (p: Product) => {
-    setEditingProduct(p);
+  const handleOpenEditProduct = (product: Product) => {
+    setEditingProduct(product);
     setProductForm({
-      name: p.name,
-      category: p.category,
-      price: p.price,
-      originalPrice: p.originalPrice,
-      discountText: p.discountText || '',
-      badge: p.badge || '',
-      iconType: p.iconType,
-      image: p.image || '',
-      description: p.description || '',
-      burnTime: p.burnTime || '',
-      stockState: (p.stockState as any) || 'in_stock',
+      name: product.name,
+      category: product.category,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      discountText: product.discountText || '',
+      badge: product.badge || '',
+      iconType: product.iconType,
+      image: product.image || '',
+      description: product.description || '',
+      burnTime: product.burnTime || '45 mins per stick',
+      scentNotes: product.scentNotes || [],
+      stockState: product.stockState === 'out_of_stock' ? 'out_of_stock' : 'in_stock',
     });
     setProductModalOpen(true);
   };
 
-  const handleSaveProduct = (e: React.FormEvent) => {
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!productForm.name) {
-      showToast('Please enter product name');
+    if (!productForm.name || !productForm.price) {
+      showToast('Please provide a name and price.');
       return;
     }
 
     if (editingProduct) {
-      updateProduct(editingProduct.id, {
-        ...productForm,
-      });
+      await updateProduct(editingProduct.id, productForm);
     } else {
-      addProduct({
+      await addProduct({
         ...productForm,
         rating: 5,
-        reviewCount: 150,
+        reviewCount: Math.floor(Math.random() * 100) + 120,
+        shipping: 'Courier 1-3 Days',
+        storeCategory: productForm.category,
       });
     }
     setProductModalOpen(false);
   };
 
-  const handleSaveSettings = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateSettings(settingsForm);
+  // Combo CRUD Modal Handlers
+  const handleOpenNewCombo = () => {
+    setEditingCombo(null);
+    setComboForm({
+      title: '',
+      badge: 'BEST VALUE',
+      savings: 'SAVE RS. 800',
+      price: 'Rs. 2,500.00',
+      regularValue: 'Rs. 3,300.00',
+      image: '/product_mega_combo.jpg',
+      inclusions: ['14-in-1 Incense Sticks Pack', 'Pure Herbal Sambrani Powder 100g', 'Free Islandwide Delivery'],
+    });
+    setComboModalOpen(true);
   };
 
-  // Filtered Products List
-  const filteredAdminProducts = products.filter((p) => {
-    const matchCat = selectedProductCategory === 'All' || p.category === selectedProductCategory;
-    const matchSearch =
-      productSearch === '' ||
+  const handleOpenEditCombo = (c: ComboBundle) => {
+    setEditingCombo(c);
+    setComboForm({
+      title: c.title,
+      badge: c.badge,
+      savings: c.savings,
+      price: c.price,
+      regularValue: c.regularValue,
+      image: c.image,
+      inclusions: c.inclusions || [],
+    });
+    setComboModalOpen(true);
+  };
+
+  const handleSaveCombo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!comboForm.title || !comboForm.price) {
+      showToast('Title and price are required.');
+      return;
+    }
+    if (editingCombo) {
+      await updateCombo(editingCombo.id, comboForm);
+    } else {
+      await addCombo(comboForm);
+    }
+    setComboModalOpen(false);
+  };
+
+  // FAQ CRUD Modal Handlers
+  const handleOpenNewFaq = () => {
+    setEditingFaq(null);
+    setFaqForm({ q: '', a: '', category: 'General' });
+    setFaqModalOpen(true);
+  };
+
+  const handleOpenEditFaq = (f: FaqItem) => {
+    setEditingFaq(f);
+    setFaqForm({ q: f.q, a: f.a, category: f.category || 'General' });
+    setFaqModalOpen(true);
+  };
+
+  const handleSaveFaq = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!faqForm.q || !faqForm.a) {
+      showToast('Question and answer are required.');
+      return;
+    }
+    if (editingFaq) {
+      await updateFaq(editingFaq.id, faqForm);
+    } else {
+      await addFaq(faqForm);
+    }
+    setFaqModalOpen(false);
+  };
+
+  // Filtered Products list
+  const filteredProducts = products.filter((p) => {
+    const matchesSearch =
       p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
       p.category.toLowerCase().includes(productSearch.toLowerCase());
-    return matchCat && matchSearch;
+    const matchesCategory = selectedProductCategory === 'All' || p.category === selectedProductCategory;
+    const matchesStock =
+      selectedStockFilter === 'All' ||
+      (selectedStockFilter === 'in_stock' && p.stockState !== 'out_of_stock') ||
+      (selectedStockFilter === 'out_of_stock' && p.stockState === 'out_of_stock');
+    return matchesSearch && matchesCategory && matchesStock;
   });
 
-  // If not authenticated, show sleek PIN login screen
+  const inStockCount = products.filter((p) => p.stockState !== 'out_of_stock').length;
+  const outOfStockCount = products.filter((p) => p.stockState === 'out_of_stock').length;
+
+  // ================= 1. PIN LOGIN SCREEN =================
   if (!isAuthenticated) {
     return (
       <div
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #0B131E 0%, #111C2A 100%)',
-          color: '#F3F4F6',
+          background: 'radial-gradient(circle at top, #1E3A8A 0%, #0F172A 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           padding: '24px',
+          fontFamily: 'sans-serif',
         }}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           style={{
-            width: '100%',
-            maxWidth: '420px',
-            background: '#162234',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'rgba(15, 23, 42, 0.85)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
             borderRadius: '24px',
-            padding: '36px',
-            boxShadow: '0 25px 60px rgba(0, 0, 0, 0.5)',
+            padding: '40px',
+            width: '100%',
+            maxWidth: '440px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            color: '#FFFFFF',
             textAlign: 'center',
           }}
         >
@@ -275,43 +445,51 @@ export default function AdminPage() {
             style={{
               width: '64px',
               height: '64px',
-              borderRadius: '50%',
-              background: 'rgba(7, 138, 131, 0.2)',
-              border: '1px solid rgba(45, 212, 191, 0.3)',
-              color: '#2DD4BF',
+              borderRadius: '20px',
+              background: 'linear-gradient(135deg, #1A56DB 0%, #059669 100%)',
               display: 'grid',
               placeItems: 'center',
-              margin: '0 auto 20px auto',
+              margin: '0 auto 20px',
+              boxShadow: '0 10px 25px rgba(26, 86, 219, 0.4)',
             }}
           >
-            <ShieldCheck size={32} />
+            <Lock size={30} color="#FFFFFF" />
           </div>
 
-          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>EECO Admin CMS</h2>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '6px' }}>EECO Control Center</h2>
           <p style={{ fontSize: '13.5px', color: '#94A3B8', marginBottom: '28px' }}>
-            Enter your admin PIN to access the store controller.
+            Enter your Secure Admin PIN to access live database controls and store management.
           </p>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ position: 'relative' }}>
+            <div>
               <input
                 type="password"
                 placeholder="Enter PIN (Default: admin123)"
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '14px 18px',
+                  borderRadius: '12px',
+                  background: '#0B131E',
+                  border: pinError ? '1.5px solid #EF4444' : '1px solid rgba(255, 255, 255, 0.15)',
+                  color: '#FFFFFF',
+                  fontSize: '16px',
+                  textAlign: 'center',
+                  letterSpacing: '2px',
+                  outline: 'none',
+                }}
                 autoFocus
-                className="admin-input"
-                style={{ textAlign: 'center', fontSize: '18px', letterSpacing: '4px' }}
               />
+              {pinError && (
+                <span style={{ fontSize: '12px', color: '#EF4444', display: 'block', marginTop: '6px' }}>
+                  Incorrect PIN. Please try again or use default: admin123
+                </span>
+              )}
             </div>
 
-            {pinError && (
-              <span style={{ fontSize: '12px', color: '#EF4444', fontWeight: 600 }}>
-                Incorrect PIN. Default is admin123
-              </span>
-            )}
-
-            <motion.button
+            <button
               type="submit"
               style={{
                 backgroundColor: '#1A56DB',
@@ -319,22 +497,30 @@ export default function AdminPage() {
                 border: 'none',
                 padding: '14px',
                 borderRadius: '12px',
+                fontSize: '15px',
                 fontWeight: 700,
-                fontSize: '14.5px',
                 cursor: 'pointer',
-                boxShadow: '0 6px 20px rgba(26, 86, 219, 0.3)',
+                boxShadow: '0 4px 14px rgba(26, 86, 219, 0.4)',
               }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.96 }}
             >
               Unlock Dashboard
-            </motion.button>
+            </button>
           </form>
 
-          <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            <Link href="/" style={{ color: '#94A3B8', fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <span>Return to Customer Store</span>
-              <ExternalLink size={14} />
+          <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+            <Link
+              href="/"
+              style={{
+                fontSize: '13px',
+                color: '#60A5FA',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              <span>Back to Storefront</span>
+              <ArrowUpRight size={14} />
             </Link>
           </div>
         </motion.div>
@@ -342,81 +528,129 @@ export default function AdminPage() {
     );
   }
 
+  // ================= 2. AUTHENTICATED DASHBOARD =================
   return (
-    <div className="admin-shell">
-      {/* Admin Sidebar */}
-      <aside className="admin-sidebar">
-        <div className="admin-brand">
-          <img src="/eeco_logo.png" alt="EECO Logo" style={{ width: '38px', height: '38px', objectFit: 'contain' }} />
-          <div>
-            <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.2 }}>
-              {settings.storeName}
-            </h3>
-            <span style={{ fontSize: '11px', color: '#2DD4BF', fontWeight: 700 }}>ADMIN CONTROL PANEL</span>
+    <div className="admin-shell" style={{ minHeight: '100vh', background: '#090E17', color: '#F1F5F9', display: 'flex' }}>
+      {/* SIDEBAR NAVIGATION */}
+      <aside
+        style={{
+          width: '270px',
+          background: '#0D1522',
+          borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+          padding: '24px 16px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          flexShrink: 0,
+        }}
+      >
+        <div>
+          {/* Logo & Store Info */}
+          <div style={{ padding: '0 8px', marginBottom: '28px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+              <div
+                style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #1A56DB, #059669)',
+                  display: 'grid',
+                  placeItems: 'center',
+                }}
+              >
+                <Flame size={20} color="#FFFFFF" />
+              </div>
+              <h2 style={{ fontSize: '17px', fontWeight: 800, color: '#FFFFFF', letterSpacing: '0.5px' }}>
+                EECO ADMIN
+              </h2>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
+              <span style={{ fontSize: '11px', color: '#94A3B8' }}>Live Server Database Synced</span>
+            </div>
           </div>
+
+          {/* Navigation Links */}
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {[
+              { id: 'overview', name: 'Dashboard Overview', icon: LayoutDashboard },
+              { id: 'products', name: 'Products Catalog', icon: Package, badge: products.length },
+              { id: 'banners', name: 'Hero Banners CMS', icon: Sliders, badge: heroSlides.length },
+              { id: 'combos', name: 'Combo Bundles CMS', icon: Gift, badge: combos.length },
+              { id: 'faqs', name: 'Customer FAQs CMS', icon: FaqIcon, badge: faqs.length },
+              { id: 'benefits', name: 'Service Benefits CMS', icon: Award },
+              { id: 'visibility', name: 'Section & Page Visibility', icon: Layers },
+              { id: 'settings', name: 'Store Settings & PIN', icon: Settings },
+              { id: 'danger', name: 'Backup & Factory Reset', icon: AlertTriangle },
+            ].map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id as any)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    padding: '11px 14px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    background: isActive ? '#1A56DB' : 'transparent',
+                    color: isActive ? '#FFFFFF' : '#94A3B8',
+                    fontSize: '13.5px',
+                    fontWeight: isActive ? 700 : 500,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    textAlign: 'left',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Icon size={18} />
+                    <span>{item.name}</span>
+                  </div>
+                  {item.badge !== undefined && (
+                    <span
+                      style={{
+                        background: isActive ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.08)',
+                        color: '#FFFFFF',
+                        fontSize: '11px',
+                        padding: '2px 7px',
+                        borderRadius: '999px',
+                        fontWeight: 700,
+                      }}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
-        <nav style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-          <button
-            className={`admin-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            <LayoutDashboard size={18} />
-            <span>Overview Dashboard</span>
-          </button>
-
-          <button
-            className={`admin-nav-item ${activeTab === 'products' ? 'active' : ''}`}
-            onClick={() => setActiveTab('products')}
-          >
-            <Package size={18} />
-            <span>Products Catalog ({products.length})</span>
-          </button>
-
-          <button
-            className={`admin-nav-item ${activeTab === 'banners' ? 'active' : ''}`}
-            onClick={() => setActiveTab('banners')}
-          >
-            <Sparkles size={18} />
-            <span>Hero &amp; Banners ({heroSlides.length})</span>
-          </button>
-
-          <button
-            className={`admin-nav-item ${activeTab === 'visibility' ? 'active' : ''}`}
-            onClick={() => setActiveTab('visibility')}
-          >
-            <Sliders size={18} />
-            <span>Sections &amp; Pages Visibility</span>
-          </button>
-
-          <button
-            className={`admin-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-            onClick={() => setActiveTab('settings')}
-          >
-            <Settings size={18} />
-            <span>Maintenance &amp; Settings</span>
-          </button>
-        </nav>
-
-        <div style={{ paddingTop: '20px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {/* Footer Actions */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
           <Link
             href="/"
             target="_blank"
             style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '8px',
-              padding: '10px 14px',
+              padding: '10px',
               borderRadius: '10px',
-              color: '#F3F4F6',
               background: 'rgba(255, 255, 255, 0.05)',
+              color: '#60A5FA',
+              textDecoration: 'none',
               fontSize: '13px',
               fontWeight: 600,
-              textDecoration: 'none',
             }}
           >
-            <ExternalLink size={15} />
-            <span>Open Live Store</span>
+            <span>View Live Website</span>
+            <ExternalLink size={14} />
           </Link>
 
           <button
@@ -424,275 +658,214 @@ export default function AdminPage() {
             style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '8px',
-              padding: '10px 14px',
+              padding: '10px',
               borderRadius: '10px',
-              color: '#EF4444',
-              background: 'none',
+              background: 'rgba(239, 68, 68, 0.1)',
+              color: '#F87171',
               border: 'none',
               fontSize: '13px',
               fontWeight: 600,
               cursor: 'pointer',
             }}
           >
-            <LogOut size={15} />
-            <span>Lock / Log Out</span>
+            <LogOut size={14} />
+            <span>Logout</span>
           </button>
         </div>
       </aside>
 
-      {/* Admin Main Body */}
-      <main className="admin-main">
-        {/* Header Bar */}
-        <header className="admin-header">
+      {/* MAIN CONTENT AREA */}
+      <main style={{ flex: 1, padding: '32px 40px', overflowY: 'auto', maxHeight: '100vh' }}>
+        {/* Top Action Bar */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '32px',
+            flexWrap: 'wrap',
+            gap: '16px',
+          }}
+        >
           <div>
-            <h1 style={{ fontSize: '26px', fontWeight: 800 }}>
-              {activeTab === 'dashboard' && 'Dashboard Overview'}
-              {activeTab === 'products' && 'Product Management'}
-              {activeTab === 'banners' && 'Hero Slider & Promo CMS'}
-              {activeTab === 'visibility' && 'Page & Section Visibility Controls'}
-              {activeTab === 'settings' && 'Store Settings & Maintenance Mode'}
+            <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#FFFFFF', marginBottom: '4px' }}>
+              {activeTab === 'overview' && 'Store Analytics & Overview'}
+              {activeTab === 'products' && 'Products Catalog Management'}
+              {activeTab === 'banners' && 'Hero Slider & Promotional Banners'}
+              {activeTab === 'combos' && 'Combo Bundles & Gift Sets'}
+              {activeTab === 'faqs' && 'Customer FAQs & Support'}
+              {activeTab === 'benefits' && 'Service Benefits & Guarantee Cards'}
+              {activeTab === 'visibility' && 'Granular Section & Page Visibility'}
+              {activeTab === 'settings' && 'Store Configuration & Admin PIN'}
+              {activeTab === 'danger' && 'Database Backup & Factory Reset'}
             </h1>
-            <p style={{ fontSize: '13.5px', color: '#94A3B8', marginTop: '4px' }}>
-              Real-time synchronization active • Changes persist to live website immediately
+            <p style={{ fontSize: '13.5px', color: '#94A3B8' }}>
+              Contabo Server Database Connected • Auto-Sync Active {lastUpdatedTime ? `(Last modified: ${new Date(lastUpdatedTime).toLocaleTimeString()})` : ''}
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            {settings.maintenanceMode && (
-              <span
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {activeTab === 'products' && (
+              <button
+                onClick={handleOpenNewProduct}
                 style={{
-                  background: '#EF4444',
-                  color: '#FFFFFF',
-                  padding: '6px 14px',
-                  borderRadius: '999px',
-                  fontSize: '12px',
-                  fontWeight: 800,
-                  display: 'inline-flex',
+                  display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '8px',
+                  backgroundColor: '#1A56DB',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  padding: '11px 20px',
+                  borderRadius: '12px',
+                  fontSize: '13.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(26, 86, 219, 0.4)',
                 }}
               >
-                <AlertTriangle size={14} />
-                <span>MAINTENANCE MODE ACTIVE</span>
-              </span>
+                <Plus size={16} />
+                <span>Add New Product</span>
+              </button>
             )}
 
-            <Link
-              href="/"
-              target="_blank"
-              style={{
-                background: '#1A56DB',
-                color: '#FFFFFF',
-                padding: '8px 18px',
-                borderRadius: '10px',
-                fontSize: '13.5px',
-                fontWeight: 700,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                textDecoration: 'none',
-              }}
-            >
-              <span>View Storefront</span>
-              <ArrowUpRight size={16} />
-            </Link>
+            {activeTab === 'combos' && (
+              <button
+                onClick={handleOpenNewCombo}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  backgroundColor: '#059669',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  padding: '11px 20px',
+                  borderRadius: '12px',
+                  fontSize: '13.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                <Plus size={16} />
+                <span>Add New Combo</span>
+              </button>
+            )}
+
+            {activeTab === 'faqs' && (
+              <button
+                onClick={handleOpenNewFaq}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  backgroundColor: '#1A56DB',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  padding: '11px 20px',
+                  borderRadius: '12px',
+                  fontSize: '13.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                <Plus size={16} />
+                <span>Add New FAQ</span>
+              </button>
+            )}
           </div>
-        </header>
+        </div>
 
-        {/* TAB 1: OVERVIEW DASHBOARD */}
-        {activeTab === 'dashboard' && (
+        {/* ================= TAB 1: OVERVIEW & ANALYTICS ================= */}
+        {activeTab === 'overview' && (
           <div>
-            {/* Stat Cards */}
-            <div className="admin-stats-grid">
-              <div className="admin-stat-card">
-                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(7, 138, 131, 0.2)', color: '#2DD4BF', display: 'grid', placeItems: 'center' }}>
-                  <Package size={24} />
-                </div>
-                <div>
-                  <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600 }}>Total Products</span>
-                  <div style={{ fontSize: '24px', fontWeight: 800 }}>{products.length}</div>
-                </div>
+            {/* Stats Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+              <div className="admin-card" style={{ background: '#111C2A', borderRadius: '18px', padding: '22px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <span style={{ fontSize: '13px', color: '#94A3B8', display: 'block', marginBottom: '8px' }}>Total Products</span>
+                <h3 style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF' }}>{products.length}</h3>
+                <span style={{ fontSize: '12px', color: '#60A5FA', display: 'block', marginTop: '4px' }}>In 6 fragrance categories</span>
               </div>
 
-              <div className="admin-stat-card">
-                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(37, 211, 102, 0.2)', color: '#25D366', display: 'grid', placeItems: 'center' }}>
-                  <CheckCircle size={24} />
-                </div>
-                <div>
-                  <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600 }}>Active on Store</span>
-                  <div style={{ fontSize: '24px', fontWeight: 800 }}>{products.filter((p) => !p.hidden).length}</div>
-                </div>
+              <div className="admin-card" style={{ background: '#111C2A', borderRadius: '18px', padding: '22px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <span style={{ fontSize: '13px', color: '#94A3B8', display: 'block', marginBottom: '8px' }}>In Stock</span>
+                <h3 style={{ fontSize: '32px', fontWeight: 800, color: '#10B981' }}>{inStockCount}</h3>
+                <span style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginTop: '4px' }}>Ready for islandwide dispatch</span>
               </div>
 
-              <div className="admin-stat-card">
-                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(255, 190, 0, 0.2)', color: '#FFBE00', display: 'grid', placeItems: 'center' }}>
-                  <Sparkles size={24} />
-                </div>
-                <div>
-                  <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600 }}>Hero Slides</span>
-                  <div style={{ fontSize: '24px', fontWeight: 800 }}>{heroSlides.length}</div>
-                </div>
+              <div className="admin-card" style={{ background: '#111C2A', borderRadius: '18px', padding: '22px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <span style={{ fontSize: '13px', color: '#94A3B8', display: 'block', marginBottom: '8px' }}>Out of Stock</span>
+                <h3 style={{ fontSize: '32px', fontWeight: 800, color: '#EF4444' }}>{outOfStockCount}</h3>
+                <span style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginTop: '4px' }}>Hidden / Sold out items</span>
               </div>
 
-              <div className="admin-stat-card">
-                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: settings.maintenanceMode ? 'rgba(239, 68, 68, 0.2)' : 'rgba(37, 211, 102, 0.2)', color: settings.maintenanceMode ? '#EF4444' : '#25D366', display: 'grid', placeItems: 'center' }}>
-                  <Wrench size={24} />
-                </div>
-                <div>
-                  <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600 }}>Site Status</span>
-                  <div style={{ fontSize: '16px', fontWeight: 800, marginTop: '4px' }}>
-                    {settings.maintenanceMode ? 'Maintenance' : 'Live & Active'}
-                  </div>
-                </div>
+              <div className="admin-card" style={{ background: '#111C2A', borderRadius: '18px', padding: '22px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <span style={{ fontSize: '13px', color: '#94A3B8', display: 'block', marginBottom: '8px' }}>Active Hero Banners</span>
+                <h3 style={{ fontSize: '32px', fontWeight: 800, color: '#F59E0B' }}>{heroSlides.length}</h3>
+                <span style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginTop: '4px' }}>Rotating promotions on home</span>
               </div>
             </div>
 
-            {/* Quick Actions & Short Cuts */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '24px' }}>
-              <div className="admin-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h3 style={{ fontSize: '17px', fontWeight: 800 }}>Recent Product Inventory</h3>
-                  <button
-                    onClick={() => setActiveTab('products')}
-                    style={{ background: 'none', border: 'none', color: '#2DD4BF', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    Manage All &rarr;
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {products.slice(0, 5).map((p) => (
-                    <div
-                      key={p.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '10px 14px',
-                        background: '#111C2A',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(255, 255, 255, 0.05)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#0B131E', overflow: 'hidden', display: 'grid', placeItems: 'center' }}>
-                          {p.image ? <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Sparkles size={18} color="#2DD4BF" />}
-                        </div>
-                        <div>
-                          <h4 style={{ fontSize: '13.5px', fontWeight: 700, color: '#F3F4F6' }}>{p.name}</h4>
-                          <span style={{ fontSize: '11.5px', color: '#94A3B8' }}>{p.category} • {p.price}</span>
-                        </div>
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <button
-                          onClick={() => toggleProductHidden(p.id)}
-                          style={{
-                            background: p.hidden ? 'rgba(239, 68, 68, 0.2)' : 'rgba(37, 211, 102, 0.2)',
-                            color: p.hidden ? '#EF4444' : '#25D366',
-                            border: 'none',
-                            padding: '4px 10px',
-                            borderRadius: '999px',
-                            fontSize: '11.5px',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {p.hidden ? 'Hidden' : 'Visible'}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+            {/* Quick Actions Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+              <div style={{ background: '#111C2A', borderRadius: '18px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <h3 style={{ fontSize: '17px', fontWeight: 700, marginBottom: '16px' }}>Store Hotline &amp; Orders</h3>
+                <p style={{ fontSize: '13.5px', color: '#94A3B8', marginBottom: '16px', lineHeight: 1.6 }}>
+                  WhatsApp Hotline: <strong style={{ color: '#FFFFFF' }}>+{settings.whatsappNumber}</strong><br />
+                  Free Shipping Threshold: <strong style={{ color: '#FFFFFF' }}>Rs. {settings.freeDeliveryThreshold}</strong><br />
+                  Islandwide Delivery Fee: <strong style={{ color: '#FFFFFF' }}>Rs. {settings.deliveryFee}</strong>
+                </p>
+                <button
+                  onClick={() => setActiveTab('settings')}
+                  style={{
+                    backgroundColor: '#1E293B',
+                    color: '#60A5FA',
+                    border: '1px solid rgba(96, 165, 250, 0.3)',
+                    padding: '8px 16px',
+                    borderRadius: '10px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Configure Store Settings
+                </button>
               </div>
 
-              {/* Fast Toggles */}
-              <div className="admin-card">
-                <h3 style={{ fontSize: '17px', fontWeight: 800, marginBottom: '16px' }}>Quick Controls</h3>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {/* Maintenance Mode Toggle */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#111C2A', borderRadius: '12px' }}>
-                    <div>
-                      <h4 style={{ fontSize: '14px', fontWeight: 700 }}>Maintenance Mode</h4>
-                      <span style={{ fontSize: '12px', color: '#94A3B8' }}>Temporarily show maintenance screen</span>
-                    </div>
-                    <div
-                      className={`toggle-switch ${settings.maintenanceMode ? 'active' : ''}`}
-                      onClick={() => updateSettings({ maintenanceMode: !settings.maintenanceMode })}
-                    >
-                      <div className="toggle-knob"></div>
-                    </div>
-                  </div>
-
-                  {/* Daily Discount Section */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#111C2A', borderRadius: '12px' }}>
-                    <div>
-                      <h4 style={{ fontSize: '14px', fontWeight: 700 }}>Daily Discount Section</h4>
-                      <span style={{ fontSize: '12px', color: '#94A3B8' }}>Show/hide on homepage</span>
-                    </div>
-                    <div
-                      className={`toggle-switch ${sectionVisibility.dailyDiscount ? 'active' : ''}`}
-                      onClick={() => updateSectionVisibility('dailyDiscount', !sectionVisibility.dailyDiscount)}
-                    >
-                      <div className="toggle-knob"></div>
-                    </div>
-                  </div>
-
-                  {/* Wholesale Products Section */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#111C2A', borderRadius: '12px' }}>
-                    <div>
-                      <h4 style={{ fontSize: '14px', fontWeight: 700 }}>Wholesale Products Section</h4>
-                      <span style={{ fontSize: '12px', color: '#94A3B8' }}>Curved teal box on homepage</span>
-                    </div>
-                    <div
-                      className={`toggle-switch ${sectionVisibility.wholesaleProducts ? 'active' : ''}`}
-                      onClick={() => updateSectionVisibility('wholesaleProducts', !sectionVisibility.wholesaleProducts)}
-                    >
-                      <div className="toggle-knob"></div>
-                    </div>
-                  </div>
-
-                  {/* Combo Bundle Page */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#111C2A', borderRadius: '12px' }}>
-                    <div>
-                      <h4 style={{ fontSize: '14px', fontWeight: 700 }}>Combo Bundle Page (/combo-bundle)</h4>
-                      <span style={{ fontSize: '12px', color: '#94A3B8' }}>Enable or disable page</span>
-                    </div>
-                    <div
-                      className={`toggle-switch ${pageVisibility.comboBundle ? 'active' : ''}`}
-                      onClick={() => updatePageVisibility('comboBundle', !pageVisibility.comboBundle)}
-                    >
-                      <div className="toggle-knob"></div>
-                    </div>
-                  </div>
-
-                  {/* Reset Defaults */}
+              <div style={{ background: '#111C2A', borderRadius: '18px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <h3 style={{ fontSize: '17px', fontWeight: 700, marginBottom: '16px' }}>Live Catalog Quick Actions</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <button
-                    onClick={() => {
-                      if (confirm('Are you sure you want to reset all store data to default templates?')) {
-                        resetToDefaults();
-                      }
-                    }}
+                    onClick={handleOpenNewProduct}
                     style={{
-                      background: 'rgba(239, 68, 68, 0.15)',
-                      border: '1px solid rgba(239, 68, 68, 0.3)',
-                      color: '#EF4444',
-                      padding: '12px',
+                      padding: '10px 16px',
+                      background: '#1A56DB',
+                      color: '#FFFFFF',
+                      border: 'none',
                       borderRadius: '10px',
                       fontSize: '13px',
                       fontWeight: 700,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
                       cursor: 'pointer',
-                      marginTop: '8px',
+                      textAlign: 'left',
                     }}
                   >
-                    <RefreshCw size={15} />
-                    <span>Reset All Data to Defaults</span>
+                    + Add New Fragrance Product with Photo
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('banners')}
+                    style={{
+                      padding: '10px 16px',
+                      background: '#1E293B',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '10px',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                  >
+                    Upload / Change Hero Banners
                   </button>
                 </div>
               </div>
@@ -700,162 +873,183 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 2: PRODUCTS CATALOG */}
+        {/* ================= TAB 2: PRODUCTS CATALOG CMS ================= */}
         {activeTab === 'products' && (
           <div>
-            <div className="admin-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '280px' }}>
-                <div style={{ position: 'relative', flex: 1 }}>
-                  <Search size={16} color="#94A3B8" style={{ position: 'absolute', top: '12px', left: '12px' }} />
-                  <input
-                    type="text"
-                    placeholder="Search products by title or fragrance..."
-                    value={productSearch}
-                    onChange={(e) => setProductSearch(e.target.value)}
-                    className="admin-input"
-                    style={{ paddingLeft: '36px' }}
-                  />
-                </div>
-
-                <select
-                  value={selectedProductCategory}
-                  onChange={(e) => setSelectedProductCategory(e.target.value)}
-                  className="admin-input"
-                  style={{ width: '200px' }}
-                >
-                  <option value="All">All Categories</option>
-                  <option value="Incense Sticks Packs">Incense Sticks</option>
-                  <option value="Incense Powder Packs">Incense Powder</option>
-                  <option value="Air Fresheners">Air Fresheners</option>
-                  <option value="Diffuser">Diffusers</option>
-                  <option value="Combo Bundle">Combo Bundles</option>
-                  <option value="Wholesale Products">Wholesale Products</option>
-                </select>
+            {/* Search and Filters Bar */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '20px',
+                flexWrap: 'wrap',
+                gap: '14px',
+                background: '#111C2A',
+                padding: '16px 20px',
+                borderRadius: '16px',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+              }}
+            >
+              {/* Search input */}
+              <div style={{ position: 'relative', width: '320px', maxWidth: '100%' }}>
+                <Search size={16} color="#64748B" style={{ position: 'absolute', left: '14px', top: '12px' }} />
+                <input
+                  type="text"
+                  placeholder="Search products by title or category..."
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px 10px 38px',
+                    borderRadius: '10px',
+                    background: '#0B131E',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#FFFFFF',
+                    fontSize: '13.5px',
+                    outline: 'none',
+                  }}
+                />
               </div>
 
-              <motion.button
-                onClick={openAddProduct}
-                style={{
-                  backgroundColor: '#1A56DB',
-                  color: '#FFFFFF',
-                  border: 'none',
-                  padding: '10px 20px',
-                  borderRadius: '10px',
-                  fontWeight: 700,
-                  fontSize: '14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(26, 86, 219, 0.3)',
-                }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <Plus size={16} />
-                <span>Add New Product</span>
-              </motion.button>
+              {/* Category Filter */}
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {['All', 'Incense Sticks Packs', 'Incense Powder Packs', 'Air Fresheners', 'Diffuser', 'Combo Bundle', 'Wholesale Products'].map(
+                  (cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedProductCategory(cat)}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: selectedProductCategory === cat ? '#1A56DB' : 'rgba(255, 255, 255, 0.06)',
+                        color: selectedProductCategory === cat ? '#FFFFFF' : '#94A3B8',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {cat}
+                    </button>
+                  )
+                )}
+              </div>
             </div>
 
             {/* Products Table */}
-            <div className="admin-card" style={{ padding: '0', overflow: 'hidden' }}>
-              <table className="admin-table">
+            <div
+              style={{
+                background: '#111C2A',
+                borderRadius: '18px',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                overflow: 'hidden',
+              }}
+            >
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13.5px' }}>
                 <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Visibility</th>
-                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  <tr style={{ background: '#0B131E', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: '#94A3B8' }}>
+                    <th style={{ padding: '14px 18px' }}>Image &amp; Title</th>
+                    <th style={{ padding: '14px 18px' }}>Category</th>
+                    <th style={{ padding: '14px 18px' }}>Price</th>
+                    <th style={{ padding: '14px 18px' }}>Stock Status</th>
+                    <th style={{ padding: '14px 18px' }}>Visibility</th>
+                    <th style={{ padding: '14px 18px', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredAdminProducts.map((p) => (
-                    <tr key={p.id}>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <div style={{ width: '42px', height: '42px', borderRadius: '8px', background: '#0B131E', overflow: 'hidden', display: 'grid', placeItems: 'center' }}>
-                            {p.image ? (
-                              <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : (
-                              <Sparkles size={18} color="#2DD4BF" />
-                            )}
-                          </div>
-                          <div>
-                            <div style={{ fontWeight: 700, color: '#F3F4F6' }}>{p.name}</div>
-                            {p.badge && (
-                              <span style={{ fontSize: '10.5px', background: '#D9003B', color: '#FFFFFF', padding: '2px 6px', borderRadius: '4px', fontWeight: 800 }}>
-                                {p.badge}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <span style={{ fontSize: '12.5px', color: '#94A3B8' }}>{p.category}</span>
-                      </td>
-                      <td>
-                        <div>
-                          <span style={{ fontWeight: 800, color: '#2DD4BF' }}>{p.price}</span>
-                          <del style={{ fontSize: '11.5px', color: '#64748B', display: 'block' }}>{p.originalPrice}</del>
-                        </div>
-                      </td>
-                      <td>
-                        <button
-                          onClick={() => updateProduct(p.id, { stockState: p.stockState === 'in_stock' ? 'out_of_stock' : 'in_stock' })}
+                  {filteredProducts.map((p) => (
+                    <tr key={p.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                      <td style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div
                           style={{
-                            background: p.stockState === 'in_stock' ? 'rgba(37, 211, 102, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                            color: p.stockState === 'in_stock' ? '#25D366' : '#EF4444',
-                            border: 'none',
+                            width: '44px',
+                            height: '44px',
+                            borderRadius: '8px',
+                            background: '#0B131E',
+                            overflow: 'hidden',
+                            flexShrink: 0,
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                          }}
+                        >
+                          <img src={p.image || '/product_thulasi_sticks.jpg'} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                        <div>
+                          <strong style={{ color: '#FFFFFF', display: 'block', fontSize: '14px' }}>{p.name}</strong>
+                          <span style={{ fontSize: '11.5px', color: '#64748B' }}>{p.burnTime || '45 mins'}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '14px 18px', color: '#CBD5E1' }}>{p.category}</td>
+                      <td style={{ padding: '14px 18px' }}>
+                        <strong style={{ color: '#60A5FA' }}>{p.price}</strong>
+                        {p.originalPrice && <del style={{ fontSize: '11px', color: '#64748B', display: 'block' }}>{p.originalPrice}</del>}
+                      </td>
+                      <td style={{ padding: '14px 18px' }}>
+                        <button
+                          onClick={() => updateProduct(p.id, { stockState: p.stockState === 'out_of_stock' ? 'in_stock' : 'out_of_stock' })}
+                          style={{
                             padding: '4px 10px',
                             borderRadius: '999px',
-                            fontSize: '11px',
+                            border: 'none',
+                            fontSize: '11.5px',
                             fontWeight: 700,
+                            background: p.stockState === 'out_of_stock' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                            color: p.stockState === 'out_of_stock' ? '#EF4444' : '#10B981',
                             cursor: 'pointer',
                           }}
                         >
-                          {p.stockState === 'in_stock' ? 'In Stock' : 'Out of Stock'}
+                          {p.stockState === 'out_of_stock' ? 'Out of Stock' : 'In Stock'}
                         </button>
                       </td>
-                      <td>
+                      <td style={{ padding: '14px 18px' }}>
                         <button
                           onClick={() => toggleProductHidden(p.id)}
                           style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            background: p.hidden ? 'rgba(239, 68, 68, 0.2)' : 'rgba(45, 212, 191, 0.2)',
-                            color: p.hidden ? '#EF4444' : '#2DD4BF',
+                            background: 'none',
                             border: 'none',
-                            padding: '4px 10px',
-                            borderRadius: '999px',
-                            fontSize: '11.5px',
-                            fontWeight: 700,
+                            color: p.hidden ? '#64748B' : '#10B981',
                             cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            fontSize: '12px',
                           }}
                         >
-                          {p.hidden ? <EyeOff size={12} /> : <Eye size={12} />}
-                          <span>{p.hidden ? 'Hidden' : 'Live'}</span>
+                          {p.hidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                          <span>{p.hidden ? 'Hidden' : 'Visible'}</span>
                         </button>
                       </td>
-                      <td style={{ textAlign: 'right' }}>
+                      <td style={{ padding: '14px 18px', textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: '8px' }}>
                           <button
-                            onClick={() => openEditProduct(p)}
-                            style={{ background: '#111C2A', border: '1px solid rgba(255,255,255,0.1)', color: '#F3F4F6', padding: '6px', borderRadius: '6px', cursor: 'pointer' }}
-                            aria-label="Edit"
+                            onClick={() => handleOpenEditProduct(p)}
+                            style={{
+                              background: 'rgba(26, 86, 219, 0.15)',
+                              color: '#60A5FA',
+                              border: 'none',
+                              padding: '6px 10px',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                            }}
                           >
-                            <Edit size={14} />
+                            <Edit size={15} />
                           </button>
                           <button
                             onClick={() => {
-                              if (confirm(`Delete product "${p.name}"?`)) deleteProduct(p.id);
+                              if (confirm(`Are you sure you want to delete "${p.name}"?`)) {
+                                deleteProduct(p.id);
+                              }
                             }}
-                            style={{ background: '#111C2A', border: '1px solid rgba(239,68,68,0.3)', color: '#EF4444', padding: '6px', borderRadius: '6px', cursor: 'pointer' }}
-                            aria-label="Delete"
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              color: '#F87171',
+                              border: 'none',
+                              padding: '6px 10px',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                            }}
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={15} />
                           </button>
                         </div>
                       </td>
@@ -867,173 +1061,399 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 3: BANNERS & HERO CMS */}
+        {/* ================= TAB 3: HERO SLIDER CMS ================= */}
         {activeTab === 'banners' && (
           <div>
-            <div className="admin-card">
-              <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '6px' }}>Hero Slider CMS</h3>
-              <p style={{ fontSize: '13.5px', color: '#94A3B8', marginBottom: '24px' }}>
-                Edit headings, offer text, glassmorphism cards, and background banners shown on the homepage hero.
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <div>
+                <h3 style={{ fontSize: '18px', fontWeight: 800 }}>Hero Carousel Slides</h3>
+                <p style={{ fontSize: '13.5px', color: '#94A3B8' }}>
+                  Upload high-res background banners (1920x600 px) and configure live offers.
+                </p>
+              </div>
+              <button
+                onClick={() =>
+                  addHeroSlide({
+                    offer: '⚡ NEW SEASON OFFER • ISLANDWIDE DELIVERY',
+                    badge: 'HOT DEAL',
+                    heading: 'Pure Ayurvedic Natural Incense Collection',
+                    desc: 'Handcrafted Ceylon fragrances made with sacred botanical resins.',
+                    icon: 'Sparkles',
+                    bannerImage: '/banner_slider_1.png',
+                    whatsappMsg: 'Hi EECO AROMATICS! I want to order the new collection.',
+                  })
+                }
+                style={{
+                  background: '#1A56DB',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  padding: '10px 18px',
+                  borderRadius: '10px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                + Add Slide
+              </button>
+            </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                {heroSlides.map((slide, idx) => (
-                  <div
-                    key={slide.id}
-                    style={{
-                      background: '#111C2A',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      borderRadius: '16px',
-                      padding: '20px',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                      <span style={{ fontSize: '14px', fontWeight: 800, color: '#2DD4BF' }}>
-                        Hero Slide #{idx + 1}
-                      </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {heroSlides.map((slide, index) => (
+                <div
+                  key={slide.id}
+                  style={{
+                    background: '#111C2A',
+                    borderRadius: '18px',
+                    padding: '24px',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <span style={{ fontWeight: 800, color: '#60A5FA', fontSize: '15px' }}>Slide #{index + 1}</span>
+                    {heroSlides.length > 1 && (
                       <button
                         onClick={() => deleteHeroSlide(slide.id)}
-                        style={{ background: 'none', border: 'none', color: '#EF4444', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                        style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer' }}
                       >
-                        Delete Slide
+                        <Trash2 size={16} />
                       </button>
-                    </div>
+                    )}
+                  </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                      <div>
-                        <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Offer Tag</label>
-                        <input
-                          type="text"
-                          value={slide.offer}
-                          onChange={(e) => updateHeroSlide(slide.id, { offer: e.target.value })}
-                          className="admin-input"
-                        />
-                      </div>
-                      <div>
-                        <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Badge Text</label>
-                        <input
-                          type="text"
-                          value={slide.badge}
-                          onChange={(e) => updateHeroSlide(slide.id, { badge: e.target.value })}
-                          className="admin-input"
-                        />
-                      </div>
-                    </div>
-
-                    <div style={{ marginBottom: '16px' }}>
-                      <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Heading Text</label>
-                      <textarea
-                        rows={2}
-                        value={slide.heading}
-                        onChange={(e) => updateHeroSlide(slide.id, { heading: e.target.value })}
-                        className="admin-input"
-                      />
-                    </div>
-
-                    <div style={{ marginBottom: '16px' }}>
-                      <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Description</label>
-                      <textarea
-                        rows={2}
-                        value={slide.desc}
-                        onChange={(e) => updateHeroSlide(slide.id, { desc: e.target.value })}
-                        className="admin-input"
-                      />
-                    </div>
-
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
-                        <label style={{ fontSize: '12.5px', color: '#94A3B8' }}>Background Banner Image (Upload from Local Storage or Enter URL)</label>
-                        <span style={{ fontSize: '11px', background: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
-                          📐 Recommended: 1920 x 600 px (Wide Banner, Max 10MB)
-                        </span>
-                      </div>
-
-                      {/* Banner Image Preview & Upload Row */}
-                      <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
-                        {slide.bannerImage && (
-                          <div
-                            style={{
-                              width: '180px',
-                              height: '60px',
-                              borderRadius: '10px',
-                              overflow: 'hidden',
-                              border: '1px solid rgba(255, 255, 255, 0.2)',
-                              background: '#0F172A',
-                            }}
-                          >
-                            <img
-                              src={slide.bannerImage}
-                              alt="Banner Preview"
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            />
-                          </div>
-                        )}
-
-                        <label
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            backgroundColor: bannerUploadingId === slide.id ? '#334155' : '#1A56DB',
-                            color: '#FFFFFF',
-                            padding: '10px 18px',
-                            borderRadius: '10px',
-                            fontSize: '13px',
-                            fontWeight: 700,
-                            cursor: bannerUploadingId === slide.id ? 'not-allowed' : 'pointer',
-                            boxShadow: '0 4px 14px rgba(26, 86, 219, 0.3)',
-                          }}
-                        >
-                          {bannerUploadingId === slide.id ? (
-                            <>
-                              <Loader2 size={16} className="spin" />
-                              <span>Uploading to VPS Database...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Upload size={16} />
-                              <span>Upload Banner Photo</span>
-                            </>
-                          )}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            disabled={bannerUploadingId === slide.id}
-                            style={{ display: 'none' }}
-                            onChange={(e) => handleBannerFileUpload(slide.id, e)}
-                          />
-                        </label>
-                      </div>
-
+                      <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Offer Tag</label>
                       <input
                         type="text"
-                        value={slide.bannerImage || ''}
-                        onChange={(e) => updateHeroSlide(slide.id, { bannerImage: e.target.value })}
+                        value={slide.offer}
+                        onChange={(e) => updateHeroSlide(slide.id, { offer: e.target.value })}
                         className="admin-input"
-                        placeholder="e.g. /banner_slider_1.png or /uploads/your_uploaded_banner.jpg"
                       />
-                      <span style={{ fontSize: '11px', color: '#64748B', display: 'block', marginTop: '4px' }}>
-                        High-resolution horizontal landscape banner. Uploaded images are permanently saved to the Contabo VPS database storage.
-                      </span>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Badge Label</label>
+                      <input
+                        type="text"
+                        value={slide.badge}
+                        onChange={(e) => updateHeroSlide(slide.id, { badge: e.target.value })}
+                        className="admin-input"
+                      />
                     </div>
                   </div>
-                ))}
-              </div>
+
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Main Heading</label>
+                    <textarea
+                      rows={2}
+                      value={slide.heading}
+                      onChange={(e) => updateHeroSlide(slide.id, { heading: e.target.value })}
+                      className="admin-input"
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Description</label>
+                    <textarea
+                      rows={2}
+                      value={slide.desc}
+                      onChange={(e) => updateHeroSlide(slide.id, { desc: e.target.value })}
+                      className="admin-input"
+                    />
+                  </div>
+
+                  {/* Banner Photo Upload */}
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '8px' }}>
+                      Background Banner Image (Upload or URL)
+                    </label>
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+                      {slide.bannerImage && (
+                        <div
+                          style={{
+                            width: '200px',
+                            height: '65px',
+                            borderRadius: '10px',
+                            overflow: 'hidden',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            background: '#0B131E',
+                          }}
+                        >
+                          <img src={slide.bannerImage} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      )}
+
+                      <label
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          backgroundColor: bannerUploadingId === slide.id ? '#334155' : '#1A56DB',
+                          color: '#FFFFFF',
+                          padding: '10px 18px',
+                          borderRadius: '10px',
+                          fontSize: '13px',
+                          fontWeight: 700,
+                          cursor: bannerUploadingId === slide.id ? 'not-allowed' : 'pointer',
+                        }}
+                      >
+                        {bannerUploadingId === slide.id ? <Loader2 size={16} className="spin" /> : <Upload size={16} />}
+                        <span>{bannerUploadingId === slide.id ? 'Uploading to Server...' : 'Upload Banner Photo'}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={bannerUploadingId === slide.id}
+                          style={{ display: 'none' }}
+                          onChange={(e) => handleBannerFileUpload(slide.id, e)}
+                        />
+                      </label>
+                    </div>
+                    <input
+                      type="text"
+                      value={slide.bannerImage || ''}
+                      onChange={(e) => updateHeroSlide(slide.id, { bannerImage: e.target.value })}
+                      className="admin-input"
+                      placeholder="e.g. /banner_slider_1.png or /uploads/your_uploaded_photo.jpg"
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* TAB 4: VISIBILITY CONTROLS */}
+        {/* ================= TAB 4: COMBO BUNDLES CMS ================= */}
+        {activeTab === 'combos' && (
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+              {combos.map((combo) => (
+                <div
+                  key={combo.id}
+                  style={{
+                    background: '#111C2A',
+                    borderRadius: '18px',
+                    padding: '24px',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div>
+                    <div style={{ height: '140px', borderRadius: '12px', overflow: 'hidden', marginBottom: '16px', background: '#0B131E' }}>
+                      <img src={combo.image || '/product_mega_combo.jpg'} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                      <span style={{ background: '#FEF3C7', color: '#92400E', fontSize: '11px', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
+                        {combo.badge}
+                      </span>
+                      <span style={{ background: '#FEE2E2', color: '#E11D48', fontSize: '11px', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
+                        {combo.savings}
+                      </span>
+                    </div>
+                    <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#FFFFFF', marginBottom: '8px' }}>{combo.title}</h3>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '14px' }}>
+                      <span style={{ fontSize: '20px', fontWeight: 800, color: '#60A5FA' }}>{combo.price}</span>
+                      <del style={{ fontSize: '13px', color: '#64748B' }}>{combo.regularValue}</del>
+                    </div>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12.5px', color: '#94A3B8' }}>
+                      {combo.inclusions.map((inc, idx) => (
+                        <li key={idx} style={{ display: 'flex', gap: '6px' }}>
+                          <span style={{ color: '#10B981' }}>✔</span>
+                          <span>{inc}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                    <button
+                      onClick={() => handleOpenEditCombo(combo)}
+                      style={{
+                        flex: 1,
+                        background: '#1E293B',
+                        color: '#60A5FA',
+                        border: 'none',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Edit Bundle
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (confirm(`Delete combo bundle "${combo.title}"?`)) deleteCombo(combo.id);
+                      }}
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        color: '#F87171',
+                        border: 'none',
+                        padding: '8px 14px',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ================= TAB 5: FAQS CMS ================= */}
+        {activeTab === 'faqs' && (
+          <div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {faqs.map((faq, idx) => (
+                <div
+                  key={faq.id}
+                  style={{
+                    background: '#111C2A',
+                    borderRadius: '16px',
+                    padding: '20px',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    gap: '16px',
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontSize: '11px', color: '#60A5FA', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px', display: 'block' }}>
+                      {faq.category || 'General Question'}
+                    </span>
+                    <h4 style={{ fontSize: '16px', fontWeight: 700, color: '#FFFFFF', marginBottom: '8px' }}>
+                      {idx + 1}. {faq.q}
+                    </h4>
+                    <p style={{ fontSize: '13.5px', color: '#94A3B8', lineHeight: 1.6 }}>{faq.a}</p>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => handleOpenEditFaq(faq)}
+                      style={{ background: '#1E293B', color: '#60A5FA', border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}
+                    >
+                      <Edit size={15} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (confirm(`Delete FAQ "${faq.q}"?`)) deleteFaq(faq.id);
+                      }}
+                      style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#F87171', border: 'none', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ================= TAB 6: SERVICE BENEFITS CMS ================= */}
+        {activeTab === 'benefits' && (
+          <div>
+            <p style={{ fontSize: '13.5px', color: '#94A3B8', marginBottom: '24px' }}>
+              Edit the 4 service guarantee cards shown directly under the Hero Banner on the homepage.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+              {benefitsForm.map((card, idx) => (
+                <div
+                  key={card.id}
+                  style={{
+                    background: '#111C2A',
+                    borderRadius: '16px',
+                    padding: '20px',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                  }}
+                >
+                  <span style={{ fontSize: '12px', fontWeight: 800, color: '#60A5FA', display: 'block', marginBottom: '10px' }}>
+                    Benefit Card #{idx + 1}
+                  </span>
+
+                  <div style={{ marginBottom: '12px' }}>
+                    <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Card Title</label>
+                    <input
+                      type="text"
+                      value={card.title}
+                      onChange={(e) => {
+                        const updated = [...benefitsForm];
+                        updated[idx].title = e.target.value;
+                        setBenefitsForm(updated);
+                      }}
+                      className="admin-input"
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: '12px' }}>
+                    <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Description</label>
+                    <textarea
+                      rows={2}
+                      value={card.description}
+                      onChange={(e) => {
+                        const updated = [...benefitsForm];
+                        updated[idx].description = e.target.value;
+                        setBenefitsForm(updated);
+                      }}
+                      className="admin-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Icon</label>
+                    <select
+                      value={card.icon}
+                      onChange={(e) => {
+                        const updated = [...benefitsForm];
+                        updated[idx].icon = e.target.value;
+                        setBenefitsForm(updated);
+                      }}
+                      className="admin-input"
+                    >
+                      <option value="ShieldCheck">Shield (Purity / Quality)</option>
+                      <option value="Truck">Truck (Fast Delivery)</option>
+                      <option value="Award">Award (Guaranteed Authentic)</option>
+                      <option value="Headphones">Headphones (24/7 Support)</option>
+                      <option value="PackageCheck">Package Check (COD)</option>
+                    </select>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => saveBenefits(benefitsForm)}
+              style={{
+                backgroundColor: '#1A56DB',
+                color: '#FFFFFF',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '12px',
+                fontWeight: 700,
+                fontSize: '14px',
+                cursor: 'pointer',
+              }}
+            >
+              Save Service Benefits to Database
+            </button>
+          </div>
+        )}
+
+        {/* ================= TAB 7: SECTION & PAGE VISIBILITY ================= */}
         {activeTab === 'visibility' && (
           <div>
-            {/* Sections Visibility */}
-            <div className="admin-card">
+            <div style={{ background: '#111C2A', borderRadius: '18px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '32px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '6px' }}>Homepage Sections Visibility</h3>
-              <p style={{ fontSize: '13.5px', color: '#94A3B8', marginBottom: '24px' }}>
-                Toggle any section on or off. Hidden sections will vanish cleanly from the live storefront.
+              <p style={{ fontSize: '13.5px', color: '#94A3B8', marginBottom: '20px' }}>
+                Toggle any section on/off. Turned-off sections will vanish smoothly from the live storefront.
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px' }}>
                 {[
                   { key: 'hero', name: 'Hero Banner Slider' },
                   { key: 'benefits', name: 'Service Benefits (4 Cards)' },
@@ -1049,63 +1469,76 @@ export default function AdminPage() {
                   <div
                     key={sec.key}
                     style={{
-                      background: '#111C2A',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      borderRadius: '14px',
-                      padding: '16px',
+                      background: '#0B131E',
+                      padding: '14px 18px',
+                      borderRadius: '12px',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
                     }}
                   >
-                    <span style={{ fontSize: '14px', fontWeight: 700 }}>{sec.name}</span>
-                    <div
-                      className={`toggle-switch ${(sectionVisibility as any)[sec.key] ? 'active' : ''}`}
-                      onClick={() => updateSectionVisibility(sec.key as any, !(sectionVisibility as any)[sec.key])}
+                    <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#FFFFFF' }}>{sec.name}</span>
+                    <button
+                      onClick={() => updateSectionVisibility(sec.key as keyof SectionVisibility, !sectionVisibility[sec.key as keyof SectionVisibility])}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '999px',
+                        border: 'none',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        background: sectionVisibility[sec.key as keyof SectionVisibility] ? '#10B981' : '#334155',
+                        color: '#FFFFFF',
+                        cursor: 'pointer',
+                      }}
                     >
-                      <div className="toggle-knob"></div>
-                    </div>
+                      {sectionVisibility[sec.key as keyof SectionVisibility] ? 'Visible' : 'Hidden'}
+                    </button>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Subpages Visibility */}
-            <div className="admin-card">
+            <div style={{ background: '#111C2A', borderRadius: '18px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '6px' }}>Store Pages Visibility</h3>
-              <p style={{ fontSize: '13.5px', color: '#94A3B8', marginBottom: '24px' }}>
-                Enable or temporarily hide entire subpages from navigation and customer access.
-              </p>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px', marginTop: '16px' }}>
                 {[
-                  { key: 'shop', name: 'Shop Catalog Page (/shop)' },
-                  { key: 'comboBundle', name: 'Combo Bundle Page (/combo-bundle)' },
+                  { key: 'shop', name: 'Shop / All Fragrances Page (/shop)' },
+                  { key: 'comboBundle', name: 'Combo Bundles Page (/combo-bundle)' },
                   { key: 'about', name: 'About Us Page (/about)' },
-                  { key: 'contact', name: 'Contact Page (/contact)' },
+                  { key: 'contact', name: 'Contact & FAQs Page (/contact)' },
                   { key: 'wishlist', name: 'Wishlist Page (/wishlist)' },
-                  { key: 'cart', name: 'Cart & Checkout (/cart)' },
+                  { key: 'cart', name: 'Cart Page (/cart)' },
                   { key: 'trackOrder', name: 'Track Order Page (/track-order)' },
                 ].map((pg) => (
                   <div
                     key={pg.key}
                     style={{
-                      background: '#111C2A',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      borderRadius: '14px',
-                      padding: '16px',
+                      background: '#0B131E',
+                      padding: '14px 18px',
+                      borderRadius: '12px',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
                     }}
                   >
-                    <span style={{ fontSize: '14px', fontWeight: 700 }}>{pg.name}</span>
-                    <div
-                      className={`toggle-switch ${(pageVisibility as any)[pg.key] ? 'active' : ''}`}
-                      onClick={() => updatePageVisibility(pg.key as any, !(pageVisibility as any)[pg.key])}
+                    <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#FFFFFF' }}>{pg.name}</span>
+                    <button
+                      onClick={() => updatePageVisibility(pg.key as keyof PageVisibility, !pageVisibility[pg.key as keyof PageVisibility])}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '999px',
+                        border: 'none',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        background: pageVisibility[pg.key as keyof PageVisibility] ? '#10B981' : '#334155',
+                        color: '#FFFFFF',
+                        cursor: 'pointer',
+                      }}
                     >
-                      <div className="toggle-knob"></div>
-                    </div>
+                      {pageVisibility[pg.key as keyof PageVisibility] ? 'Enabled' : 'Disabled'}
+                    </button>
                   </div>
                 ))}
               </div>
@@ -1113,205 +1546,205 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 5: SETTINGS & MAINTENANCE */}
+        {/* ================= TAB 8: STORE SETTINGS & PIN ================= */}
         {activeTab === 'settings' && (
-          <div>
-            <form onSubmit={handleSaveSettings}>
-              {/* Maintenance Card */}
-              <div
-                className="admin-card"
-                style={{
-                  border: settingsForm.maintenanceMode ? '1.5px solid #EF4444' : '1px solid rgba(255, 255, 255, 0.08)',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <div>
-                    <h3 style={{ fontSize: '18px', fontWeight: 800, color: settingsForm.maintenanceMode ? '#EF4444' : '#F3F4F6' }}>
-                      Site Maintenance Mode
-                    </h3>
-                    <p style={{ fontSize: '13px', color: '#94A3B8' }}>
-                      When enabled, all store visitors will see the maintenance landing page with your WhatsApp contact button.
-                    </p>
-                  </div>
-
-                  <div
-                    className={`toggle-switch ${settingsForm.maintenanceMode ? 'active' : ''}`}
-                    onClick={() => setSettingsForm({ ...settingsForm, maintenanceMode: !settingsForm.maintenanceMode })}
-                  >
-                    <div className="toggle-knob"></div>
-                  </div>
-                </div>
-
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateSettings(settingsForm);
+            }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
+          >
+            <div style={{ background: '#111C2A', borderRadius: '18px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '16px' }}>Store Identity &amp; Contact</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div>
-                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>
-                    Maintenance Notice Message
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={settingsForm.maintenanceNotice}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, maintenanceNotice: e.target.value })}
-                    className="admin-input"
-                  />
-                </div>
-              </div>
-
-              {/* General Store Settings */}
-              <div className="admin-card">
-                <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '20px' }}>General Store Settings</h3>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                  <div>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>Store Name</label>
-                    <input
-                      type="text"
-                      value={settingsForm.storeName}
-                      onChange={(e) => setSettingsForm({ ...settingsForm, storeName: e.target.value })}
-                      className="admin-input"
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>Store Slogan</label>
-                    <input
-                      type="text"
-                      value={settingsForm.storeSlogan}
-                      onChange={(e) => setSettingsForm({ ...settingsForm, storeSlogan: e.target.value })}
-                      className="admin-input"
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                  <div>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>Official Registration No.</label>
-                    <input
-                      type="text"
-                      value={settingsForm.regNo}
-                      onChange={(e) => setSettingsForm({ ...settingsForm, regNo: e.target.value })}
-                      className="admin-input"
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>WhatsApp Number (Country code + digits)</label>
-                    <input
-                      type="text"
-                      value={settingsForm.whatsappNumber}
-                      onChange={(e) => setSettingsForm({ ...settingsForm, whatsappNumber: e.target.value })}
-                      className="admin-input"
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                  <div>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>Free Delivery Threshold (Rs.)</label>
-                    <input
-                      type="number"
-                      value={settingsForm.freeDeliveryThreshold}
-                      onChange={(e) => setSettingsForm({ ...settingsForm, freeDeliveryThreshold: Number(e.target.value) })}
-                      className="admin-input"
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>Standard Delivery Fee (Rs.)</label>
-                    <input
-                      type="number"
-                      value={settingsForm.deliveryFee}
-                      onChange={(e) => setSettingsForm({ ...settingsForm, deliveryFee: Number(e.target.value) })}
-                      className="admin-input"
-                    />
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: '24px' }}>
-                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>Admin Passcode / PIN</label>
+                  <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Store Name</label>
                   <input
                     type="text"
-                    value={settingsForm.adminPin}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, adminPin: e.target.value })}
+                    value={settingsForm.storeName}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, storeName: e.target.value })}
                     className="admin-input"
-                    style={{ width: '240px' }}
                   />
                 </div>
-
-                <motion.button
-                  type="submit"
-                  style={{
-                    backgroundColor: '#1A56DB',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    padding: '14px 28px',
-                    borderRadius: '12px',
-                    fontWeight: 700,
-                    fontSize: '14.5px',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 14px rgba(26, 86, 219, 0.3)',
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.96 }}
-                >
-                  <Save size={18} />
-                  <span>Save All Settings</span>
-                </motion.button>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Store Slogan</label>
+                  <input
+                    type="text"
+                    value={settingsForm.storeSlogan}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, storeSlogan: e.target.value })}
+                    className="admin-input"
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>WhatsApp Order Hotline</label>
+                  <input
+                    type="text"
+                    value={settingsForm.whatsappNumber}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, whatsappNumber: e.target.value })}
+                    className="admin-input"
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Business Registration Number</label>
+                  <input
+                    type="text"
+                    value={settingsForm.regNo}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, regNo: e.target.value })}
+                    className="admin-input"
+                  />
+                </div>
               </div>
-            </form>
+            </div>
+
+            <div style={{ background: '#111C2A', borderRadius: '18px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '16px' }}>Delivery Fees &amp; Announcement Bar</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Free Delivery Minimum Threshold (Rs.)</label>
+                  <input
+                    type="number"
+                    value={settingsForm.freeDeliveryThreshold}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, freeDeliveryThreshold: parseInt(e.target.value, 10) || 0 })}
+                    className="admin-input"
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Standard Courier Delivery Fee (Rs.)</label>
+                  <input
+                    type="number"
+                    value={settingsForm.deliveryFee}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, deliveryFee: parseInt(e.target.value, 10) || 0 })}
+                    className="admin-input"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Top Bar Announcement Marquee</label>
+                <input
+                  type="text"
+                  value={settingsForm.announcementText}
+                  onChange={(e) => setSettingsForm({ ...settingsForm, announcementText: e.target.value })}
+                  className="admin-input"
+                />
+              </div>
+            </div>
+
+            {/* Security Admin PIN */}
+            <div style={{ background: '#111C2A', borderRadius: '18px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '6px' }}>Security &amp; Admin PIN</h3>
+              <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '16px' }}>
+                Change your secret Admin Dashboard login PIN.
+              </p>
+              <div style={{ maxWidth: '320px' }}>
+                <label style={{ fontSize: '12px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Admin PIN</label>
+                <input
+                  type="text"
+                  value={settingsForm.adminPin}
+                  onChange={(e) => setSettingsForm({ ...settingsForm, adminPin: e.target.value })}
+                  className="admin-input"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              style={{
+                backgroundColor: '#1A56DB',
+                color: '#FFFFFF',
+                border: 'none',
+                padding: '14px 28px',
+                borderRadius: '12px',
+                fontWeight: 700,
+                fontSize: '15px',
+                cursor: 'pointer',
+                alignSelf: 'flex-start',
+              }}
+            >
+              Save All Settings
+            </button>
+          </form>
+        )}
+
+        {/* ================= TAB 9: DANGER ZONE & FACTORY RESET ================= */}
+        {activeTab === 'danger' && (
+          <div style={{ background: '#111C2A', borderRadius: '18px', padding: '28px', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+              <AlertTriangle size={24} color="#EF4444" />
+              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#EF4444' }}>Factory Reset &amp; Default Restore</h3>
+            </div>
+            <p style={{ fontSize: '13.5px', color: '#94A3B8', lineHeight: 1.6, marginBottom: '24px' }}>
+              Restores the database to initial clean seed state (12 original authentic EECO products, 3 hero slides, 3 combo bundles, 4 FAQs, 4 service benefits, and default settings).
+            </p>
+            <button
+              onClick={() => {
+                if (confirm('Are you sure you want to reset the database to factory template defaults?')) {
+                  resetToDefaults();
+                }
+              }}
+              style={{
+                backgroundColor: '#EF4444',
+                color: '#FFFFFF',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '10px',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Reset Database to Factory Defaults
+            </button>
           </div>
         )}
       </main>
 
-      {/* Add / Edit Product Modal */}
+      {/* ================= PRODUCT ADD/EDIT MODAL ================= */}
       <AnimatePresence>
         {productModalOpen && (
-          <motion.div
+          <div
             style={{
               position: 'fixed',
               inset: 0,
-              background: 'rgba(0, 0, 0, 0.75)',
-              backdropFilter: 'blur(6px)',
-              zIndex: 30000,
+              backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 1000,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               padding: '20px',
             }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
           >
             <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
               style={{
-                width: '100%',
-                maxWidth: '580px',
-                background: '#162234',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: '#111C2A',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
                 borderRadius: '24px',
                 padding: '32px',
+                width: '100%',
+                maxWidth: '620px',
                 maxHeight: '90vh',
                 overflowY: 'auto',
-                color: '#F3F4F6',
+                color: '#FFFFFF',
               }}
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
             >
-              <h2 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '20px' }}>
-                {editingProduct ? 'Edit Product' : 'Add New Product'}
-              </h2>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '20px' }}>
+                {editingProduct ? 'Edit Product' : 'Add New Fragrance Product'}
+              </h3>
 
               <form onSubmit={handleSaveProduct} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Product Title *</label>
+                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Product Title</label>
                   <input
                     type="text"
-                    required
                     value={productForm.name}
                     onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
                     className="admin-input"
+                    placeholder="e.g. EECO Thulasi Herbal Incense Sticks Pack"
+                    required
                   />
                 </div>
 
@@ -1326,23 +1759,21 @@ export default function AdminPage() {
                       <option value="Incense Sticks Packs">Incense Sticks Packs</option>
                       <option value="Incense Powder Packs">Incense Powder Packs</option>
                       <option value="Air Fresheners">Air Fresheners</option>
-                      <option value="Diffuser">Diffuser</option>
+                      <option value="Diffuser">Diffusers &amp; Aroma Oils</option>
                       <option value="Combo Bundle">Combo Bundle</option>
                       <option value="Wholesale Products">Wholesale Products</option>
                     </select>
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Icon Type</label>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Stock Status</label>
                     <select
-                      value={productForm.iconType}
-                      onChange={(e) => setProductForm({ ...productForm, iconType: e.target.value as any })}
+                      value={productForm.stockState}
+                      onChange={(e) => setProductForm({ ...productForm, stockState: e.target.value as any })}
                       className="admin-input"
                     >
-                      <option value="flame">Flame (Incense Sticks)</option>
-                      <option value="sparkles">Sparkles (Powder / Herbal)</option>
-                      <option value="wind">Wind (Air Fresheners)</option>
-                      <option value="droplets">Droplets (Diffuser)</option>
+                      <option value="in_stock">In Stock (Available)</option>
+                      <option value="out_of_stock">Out of Stock</option>
                     </select>
                   </div>
                 </div>
@@ -1355,54 +1786,29 @@ export default function AdminPage() {
                       value={productForm.price}
                       onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
                       className="admin-input"
+                      placeholder="e.g. Rs. 1,350.00"
+                      required
                     />
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Original / Strikethrough Price</label>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Original Price (Strikethrough)</label>
                     <input
                       type="text"
                       value={productForm.originalPrice}
                       onChange={(e) => setProductForm({ ...productForm, originalPrice: e.target.value })}
                       className="admin-input"
+                      placeholder="e.g. Rs. 1,600.00"
                     />
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <div>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Discount Badge</label>
-                    <input
-                      type="text"
-                      value={productForm.badge}
-                      onChange={(e) => setProductForm({ ...productForm, badge: e.target.value })}
-                      className="admin-input"
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Stock Status</label>
-                    <select
-                      value={productForm.stockState}
-                      onChange={(e) => setProductForm({ ...productForm, stockState: e.target.value as any })}
-                      className="admin-input"
-                    >
-                      <option value="in_stock">In Stock</option>
-                      <option value="out_of_stock">Out of Stock</option>
-                    </select>
-                  </div>
-                </div>
-
+                {/* Direct Image Upload */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
-                    <label style={{ fontSize: '12.5px', color: '#94A3B8' }}>Product Photo (Upload Image File or Enter Path)</label>
-                    <span style={{ fontSize: '11px', background: 'rgba(26, 86, 219, 0.2)', color: '#60A5FA', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
-                      📐 Recommended: 800 x 800 px (1:1 Square, Max 10MB)
-                    </span>
-                  </div>
-
-                  {/* Photo Preview & Direct Upload Button */}
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '8px' }}>
+                    Product Photo (Upload from Local Storage or URL)
+                  </label>
+                  <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginBottom: '10px' }}>
                     {productForm.image ? (
                       <div
                         style={{
@@ -1410,18 +1816,12 @@ export default function AdminPage() {
                           height: '64px',
                           borderRadius: '12px',
                           overflow: 'hidden',
-                          border: '1.5px solid rgba(26, 86, 219, 0.5)',
-                          background: '#0F172A',
-                          display: 'grid',
-                          placeItems: 'center',
+                          border: '1.5px solid #1A56DB',
+                          background: '#0B131E',
                           flexShrink: 0,
                         }}
                       >
-                        <img
-                          src={productForm.image}
-                          alt="Product Preview"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
+                        <img src={productForm.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                     ) : (
                       <div
@@ -1430,7 +1830,7 @@ export default function AdminPage() {
                           height: '64px',
                           borderRadius: '12px',
                           border: '1.5px dashed rgba(255, 255, 255, 0.2)',
-                          background: '#111C2A',
+                          background: '#0B131E',
                           display: 'grid',
                           placeItems: 'center',
                           flexShrink: 0,
@@ -1453,20 +1853,10 @@ export default function AdminPage() {
                         fontSize: '13px',
                         fontWeight: 700,
                         cursor: isUploadingProductImg ? 'not-allowed' : 'pointer',
-                        boxShadow: '0 4px 14px rgba(26, 86, 219, 0.3)',
                       }}
                     >
-                      {isUploadingProductImg ? (
-                        <>
-                          <Loader2 size={16} className="spin" />
-                          <span>Uploading to VPS Database...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Upload size={16} />
-                          <span>Choose Product Photo</span>
-                        </>
-                      )}
+                      {isUploadingProductImg ? <Loader2 size={16} className="spin" /> : <Upload size={16} />}
+                      <span>{isUploadingProductImg ? 'Uploading...' : 'Choose Product Photo'}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -1476,17 +1866,13 @@ export default function AdminPage() {
                       />
                     </label>
                   </div>
-
                   <input
                     type="text"
                     value={productForm.image}
                     onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
                     className="admin-input"
-                    placeholder="e.g. /uploads/1740000000_photo.jpg or /product_thulasi_sticks.jpg"
+                    placeholder="e.g. /uploads/photo.jpg or /product_thulasi_sticks.jpg"
                   />
-                  <span style={{ fontSize: '11px', color: '#64748B', display: 'block', marginTop: '4px' }}>
-                    Uploaded photos are permanently saved in the Contabo VPS database and immediately visible to all web visitors.
-                  </span>
                 </div>
 
                 <div>
@@ -1503,7 +1889,309 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={() => setProductModalOpen(false)}
-                    style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', color: '#F3F4F6', padding: '10px 18px', borderRadius: '10px', cursor: 'pointer' }}
+                    style={{
+                      background: 'none',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#FFFFFF',
+                      padding: '10px 18px',
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      backgroundColor: '#1A56DB',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      padding: '10px 22px',
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Save Product
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= COMBO BUNDLE MODAL ================= */}
+      <AnimatePresence>
+        {comboModalOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 1000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              style={{
+                background: '#111C2A',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '24px',
+                padding: '32px',
+                width: '100%',
+                maxWidth: '600px',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                color: '#FFFFFF',
+              }}
+            >
+              <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '20px' }}>
+                {editingCombo ? 'Edit Combo Bundle' : 'Add New Combo Bundle'}
+              </h3>
+
+              <form onSubmit={handleSaveCombo} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Bundle Title</label>
+                  <input
+                    type="text"
+                    value={comboForm.title}
+                    onChange={(e) => setComboForm({ ...comboForm, title: e.target.value })}
+                    className="admin-input"
+                    placeholder="e.g. Master Pooja & Home Fragrance Combo"
+                    required
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Badge Label</label>
+                    <input
+                      type="text"
+                      value={comboForm.badge}
+                      onChange={(e) => setComboForm({ ...comboForm, badge: e.target.value })}
+                      className="admin-input"
+                      placeholder="e.g. BEST VALUE"
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Savings Text</label>
+                    <input
+                      type="text"
+                      value={comboForm.savings}
+                      onChange={(e) => setComboForm({ ...comboForm, savings: e.target.value })}
+                      className="admin-input"
+                      placeholder="e.g. SAVE RS. 950"
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Combo Selling Price</label>
+                    <input
+                      type="text"
+                      value={comboForm.price}
+                      onChange={(e) => setComboForm({ ...comboForm, price: e.target.value })}
+                      className="admin-input"
+                      placeholder="e.g. Rs. 3,850.00"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Regular Value</label>
+                    <input
+                      type="text"
+                      value={comboForm.regularValue}
+                      onChange={(e) => setComboForm({ ...comboForm, regularValue: e.target.value })}
+                      className="admin-input"
+                      placeholder="e.g. Rs. 4,800.00"
+                    />
+                  </div>
+                </div>
+
+                {/* Combo Image Upload */}
+                <div>
+                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '8px' }}>Bundle Photo</label>
+                  <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginBottom: '10px' }}>
+                    <label
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        backgroundColor: isUploadingComboImg ? '#334155' : '#059669',
+                        color: '#FFFFFF',
+                        padding: '10px 18px',
+                        borderRadius: '10px',
+                        fontSize: '13px',
+                        fontWeight: 700,
+                        cursor: isUploadingComboImg ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      {isUploadingComboImg ? <Loader2 size={16} className="spin" /> : <Upload size={16} />}
+                      <span>{isUploadingComboImg ? 'Uploading...' : 'Upload Bundle Photo'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={isUploadingComboImg}
+                        style={{ display: 'none' }}
+                        onChange={handleComboFileUpload}
+                      />
+                    </label>
+                  </div>
+                  <input
+                    type="text"
+                    value={comboForm.image}
+                    onChange={(e) => setComboForm({ ...comboForm, image: e.target.value })}
+                    className="admin-input"
+                    placeholder="e.g. /uploads/combo.jpg or /product_mega_combo.jpg"
+                  />
+                </div>
+
+                {/* Inclusions list */}
+                <div>
+                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>Bundle Inclusions List</label>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                    <input
+                      type="text"
+                      placeholder="Add item (e.g. 14x Incense Stick Packs)"
+                      value={inclusionInput}
+                      onChange={(e) => setInclusionInput(e.target.value)}
+                      className="admin-input"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (inclusionInput.trim()) {
+                          setComboForm({ ...comboForm, inclusions: [...comboForm.inclusions, inclusionInput.trim()] });
+                          setInclusionInput('');
+                        }
+                      }}
+                      style={{ padding: '0 16px', background: '#1A56DB', color: '#FFFFFF', border: 'none', borderRadius: '10px', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {comboForm.inclusions.map((inc, i) => (
+                      <li key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0B131E', padding: '8px 12px', borderRadius: '8px', fontSize: '13px' }}>
+                        <span>✔ {inc}</span>
+                        <button
+                          type="button"
+                          onClick={() => setComboForm({ ...comboForm, inclusions: comboForm.inclusions.filter((_, idx) => idx !== i) })}
+                          style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer' }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setComboModalOpen(false)}
+                    style={{ background: 'none', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#FFFFFF', padding: '10px 18px', borderRadius: '10px', cursor: 'pointer' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{ backgroundColor: '#059669', color: '#FFFFFF', border: 'none', padding: '10px 22px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    Save Bundle
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= FAQ MODAL ================= */}
+      <AnimatePresence>
+        {faqModalOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 1000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              style={{
+                background: '#111C2A',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '24px',
+                padding: '32px',
+                width: '100%',
+                maxWidth: '540px',
+                color: '#FFFFFF',
+              }}
+            >
+              <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '20px' }}>
+                {editingFaq ? 'Edit FAQ Item' : 'Add New FAQ Item'}
+              </h3>
+
+              <form onSubmit={handleSaveFaq} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Category Tag</label>
+                  <input
+                    type="text"
+                    value={faqForm.category}
+                    onChange={(e) => setFaqForm({ ...faqForm, category: e.target.value })}
+                    className="admin-input"
+                    placeholder="e.g. Delivery, Ordering, Quality"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Question</label>
+                  <input
+                    type="text"
+                    value={faqForm.q}
+                    onChange={(e) => setFaqForm({ ...faqForm, q: e.target.value })}
+                    className="admin-input"
+                    placeholder="e.g. How long does delivery take?"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Answer</label>
+                  <textarea
+                    rows={4}
+                    value={faqForm.a}
+                    onChange={(e) => setFaqForm({ ...faqForm, a: e.target.value })}
+                    className="admin-input"
+                    placeholder="Enter detailed helpful answer..."
+                    required
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setFaqModalOpen(false)}
+                    style={{ background: 'none', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#FFFFFF', padding: '10px 18px', borderRadius: '10px', cursor: 'pointer' }}
                   >
                     Cancel
                   </button>
@@ -1511,12 +2199,12 @@ export default function AdminPage() {
                     type="submit"
                     style={{ backgroundColor: '#1A56DB', color: '#FFFFFF', border: 'none', padding: '10px 22px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer' }}
                   >
-                    Save Product
+                    Save FAQ
                   </button>
                 </div>
               </form>
             </motion.div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
