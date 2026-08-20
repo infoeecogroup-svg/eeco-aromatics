@@ -99,9 +99,9 @@ export const CustomCursor: React.FC = () => {
           width: isHovered ? (cursorText ? 64 : 44) : isClicked ? 24 : 32,
           height: isHovered ? (cursorText ? 64 : 44) : isClicked ? 24 : 32,
           borderRadius: '50%',
-          border: isHovered ? '2px solid rgba(7, 138, 131, 0.85)' : '1.5px solid rgba(7, 138, 131, 0.45)',
-          backgroundColor: isHovered ? 'rgba(7, 138, 131, 0.12)' : 'transparent',
-          boxShadow: isHovered ? '0 0 20px rgba(7, 138, 131, 0.3)' : 'none',
+          border: isHovered ? '2px solid rgba(26, 86, 219, 0.85)' : '1.5px solid rgba(26, 86, 219, 0.45)',
+          backgroundColor: isHovered ? 'rgba(26, 86, 219, 0.12)' : 'transparent',
+          boxShadow: isHovered ? '0 0 20px rgba(26, 86, 219, 0.3)' : 'none',
           transition: 'width 0.22s ease-out, height 0.22s ease-out, border 0.2s ease-out, background-color 0.2s ease-out, box-shadow 0.2s ease-out',
           display: 'flex',
           alignItems: 'center',
@@ -114,7 +114,7 @@ export const CustomCursor: React.FC = () => {
             style={{
               fontSize: '10px',
               fontWeight: 800,
-              color: '#078A83',
+              color: '#1A56DB',
               letterSpacing: '0.5px',
               textTransform: 'uppercase',
             }}
@@ -137,8 +137,8 @@ export const CustomCursor: React.FC = () => {
           width: isClicked ? 10 : isHovered ? 6 : 7,
           height: isClicked ? 10 : isHovered ? 6 : 7,
           borderRadius: '50%',
-          backgroundColor: isHovered ? '#FFBE00' : '#078A83',
-          boxShadow: '0 0 10px rgba(255, 190, 0, 0.8)',
+          backgroundColor: isHovered ? '#F59E0B' : '#1A56DB',
+          boxShadow: '0 0 10px rgba(245, 158, 11, 0.8)',
           transition: 'width 0.15s ease-out, height 0.15s ease-out, background-color 0.2s ease-out',
         }}
       />

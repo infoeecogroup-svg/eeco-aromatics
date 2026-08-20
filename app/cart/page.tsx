@@ -82,7 +82,7 @@ export default function CartPage() {
         </div>
 
         <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#111827', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <ShoppingCart size={32} color="#078A83" />
+          <ShoppingCart size={32} color="#1A56DB" />
           <span>Shopping Cart ({cart.reduce((s, i) => s + i.quantity, 0)} Items)</span>
         </h1>
 
@@ -96,7 +96,7 @@ export default function CartPage() {
             <Link href="/shop" style={{ textDecoration: 'none' }}>
               <button
                 style={{
-                  backgroundColor: 'var(--primary-teal)',
+                  backgroundColor: '#1A56DB',
                   color: '#FFFFFF',
                   border: 'none',
                   padding: '12px 28px',
@@ -151,8 +151,8 @@ export default function CartPage() {
                         width: '64px',
                         height: '64px',
                         borderRadius: '12px',
-                        background: '#F8FAF9',
-                        border: '1px solid #E5E7EB',
+                        background: '#F8FAFC',
+                        border: '1px solid #E2E8F0',
                         overflow: 'hidden',
                         display: 'grid',
                         placeItems: 'center',
@@ -162,7 +162,7 @@ export default function CartPage() {
                       {item.image ? (
                         <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
-                        <ShoppingCart size={24} color="#078A83" />
+                        <ShoppingCart size={24} color="#1A56DB" />
                       )}
                     </div>
 
@@ -170,7 +170,7 @@ export default function CartPage() {
                       <h4 style={{ fontSize: '14.5px', fontWeight: 700, color: '#111827', marginBottom: '4px', lineHeight: 1.3 }}>
                         {item.name}
                       </h4>
-                      <span style={{ fontSize: '14px', fontWeight: 800, color: '#078A83' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 800, color: '#1A56DB' }}>
                         Rs. {item.price.toLocaleString()}.00
                       </span>
                     </div>
@@ -229,7 +229,7 @@ export default function CartPage() {
                 }}
               >
                 <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#111827', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Truck size={20} color="#078A83" />
+                  <Truck size={20} color="#1A56DB" />
                   <span>Doorstep Delivery Address</span>
                 </h3>
 
@@ -378,7 +378,7 @@ export default function CartPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '20px', fontWeight: 800, color: '#111827', marginBottom: '24px' }}>
                 <span>Total Amount:</span>
-                <span style={{ color: '#078A83' }}>Rs. {grandTotal.toLocaleString()}.00</span>
+                <span style={{ color: '#1A56DB' }}>Rs. {grandTotal.toLocaleString()}.00</span>
               </div>
 
               <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '12px 14px', borderRadius: '12px', marginBottom: '20px', fontSize: '12.5px', color: '#166534', display: 'flex', alignItems: 'center', gap: '8px' }}>

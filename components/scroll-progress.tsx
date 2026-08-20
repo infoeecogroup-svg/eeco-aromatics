@@ -22,8 +22,8 @@ export const ScrollProgressBar: React.FC = () => {
         transformOrigin: '0%',
         scaleX,
         zIndex: 9999,
-        background: 'linear-gradient(90deg, #078A83 0%, #FFBE00 50%, #D9003B 100%)',
-        boxShadow: '0 0 12px rgba(7, 138, 131, 0.6), 0 0 4px rgba(255, 190, 0, 0.4)',
+        background: 'linear-gradient(90deg, #1A56DB 0%, #059669 35%, #F59E0B 70%, #E11D48 100%)',
+        boxShadow: '0 0 12px rgba(26, 86, 219, 0.6), 0 0 4px rgba(245, 158, 11, 0.4)',
       }}
     />
   );

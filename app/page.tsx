@@ -175,15 +175,15 @@ export default function Home() {
   const getProductIcon = (type: Product['iconType']) => {
     switch (type) {
       case 'flame':
-        return <Flame size={36} color="#078A83" />;
+        return <Flame size={36} color="#059669" />;
       case 'sparkles':
-        return <Sparkles size={36} color="#D9003B" />;
+        return <Sparkles size={36} color="#E11D48" />;
       case 'wind':
-        return <Wind size={36} color="#06666B" />;
+        return <Wind size={36} color="#1A56DB" />;
       case 'droplets':
-        return <Droplets size={36} color="#078A83" />;
+        return <Droplets size={36} color="#A855F7" />;
       default:
-        return <Sparkles size={36} color="#078A83" />;
+        return <Sparkles size={36} color="#1A56DB" />;
     }
   };
 
@@ -229,7 +229,6 @@ export default function Home() {
       <Navigation />
 
       {/* ================= 4. FULL-WIDTH HERO BANNER SLIDER ================= */}
-      {/* Full width, clean with no overlay texts/buttons, auto-shuffling, linked to Combo Bundle */}
       {sectionVisibility.hero && (
         <section aria-label="Featured Promotional Banners">
           <HeroBannerSlider autoPlayInterval={3500} />
@@ -248,10 +247,10 @@ export default function Home() {
                   key={card.id}
                   variants={fadeUpVariant}
                   whileHover={{ y: -4, scale: 1.01 }}
-                  transition={{ duration: 0.25, ease: EASE_ULTRA_SMOOTH }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   <div className="benefit-icon-container">
-                    <IconComponent size={23} strokeWidth={1.8} />
+                    <IconComponent size={24} />
                   </div>
                   <h3 className="benefit-card-title">{card.title}</h3>
                   <p className="benefit-card-desc">{card.description}</p>
@@ -262,41 +261,45 @@ export default function Home() {
         </AnimatedSection>
       )}
 
-      {/* ================= 6. DAILY DISCOUNT SECTION (3s Auto-Shuffle Carousel) ================= */}
+      {/* ================= 6. ALL PRODUCTS GRID ================= */}
       {sectionVisibility.dailyDiscount && (
-        <ProductSliderSection
-          title="Daily Discount You'll Love"
-          subtitle="Handcrafted aromatic selections at special limited-time prices"
-          viewAllLink="/shop"
-          products={visibleProducts}
-          isWishlisted={isInWishlist}
-          onToggleWishlist={toggleWishlist}
-          onQuickView={openQuickView}
-          onAddToCart={addToCart}
-          autoPlayInterval={3000}
-        />
+        <section className="daily-discount-wrap layout-max-width" aria-label="Explore Fragrances">
+          <h2 className="discount-heading-text">Explore All Fragrances</h2>
+          <AnimatedGrid className="daily-discount-grid">
+            {visibleProducts.slice(0, 12).map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                isWishlisted={isInWishlist(product.id)}
+                onToggleWishlist={toggleWishlist}
+                onQuickView={openQuickView}
+                onAddToCart={addToCart}
+              />
+            ))}
+          </AnimatedGrid>
+        </section>
       )}
 
-      {/* ================= 7. BEST SELLING PRODUCTS SECTION (3s Auto-Shuffle Carousel) ================= */}
+      {/* ================= 7. BEST SELLING PRODUCTS (Golden Amber Logo Theme) ================= */}
       {sectionVisibility.bestSelling && (
         <AnimatedSection className="bestselling-section-wrap layout-max-width">
           <div className="bestselling-inner-box">
             <div className="bestselling-header-cutout">
               <h2>Best Selling Products</h2>
-              <p>Up to 69% discount for limited time 🔥</p>
+              <p>Top customer picks &amp; value bundles</p>
             </div>
 
             <ProductSliderSection
-              title="Top Picks of the Season"
-              subtitle="Our most loved traditional incense and diffusers"
+              title="Best Selling Products"
+              subtitle="Sri Lanka's highest-rated aromatic sticks & diffusers"
               viewAllLink="/shop"
-              products={[...visibleProducts].reverse()}
+              products={visibleProducts}
               isWishlisted={isInWishlist}
               onToggleWishlist={toggleWishlist}
               onQuickView={openQuickView}
               onAddToCart={addToCart}
-              autoPlayInterval={3000}
               className="bestselling-slider-inner"
+              autoPlayInterval={3500}
             />
           </div>
         </AnimatedSection>
@@ -313,7 +316,7 @@ export default function Home() {
             <Link
               href="/shop"
               style={{
-                color: '#078A83',
+                color: '#1A56DB',
                 fontWeight: 700,
                 fontSize: '14px',
                 display: 'flex',
@@ -340,7 +343,7 @@ export default function Home() {
                 >
                   <div className="category-card-img-box">
                     {getProductIcon(cat.iconType)}
-                    <span style={{ fontSize: '11px', color: '#078A83', fontWeight: 700 }}>
+                    <span style={{ fontSize: '11px', color: '#1A56DB', fontWeight: 700 }}>
                       EECO LINE
                     </span>
                   </div>

@@ -71,7 +71,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ShoppingCart size={22} color="#078A83" />
+                <ShoppingCart size={22} color="#1A56DB" />
                 <h3 style={{ fontSize: '18px', fontWeight: 800 }}>Shopping Cart ({totalCartCount})</h3>
               </div>
               <motion.button
@@ -119,24 +119,24 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                       style={{
                         width: '56px',
                         height: '56px',
-                        background: '#F8FAF9',
+                        background: '#F8FAFC',
                         borderRadius: '10px',
                         display: 'grid',
                         placeItems: 'center',
                         overflow: 'hidden',
-                        border: '1px solid #E5E7EB',
+                        border: '1px solid #E2E8F0',
                       }}
                     >
                       {item.image ? (
                         <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
-                        <Sparkles size={22} color="#078A83" />
+                        <Sparkles size={22} color="#1A56DB" />
                       )}
                     </div>
 
                     <div style={{ flex: 1 }}>
                       <h4 style={{ fontSize: '13.5px', fontWeight: 700, lineHeight: 1.3, marginBottom: '4px' }}>{item.name}</h4>
-                      <span style={{ fontSize: '13.5px', color: '#078A83', fontWeight: 800 }}>
+                      <span style={{ fontSize: '13.5px', color: '#1A56DB', fontWeight: 800 }}>
                         Rs. {item.price.toLocaleString()}.00
                       </span>
                     </div>
@@ -177,7 +177,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               <div style={{ borderTop: '1px solid #E5E7EB', paddingTop: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, fontSize: '17px', marginBottom: '16px' }}>
                   <span>Total Amount:</span>
-                  <span style={{ color: '#078A83' }}>Rs. {totalCartPrice.toLocaleString()}.00</span>
+                  <span style={{ color: '#1A56DB' }}>Rs. {totalCartPrice.toLocaleString()}.00</span>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

@@ -1,24 +1,28 @@
 :root {
-  --primary-teal: #078A83;
-  --dark-teal: #06666B;
-  --footer-dark-teal: #075D63;
-  --secondary-teal: #087F7A;
-  --accent-yellow: #FFBE00;
-  --yellow-logo: #FFD12E;
-  --yellow-section: #FFE76A;
-  --light-yellow: #FFF5C9;
-  --turquoise-section: #9EDFE0;
-  --pink-banner: #F9C8E8;
-  --yellow-banner: #FFE66B;
-  --green-banner: #9BE86A;
-  --text-dark: #111827;
-  --text-muted: #435467;
-  --bg-light: #F4F4F5;
-  --border-color: #DDE3E8;
-  --discount-red: #D9003B;
-  --section-green: #9BE86A;
-  --star-yellow: #FFB800;
-  --star-muted: #C7CDD3;
+  --primary-teal: #1A56DB;
+  --primary-blue: #1A56DB;
+  --dark-teal: #1E3A8A;
+  --dark-blue: #1E3A8A;
+  --footer-dark-teal: #0F172A;
+  --secondary-teal: #059669;
+  --brand-green: #059669;
+  --vibrant-green: #10B981;
+  --accent-yellow: #F59E0B;
+  --yellow-logo: #FBBF24;
+  --yellow-section: #FEF3C7;
+  --light-yellow: #FEF3C7;
+  --turquoise-section: #EFF6FF;
+  --pink-banner: #FCE7F3;
+  --yellow-banner: #FEF3C7;
+  --green-banner: #DCFCE7;
+  --text-dark: #0F172A;
+  --text-muted: #475569;
+  --bg-light: #F8FAFC;
+  --border-color: #E2E8F0;
+  --discount-red: #E11D48;
+  --section-green: #DCFCE7;
+  --star-yellow: #F59E0B;
+  --star-muted: #CBD5E1;
   --font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -90,13 +94,14 @@ a {
 
 /* ================= 1. TOP INFORMATION BAR ================= */
 .top-bar {
-  background-color: var(--primary-teal);
+  background: linear-gradient(90deg, #0F172A 0%, #1E3A8A 100%);
   color: #FFFFFF;
   min-height: 44px;
   font-size: 13px;
   font-weight: 500;
   display: flex;
   align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .top-bar-inner {
@@ -130,7 +135,7 @@ a {
 
 .top-whatsapp-pill {
   background: var(--accent-yellow);
-  color: #111827;
+  color: #0F172A;
   border-radius: 999px;
   padding: 4px 12px;
   font-weight: 800;
@@ -145,13 +150,13 @@ a {
 
 .top-whatsapp-pill:hover {
   transform: scale(1.04);
-  box-shadow: 0 4px 12px rgba(255, 190, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.45);
 }
 
 .lang-btn-pill {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
   padding: 3px 10px;
   font-size: 12.5px;
@@ -165,21 +170,21 @@ a {
 }
 
 .lang-btn-pill:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
 .top-separator {
   width: 1px;
   height: 14px;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.25);
   margin: 0 2px;
   display: inline-block;
 }
 
 .discount-pill {
-  background: var(--accent-yellow);
-  color: #111827;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #FFFFFF;
   border-radius: 999px;
   padding: 3px 8px;
   font-size: 11px;
@@ -187,6 +192,7 @@ a {
   line-height: 1.2;
   margin: 0 2px;
   display: inline-block;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
 }
 
 .top-bar-right a {
@@ -199,6 +205,7 @@ a {
 
 .top-bar-right a:hover {
   opacity: 1;
+  color: #FDE68A;
   text-decoration: underline;
 }
 
@@ -216,7 +223,7 @@ a {
 .main-header {
   height: 84px;
   background: #FFFFFF;
-  border-bottom: 1px solid #E5E7EB;
+  border-bottom: 1px solid #E2E8F0;
   display: flex;
   align-items: center;
 }
@@ -244,15 +251,17 @@ a {
 }
 
 .header-logo-img {
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
 }
 
 .logo-title {
   font-size: 26px;
   font-weight: 800;
-  color: var(--secondary-teal);
+  background: linear-gradient(135deg, #1A56DB 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
   position: relative;
   line-height: 1.1;
@@ -270,7 +279,7 @@ a {
   flex: 1;
   max-width: 620px;
   height: 48px;
-  border: 1.5px solid #DDE2E6;
+  border: 1.5px solid #E2E8F0;
   border-radius: 999px;
   background: #FFFFFF;
   display: flex;
@@ -280,8 +289,8 @@ a {
 }
 
 .header-search-wrap:focus-within {
-  border-color: var(--primary-teal);
-  box-shadow: 0 0 0 3px rgba(7, 138, 131, 0.15);
+  border-color: #1A56DB;
+  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.15);
 }
 
 .header-search-wrap input {
@@ -293,11 +302,11 @@ a {
 }
 
 .header-search-wrap input::placeholder {
-  color: #9CA3AF;
+  color: #94A3B8;
 }
 
 .search-btn-icon {
-  color: #78909C;
+  color: #64748B;
   display: grid;
   place-items: center;
   padding: 4px;
@@ -306,7 +315,7 @@ a {
 }
 
 .search-btn-icon:hover {
-  color: var(--primary-teal);
+  color: #1A56DB;
 }
 
 /* Account & Cart Controls */
@@ -328,18 +337,18 @@ a {
 .yellow-circle-icon {
   width: 42px;
   height: 42px;
-  background: var(--accent-yellow);
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
   border-radius: 50%;
   display: grid;
   place-items: center;
-  color: #111827;
-  box-shadow: 0 4px 10px rgba(255, 190, 0, 0.25);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
   transition: transform 250ms var(--transition-smooth), box-shadow 250ms ease;
 }
 
 .control-box:hover .yellow-circle-icon {
-  transform: scale(1.05);
-  box-shadow: 0 6px 14px rgba(255, 190, 0, 0.35);
+  transform: scale(1.06);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
 }
 
 .control-labels {
@@ -349,7 +358,7 @@ a {
 
 .control-labels .small-label {
   font-size: 11.5px;
-  color: #5F6368;
+  color: #64748B;
 }
 
 .control-labels .large-label {
@@ -385,7 +394,7 @@ a {
 .btn-explore-categories {
   width: 250px;
   height: 44px;
-  background: var(--primary-teal);
+  background: linear-gradient(135deg, #1A56DB 0%, #1E40AF 100%);
   color: #FFFFFF;
   border-radius: 8px;
   font-size: 14.5px;
@@ -394,13 +403,14 @@ a {
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  box-shadow: 0 4px 12px rgba(7, 138, 131, 0.25);
+  box-shadow: 0 4px 14px rgba(26, 86, 219, 0.28);
   cursor: pointer;
-  transition: background-color 200ms ease, transform 200ms var(--transition-smooth);
+  transition: background-color 200ms ease, transform 200ms var(--transition-smooth), box-shadow 200ms ease;
 }
 
 .btn-explore-categories:hover {
-  background: var(--dark-teal);
+  background: linear-gradient(135deg, #1E40AF 0%, #172554 100%);
+  box-shadow: 0 6px 18px rgba(26, 86, 219, 0.38);
   transform: translateY(-1px);
 }
 
@@ -410,7 +420,7 @@ a {
   gap: 32px;
   font-size: 14.5px;
   font-weight: 600;
-  color: #171717;
+  color: #1E293B;
 }
 
 .nav-menu-list a {
@@ -423,7 +433,7 @@ a {
 }
 
 .nav-menu-list a.active {
-  color: var(--primary-teal);
+  color: #1A56DB;
   font-weight: 700;
 }
 
@@ -434,22 +444,23 @@ a {
   left: 0;
   right: 0;
   height: 2.5px;
-  background: var(--primary-teal);
+  background: linear-gradient(90deg, #1A56DB, #059669);
   border-radius: 999px;
 }
 
 .nav-menu-list a:hover {
-  color: var(--primary-teal);
+  color: #1A56DB;
 }
 
 .popular-badge-inline {
-  background: var(--accent-yellow);
-  color: #111827;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #FFFFFF;
   font-size: 10px;
   font-weight: 800;
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: 999px;
   margin-left: 2px;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
 }
 
 /* WhatsApp Support Button */
@@ -1000,8 +1011,8 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: #F0FDF4;
-  color: #078A83;
+  background: #ECFDF5;
+  color: #059669;
   font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;
@@ -1378,7 +1389,7 @@ a {
   color: var(--text-muted);
 }
 
-/* ================= WHOLESALE PRODUCTS SECTION (Rich Logo Teal Background) ================= */
+/* ================= WHOLESALE PRODUCTS SECTION (Rich Logo Sapphire & Emerald Gradient) ================= */
 .wholesale-section-wrap {
   max-width: 1640px;
   margin: 60px auto 60px;
@@ -1387,11 +1398,12 @@ a {
 }
 
 .wholesale-inner-box {
-  background: linear-gradient(135deg, #078A83 0%, #06666B 55%, #03393C 100%);
+  background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #065F46 100%);
   border-radius: 40px;
   position: relative;
   padding: 100px 30px 30px;
-  box-shadow: 0 20px 50px rgba(7, 138, 131, 0.22);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .wholesale-slider-inner {
@@ -1411,7 +1423,7 @@ a {
 }
 
 .wholesale-slider-inner .slider-viewall-link {
-  color: #FFE76A !important;
+  color: #FBBF24 !important;
   font-weight: 700;
 }
 
@@ -1421,14 +1433,14 @@ a {
 
 .wholesale-slider-inner .slider-nav-btn {
   background: #FFFFFF !important;
-  color: #078A83 !important;
+  color: #1A56DB !important;
   border: none !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18) !important;
 }
 
 .wholesale-slider-inner .slider-nav-btn:hover {
-  background: #FFE76A !important;
-  color: #111827 !important;
+  background: #F59E0B !important;
+  color: #0F172A !important;
   transform: scale(1.08) !important;
 }
 
@@ -2017,11 +2029,13 @@ a {
 }
 
 .newlylaunched-inner-box {
-  background-color: var(--turquoise-section);
+  background: linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #ECFDF5 100%);
   border-radius: 40px;
   position: relative;
   padding: 158px 40px 42px;
   min-height: 665px;
+  border: 1.5px solid #E0E7FF;
+  box-shadow: 0 10px 30px rgba(26, 86, 219, 0.06);
 }
 
 .newlylaunched-header-cutout {
@@ -2431,14 +2445,14 @@ a {
   box-shadow: 0 6px 15px rgba(0,0,0,0.02);
 }
 
-/* ================= FOOTER SECTION (Rich Ceylon Herbal Midnight Teal) ================= */
+/* ================= FOOTER SECTION (Modern Logo Midnight Sapphire & Navy) ================= */
 .sellzy-main-footer {
-  background: linear-gradient(180deg, #054C52 0%, #03393C 50%, #022528 100%);
+  background: linear-gradient(180deg, #0F172A 0%, #0B1120 60%, #030712 100%);
   color: #FFFFFF;
   padding: 60px 0 24px;
   position: relative;
-  border-top: 2px solid rgba(7, 138, 131, 0.35);
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+  border-top: 2px solid rgba(26, 86, 219, 0.35);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
   margin-top: 40px;
 }
 
@@ -2461,7 +2475,7 @@ a {
 .footer-column-divider {
   width: 32px;
   height: 2.5px;
-  background: linear-gradient(90deg, #FFBE00, #FFE76A);
+  background: linear-gradient(90deg, #F59E0B, #10B981);
   border-radius: 2px;
   margin-bottom: 18px;
 }
@@ -2487,7 +2501,9 @@ a {
 }
 
 .footer-brand-title {
-  color: #FFE76A;
+  background: linear-gradient(135deg, #60A5FA 0%, #34D399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.3px;
@@ -2495,7 +2511,7 @@ a {
 }
 
 .footer-brand-slogan {
-  color: #C4ECE8;
+  color: #94A3B8;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.2px;
@@ -2504,7 +2520,7 @@ a {
 .footer-logo-underline {
   width: 42px;
   height: 3px;
-  background: linear-gradient(90deg, #FFBE00, #FFE76A);
+  background: linear-gradient(90deg, #F59E0B, #10B981);
   border-radius: 2px;
   margin: 12px 0 16px;
 }
@@ -2512,7 +2528,7 @@ a {
 .footer-company-desc {
   font-size: 13px;
   line-height: 1.65;
-  color: #C4ECE8;
+  color: #94A3B8;
   max-width: 360px;
   margin-bottom: 20px;
 }
@@ -2537,14 +2553,14 @@ a {
 }
 
 .social-icon-btn:hover {
-  background: var(--primary-teal);
-  border-color: var(--primary-teal);
+  background: #1A56DB;
+  border-color: #1A56DB;
   transform: translateY(-3px);
 }
 
 .social-icon-btn.whatsapp-highlight {
-  background: rgba(37, 211, 102, 0.2);
-  border-color: rgba(37, 211, 102, 0.4);
+  background: rgba(37, 211, 102, 0.15);
+  border-color: rgba(37, 211, 102, 0.35);
   color: #25D366;
 }
 
@@ -2559,25 +2575,25 @@ a {
   gap: 6px;
   font-size: 13.5px;
   font-weight: 600;
-  color: #D5F5F4;
+  color: #CBD5E1;
   margin-bottom: 12px;
   transition: color 200ms ease, transform 200ms ease;
   text-decoration: none;
 }
 
 .footer-link-item .footer-chevron {
-  color: #2DD4BF;
+  color: #10B981;
   transition: transform 200ms ease;
 }
 
 .footer-link-item:hover {
-  color: #FFE76A;
+  color: #FBBF24;
   transform: translateX(3px);
 }
 
 .footer-link-item:hover .footer-chevron {
   transform: translateX(2px);
-  color: #FFE76A;
+  color: #FBBF24;
 }
 
 .footer-link-item.highlight-combo {
@@ -2585,7 +2601,7 @@ a {
 }
 
 .footer-pill-hot {
-  background: #D9003B;
+  background: #E11D48;
   color: #FFFFFF;
   font-size: 9px;
   font-weight: 800;
@@ -2596,7 +2612,7 @@ a {
 }
 
 .footer-link-item.wholesale-link {
-  color: #FFE76A;
+  color: #FBBF24;
   font-weight: 700;
 }
 
@@ -2606,7 +2622,7 @@ a {
   gap: 12px;
   font-size: 13px;
   font-weight: 600;
-  color: #D5F5F4;
+  color: #CBD5E1;
   margin-bottom: 14px;
 }
 
@@ -2619,7 +2635,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2DD4BF;
+  color: #10B981;
   flex-shrink: 0;
   transition: background-color 200ms ease;
 }
@@ -2638,7 +2654,7 @@ a {
 }
 
 .whatsapp-text-link:hover {
-  color: #FFE76A;
+  color: #FBBF24;
   text-decoration: underline;
 }
 
@@ -2664,9 +2680,9 @@ a {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.payment-pill.pill-cod { color: #D9003B; }
-.payment-pill.pill-transfer { color: #0F766E; }
-.payment-pill.pill-card { color: #1E40AF; }
+.payment-pill.pill-cod { color: #E11D48; }
+.payment-pill.pill-transfer { color: #059669; }
+.payment-pill.pill-card { color: #1A56DB; }
 
 .copyright-bar-wrap {
   margin-top: 40px;
@@ -2682,7 +2698,7 @@ a {
   transform: translateX(-50%);
   width: min(500px, 80%);
   height: 10px;
-  border-top: 1px solid rgba(45, 212, 191, 0.4);
+  border-top: 1px solid rgba(26, 86, 219, 0.4);
   border-top-left-radius: 100px;
   border-top-right-radius: 100px;
 }
@@ -2694,13 +2710,13 @@ a {
   flex-wrap: wrap;
   gap: 12px;
   font-size: 13px;
-  color: #A0D2CE;
+  color: #94A3B8;
 }
 
 .islandwide-delivery-tag {
   font-size: 12px;
   font-weight: 700;
-  color: #FFE76A;
+  color: #FBBF24;
 }
 
 .back-to-top-btn {
@@ -3592,7 +3608,7 @@ a {
 }
 
 .toggle-switch.active {
-  background: #078A83;
+  background: #1A56DB;
 }
 
 .toggle-knob {

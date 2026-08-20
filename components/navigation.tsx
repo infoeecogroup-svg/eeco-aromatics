@@ -25,11 +25,11 @@ export const Navigation: React.FC = () => {
   }, []);
 
   const CATEGORIES = [
-    { name: 'Incense Sticks Packs', sub: 'Traditional 14-in-1 herbal sticks', icon: Flame, color: '#078A83' },
-    { name: 'Incense Powder Packs', sub: 'Sambrani, Cinnamon & Ashtadupa', icon: Sparkles, color: '#D9003B' },
-    { name: 'Air Fresheners', sub: 'Long-lasting room sprays', icon: Wind, color: '#06666B' },
-    { name: 'Diffuser', sub: 'Natural reed oil aroma diffusers', icon: Droplets, color: '#078A83' },
-    { name: 'Wholesale Products', sub: 'Bulk merchant cartons & master packs', icon: Sparkles, color: '#FFBE00' },
+    { name: 'Incense Sticks Packs', sub: 'Traditional 14-in-1 herbal sticks', icon: Flame, color: '#059669' },
+    { name: 'Incense Powder Packs', sub: 'Sambrani, Cinnamon & Ashtadupa', icon: Sparkles, color: '#E11D48' },
+    { name: 'Air Fresheners', sub: 'Long-lasting room sprays', icon: Wind, color: '#1A56DB' },
+    { name: 'Diffuser', sub: 'Natural reed oil aroma diffusers', icon: Droplets, color: '#A855F7' },
+    { name: 'Wholesale Products', sub: 'Bulk merchant cartons & master packs', icon: Sparkles, color: '#F59E0B' },
   ];
 
   return (
@@ -84,7 +84,7 @@ export const Navigation: React.FC = () => {
                 <Link
                   href="/shop"
                   className="category-dropdown-item"
-                  style={{ borderTop: '1px solid #F3F4F6', marginTop: '4px', paddingTop: '10px', color: '#078A83' }}
+                  style={{ borderTop: '1px solid #F3F4F6', marginTop: '4px', paddingTop: '10px', color: '#1A56DB' }}
                   onClick={() => setCategoriesOpen(false)}
                 >
                   <Sparkles size={16} />

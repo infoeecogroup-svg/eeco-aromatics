@@ -65,8 +65,8 @@ export default function TrackOrderPage() {
                 width: '64px',
                 height: '64px',
                 borderRadius: '50%',
-                background: '#F0FDF4',
-                color: '#078A83',
+                background: '#EFF6FF',
+                color: '#1A56DB',
                 display: 'grid',
                 placeItems: 'center',
                 margin: '0 auto 16px auto',
@@ -123,7 +123,7 @@ export default function TrackOrderPage() {
               <motion.button
                 type="submit"
                 style={{
-                  backgroundColor: 'var(--primary-teal)',
+                  backgroundColor: '#1A56DB',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '999px',
@@ -136,7 +136,7 @@ export default function TrackOrderPage() {
                   gap: '8px',
                   cursor: 'pointer',
                   marginTop: '8px',
-                  boxShadow: '0 6px 18px rgba(7, 138, 131, 0.25)',
+                  boxShadow: '0 6px 18px rgba(26, 86, 219, 0.25)',
                 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.96 }}
@@ -173,7 +173,7 @@ export default function TrackOrderPage() {
 
                 <div style={{ textAlign: 'right' }}>
                   <span style={{ fontSize: '12px', color: '#6B7280' }}>Estimated Delivery:</span>
-                  <div style={{ fontSize: '14.5px', fontWeight: 800, color: '#078A83' }}>1-2 Business Days</div>
+                  <div style={{ fontSize: '14.5px', fontWeight: 800, color: '#1A56DB' }}>1-2 Business Days</div>
                 </div>
               </div>
 
@@ -182,7 +182,7 @@ export default function TrackOrderPage() {
                 <div style={{ position: 'absolute', left: '11px', top: '10px', bottom: '10px', width: '2px', background: '#E5E7EB' }}></div>
 
                 <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', left: '-32px', width: '24px', height: '24px', borderRadius: '50%', background: '#078A83', color: '#FFFFFF', display: 'grid', placeItems: 'center', fontSize: '12px' }}>
+                  <div style={{ position: 'absolute', left: '-32px', width: '24px', height: '24px', borderRadius: '50%', background: '#059669', color: '#FFFFFF', display: 'grid', placeItems: 'center', fontSize: '12px' }}>
                     ✔
                   </div>
                   <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#111827' }}>Order Confirmed &amp; Packed</h4>
@@ -190,7 +190,7 @@ export default function TrackOrderPage() {
                 </div>
 
                 <div style={{ position: 'relative' }}>
-                  <div style={{ position: 'absolute', left: '-32px', width: '24px', height: '24px', borderRadius: '50%', background: '#078A83', color: '#FFFFFF', display: 'grid', placeItems: 'center', fontSize: '12px' }}>
+                  <div style={{ position: 'absolute', left: '-32px', width: '24px', height: '24px', borderRadius: '50%', background: '#059669', color: '#FFFFFF', display: 'grid', placeItems: 'center', fontSize: '12px' }}>
                     ✔
                   </div>
                   <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#111827' }}>Handed to Courier Service</h4>

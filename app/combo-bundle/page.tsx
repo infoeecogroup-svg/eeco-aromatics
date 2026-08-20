@@ -112,30 +112,32 @@ export default function ComboBundlePage() {
         {/* Hero Header */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #078A83 0%, #06666B 60%, #03393C 100%)',
+            background: 'linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #065F46 100%)',
             color: '#FFFFFF',
             borderRadius: '24px',
             padding: '48px 40px',
             marginBottom: '48px',
-            boxShadow: '0 20px 40px rgba(7, 138, 131, 0.25)',
+            boxShadow: '0 20px 50px rgba(15, 23, 42, 0.35)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '24px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
           }}
         >
           <div style={{ maxWidth: '640px' }}>
             <span
               style={{
-                background: 'var(--accent-yellow)',
-                color: '#111827',
+                background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                color: '#FFFFFF',
                 padding: '4px 12px',
                 borderRadius: '999px',
                 fontSize: '12px',
                 fontWeight: 800,
                 display: 'inline-block',
                 marginBottom: '12px',
+                boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
               }}
             >
               VALUE SAVINGS &amp; FREE GIFTS
@@ -143,14 +145,14 @@ export default function ComboBundlePage() {
             <h1 style={{ fontSize: '36px', fontWeight: 800, lineHeight: 1.2, marginBottom: '14px' }}>
               EECO Signature Combo Packs &amp; Gift Bundles
             </h1>
-            <p style={{ fontSize: '15px', opacity: 0.95, lineHeight: 1.6 }}>
+            <p style={{ fontSize: '15px', opacity: 0.95, lineHeight: 1.6, color: '#E2E8F0' }}>
               Get more value for your money! Enjoy bundled savings on our 14-in-1 Incense Packs, Ashtadupa Powders, and Luxury Diffusers with Free Islandwide Delivery.
             </p>
           </div>
 
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.12)',
+              background: 'rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(10px)',
               borderRadius: '18px',
               padding: '24px',
@@ -158,9 +160,9 @@ export default function ComboBundlePage() {
               textAlign: 'center',
             }}
           >
-            <Truck size={32} color="#FFE76A" style={{ margin: '0 auto 8px auto' }} />
+            <Truck size={32} color="#FBBF24" style={{ margin: '0 auto 8px auto' }} />
             <h4 style={{ fontSize: '16px', fontWeight: 800 }}>Free Delivery Included</h4>
-            <p style={{ fontSize: '12.5px', opacity: 0.9 }}>On all major combo bundles</p>
+            <p style={{ fontSize: '12.5px', opacity: 0.9, color: '#CBD5E1' }}>On all major combo bundles</p>
           </div>
         </div>
 
@@ -180,7 +182,7 @@ export default function ComboBundlePage() {
                 position: 'relative',
               }}
               variants={fadeUpVariant}
-              whileHover={{ y: -6, borderColor: '#078A83' }}
+              whileHover={{ y: -6, borderColor: '#1A56DB' }}
               transition={{ duration: 0.25 }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -200,7 +202,7 @@ export default function ComboBundlePage() {
                 <span
                   style={{
                     background: '#FEE2E2',
-                    color: '#D9003B',
+                    color: '#E11D48',
                     fontSize: '12px',
                     fontWeight: 800,
                     padding: '4px 10px',
@@ -219,7 +221,7 @@ export default function ComboBundlePage() {
                   overflow: 'hidden',
                   marginBottom: '20px',
                   border: '1px solid #E5E7EB',
-                  background: '#F8FAF9',
+                  background: '#F8FAFC',
                 }}
               >
                 <img
@@ -234,7 +236,7 @@ export default function ComboBundlePage() {
               </h3>
 
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px' }}>
-                <span style={{ fontSize: '28px', fontWeight: 800, color: '#078A83' }}>{bundle.price}</span>
+                <span style={{ fontSize: '28px', fontWeight: 800, color: '#1A56DB' }}>{bundle.price}</span>
                 <del style={{ fontSize: '15px', color: '#9CA3AF' }}>{bundle.regularValue}</del>
               </div>
 

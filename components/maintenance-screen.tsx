@@ -13,7 +13,7 @@ export const MaintenanceScreen: React.FC = () => {
     <div
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #06666B 0%, #078A83 50%, #03393C 100%)',
+        background: 'linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #065F46 100%)',
         color: '#FFFFFF',
         display: 'flex',
         alignItems: 'center',

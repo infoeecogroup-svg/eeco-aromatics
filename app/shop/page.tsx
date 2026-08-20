@@ -114,7 +114,7 @@ function ShopContent() {
           {selectedCategory !== 'All' && (
             <>
               <span>/</span>
-              <span style={{ color: '#078A83', fontWeight: 700 }}>{selectedCategory}</span>
+              <span style={{ color: '#1A56DB', fontWeight: 700 }}>{selectedCategory}</span>
             </>
           )}
         </div>
@@ -123,7 +123,7 @@ function ShopContent() {
           {/* Sidebar Filter Panel */}
           <aside className="shop-sidebar">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-              <Filter size={18} color="#078A83" />
+              <Filter size={18} color="#1A56DB" />
               <h2 style={{ fontSize: '18px', fontWeight: 800 }}>Filters</h2>
             </div>
 
@@ -150,7 +150,7 @@ function ShopContent() {
             <div className="filter-group">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <h3>Max Price</h3>
-                <span style={{ fontSize: '13px', fontWeight: 800, color: '#078A83' }}>
+                <span style={{ fontSize: '13px', fontWeight: 800, color: '#1A56DB' }}>
                   Rs. {maxPrice.toLocaleString()}
                 </span>
               </div>
@@ -161,7 +161,7 @@ function ShopContent() {
                 step={100}
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
-                style={{ width: '100%', accentColor: '#078A83', cursor: 'pointer' }}
+                style={{ width: '100%', accentColor: '#1A56DB', cursor: 'pointer' }}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#9CA3AF', marginTop: '4px' }}>
                 <span>Rs. 400</span>
@@ -176,7 +176,7 @@ function ShopContent() {
                   type="checkbox"
                   checked={inStockOnly}
                   onChange={(e) => setInStockOnly(e.target.checked)}
-                  style={{ width: '16px', height: '16px', accentColor: '#078A83' }}
+                  style={{ width: '16px', height: '16px', accentColor: '#1A56DB' }}
                 />
                 <span>In-Stock Items Only</span>
               </label>
@@ -233,7 +233,7 @@ function ShopContent() {
             {/* Product Grid */}
             {filteredProducts.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '60px 20px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E5E7EB' }}>
-                <Sparkles size={48} color="#078A83" style={{ marginBottom: '16px', opacity: 0.4 }} />
+                <Sparkles size={48} color="#1A56DB" style={{ marginBottom: '16px', opacity: 0.4 }} />
                 <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#111827', marginBottom: '8px' }}>No matching products found</h3>
                 <p style={{ fontSize: '14px', color: '#6B7280', marginBottom: '20px' }}>Try adjusting your search criteria or price range.</p>
                 <button
@@ -244,7 +244,7 @@ function ShopContent() {
                     setInStockOnly(false);
                   }}
                   style={{
-                    backgroundColor: '#078A83',
+                    backgroundColor: '#1A56DB',
                     color: '#FFFFFF',
                     border: 'none',
                     padding: '10px 22px',

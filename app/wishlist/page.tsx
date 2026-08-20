@@ -125,16 +125,16 @@ export default function WishlistPage() {
                   boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
                 }}
                 variants={fadeUpVariant}
-                whileHover={{ y: -4, borderColor: '#078A83' }}
+                whileHover={{ y: -4, borderColor: '#1A56DB' }}
               >
                 <div
                   style={{
                     height: '180px',
                     borderRadius: '12px',
                     overflow: 'hidden',
-                    background: '#F8FAF9',
+                    background: '#F8FAFC',
                     marginBottom: '14px',
-                    border: '1px solid #E5E7EB',
+                    border: '1px solid #E2E8F0',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -143,11 +143,11 @@ export default function WishlistPage() {
                   {product.image ? (
                     <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
-                    <Sparkles size={36} color="#078A83" />
+                    <Sparkles size={36} color="#1A56DB" />
                   )}
                 </div>
 
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#078A83', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#1A56DB', textTransform: 'uppercase' }}>
                   {product.category}
                 </span>
 

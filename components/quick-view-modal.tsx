@@ -44,11 +44,11 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
 
   const getProductIcon = (type: string) => {
     switch (type) {
-      case 'flame': return <Flame size={48} color="#078A83" />;
-      case 'sparkles': return <Sparkles size={48} color="#D9003B" />;
-      case 'wind': return <Wind size={48} color="#06666B" />;
-      case 'droplets': return <Droplets size={48} color="#078A83" />;
-      default: return <Sparkles size={48} color="#078A83" />;
+      case 'flame': return <Flame size={48} color="#059669" />;
+      case 'sparkles': return <Sparkles size={48} color="#E11D48" />;
+      case 'wind': return <Wind size={48} color="#1A56DB" />;
+      case 'droplets': return <Droplets size={48} color="#A855F7" />;
+      default: return <Sparkles size={48} color="#1A56DB" />;
     }
   };
 
@@ -88,92 +88,64 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
             transition={{ duration: 0.35, ease: EASE_ULTRA_SMOOTH }}
             onClick={(e) => e.stopPropagation()}
             style={{
-              backgroundColor: '#FFFFFF',
+              background: '#FFFFFF',
               borderRadius: '24px',
-              maxWidth: '850px',
+              maxWidth: '820px',
               width: '100%',
               maxHeight: '90vh',
               overflowY: 'auto',
-              boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.3)',
               position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
+              boxShadow: '0 25px 60px -15px rgba(15, 23, 42, 0.3)',
+              padding: '36px',
             }}
           >
             {/* Close Button */}
-            <motion.button
+            <button
               onClick={onClose}
-              whileHover={{ scale: 1.1, rotate: 90 }}
-              whileTap={{ scale: 0.9 }}
               style={{
                 position: 'absolute',
                 top: '18px',
                 right: '18px',
-                width: '38px',
-                height: '38px',
+                width: '36px',
+                height: '36px',
                 borderRadius: '50%',
                 backgroundColor: '#F3F4F6',
+                border: 'none',
                 display: 'grid',
                 placeItems: 'center',
-                color: '#4B5563',
-                zIndex: 10,
                 cursor: 'pointer',
-                border: 'none',
+                color: '#6B7280',
+                transition: 'all 0.2s',
               }}
               aria-label="Close dialog"
             >
-              <X size={20} />
-            </motion.button>
+              <X size={18} />
+            </button>
 
             <div
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                gap: '30px',
-                padding: '36px',
+                gap: '32px',
               }}
             >
-              {/* Left Column: Image / Visual */}
+              {/* Left Column: Image */}
               <div
                 style={{
-                  background: 'linear-gradient(145deg, #F8FAFB, #EDF4F4)',
-                  borderRadius: '18px',
-                  padding: '24px',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  position: 'relative',
-                  minHeight: '280px',
-                  border: '1px solid #E5E7EB',
+                  backgroundColor: '#F8FAFC',
+                  borderRadius: '18px',
+                  padding: '30px',
+                  border: '1px solid #E2E8F0',
                 }}
               >
-                {product.badge && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '16px',
-                      left: '16px',
-                      background: '#D9003B',
-                      color: '#FFFFFF',
-                      fontSize: '12px',
-                      fontWeight: 800,
-                      padding: '4px 12px',
-                      borderRadius: '999px',
-                      boxShadow: '0 4px 10px rgba(217, 0, 59, 0.3)',
-                    }}
-                  >
-                    {product.badge}
-                  </span>
-                )}
-
                 {product.image ? (
-                  <motion.img
+                  <img
                     src={product.image}
                     alt={product.name}
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.4 }}
                     style={{
                       maxWidth: '100%',
                       maxHeight: '260px',
@@ -191,7 +163,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                     }}
                   >
                     {getProductIcon(product.iconType)}
-                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#078A83' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#1A56DB' }}>
                       {product.category}
                     </span>
                   </div>
@@ -203,10 +175,10 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                     alignItems: 'center',
                     gap: '8px',
                     marginTop: '20px',
-                    color: '#078A83',
+                    color: '#059669',
                     fontSize: '12px',
                     fontWeight: 700,
-                    background: 'rgba(7, 138, 131, 0.1)',
+                    background: 'rgba(5, 150, 105, 0.1)',
                     padding: '6px 14px',
                     borderRadius: '999px',
                   }}
@@ -223,7 +195,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                     style={{
                       fontSize: '12px',
                       fontWeight: 700,
-                      color: '#078A83',
+                      color: '#1A56DB',
                       textTransform: 'uppercase',
                       letterSpacing: '1px',
                     }}
@@ -235,7 +207,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                     style={{
                       fontSize: '22px',
                       fontWeight: 800,
-                      color: '#111827',
+                      color: '#0F172A',
                       lineHeight: 1.3,
                       marginTop: '6px',
                       marginBottom: '12px',
@@ -251,31 +223,33 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                         <Star
                           key={i}
                           size={16}
-                          fill={i < product.rating ? '#FFB800' : '#E5E7EB'}
-                          color={i < product.rating ? '#FFB800' : '#E5E7EB'}
+                          fill={i < product.rating ? '#F59E0B' : '#E2E8F0'}
+                          color={i < product.rating ? '#F59E0B' : '#E2E8F0'}
                         />
                       ))}
                     </div>
-                    <span style={{ fontSize: '13px', color: '#6B7280', fontWeight: 600 }}>
+                    <span style={{ fontSize: '13px', color: '#64748B', fontWeight: 600 }}>
                       ({product.reviewCount} customer reviews)
                     </span>
                   </div>
 
                   {/* Price */}
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '18px' }}>
-                    <span style={{ fontSize: '24px', fontWeight: 800, color: '#078A83' }}>
+                    <span style={{ fontSize: '24px', fontWeight: 800, color: '#1A56DB' }}>
                       {product.price}
                     </span>
-                    <del style={{ fontSize: '15px', color: '#9CA3AF', fontWeight: 500 }}>
-                      {product.originalPrice}
-                    </del>
+                    {product.originalPrice && (
+                      <del style={{ fontSize: '15px', color: '#94A3B8', fontWeight: 500 }}>
+                        {product.originalPrice}
+                      </del>
+                    )}
                     {product.discountText && (
                       <span
                         style={{
                           fontSize: '12px',
                           fontWeight: 800,
-                          color: '#D9003B',
-                          background: 'rgba(217, 0, 59, 0.1)',
+                          color: '#E11D48',
+                          background: 'rgba(225, 29, 72, 0.1)',
                           padding: '2px 8px',
                           borderRadius: '4px',
                         }}
@@ -285,17 +259,17 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                     )}
                   </div>
 
-                  <p style={{ fontSize: '13.5px', color: '#4B5563', lineHeight: 1.55, marginBottom: '20px' }}>
+                  <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.55, marginBottom: '20px' }}>
                     Handcrafted premium natural formulation by EECO AROMATICS. Long-lasting therapeutic aroma designed for meditation, sacred worship, and room freshness.
                   </p>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '22px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', color: '#374151' }}>
-                      <CheckCircle2 size={16} color="#078A83" />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', color: '#334155' }}>
+                      <CheckCircle2 size={16} color="#059669" />
                       <span>100% Genuine Sri Lankan Herbal Aromatic Product</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', color: '#374151' }}>
-                      <ShieldCheck size={16} color="#078A83" />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', color: '#334155' }}>
+                      <ShieldCheck size={16} color="#059669" />
                       <span>Cash on Delivery &amp; Fast Islandwide Courier Available</span>
                     </div>
                   </div>
@@ -308,7 +282,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        border: '1.5px solid #E5E7EB',
+                        border: '1.5px solid #E2E8F0',
                         borderRadius: '999px',
                         padding: '4px 12px',
                         gap: '12px',
@@ -316,7 +290,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                     >
                       <button
                         onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                        style={{ fontSize: '16px', fontWeight: 700, cursor: 'pointer', padding: '0 4px' }}
+                        style={{ fontSize: '16px', fontWeight: 700, cursor: 'pointer', padding: '0 4px', border: 'none', background: 'none' }}
                       >
                         -
                       </button>
@@ -325,7 +299,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                       </span>
                       <button
                         onClick={() => setQuantity((q) => q + 1)}
-                        style={{ fontSize: '16px', fontWeight: 700, cursor: 'pointer', padding: '0 4px' }}
+                        style={{ fontSize: '16px', fontWeight: 700, cursor: 'pointer', padding: '0 4px', border: 'none', background: 'none' }}
                       >
                         +
                       </button>
@@ -339,9 +313,9 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                         width: '42px',
                         height: '42px',
                         borderRadius: '50%',
-                        border: isWishlisted ? 'none' : '1.5px solid #E5E7EB',
-                        backgroundColor: isWishlisted ? '#D9003B' : '#FFFFFF',
-                        color: isWishlisted ? '#FFFFFF' : '#4B5563',
+                        border: isWishlisted ? 'none' : '1.5px solid #E2E8F0',
+                        backgroundColor: isWishlisted ? '#E11D48' : '#FFFFFF',
+                        color: isWishlisted ? '#FFFFFF' : '#475569',
                         display: 'grid',
                         placeItems: 'center',
                         cursor: 'pointer',
@@ -357,11 +331,11 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                         onAddToCart(product, quantity);
                         onClose();
                       }}
-                      whileHover={{ scale: 1.02, backgroundColor: '#06666B' }}
+                      whileHover={{ scale: 1.02, backgroundColor: '#1E3A8A' }}
                       whileTap={{ scale: 0.97 }}
                       style={{
                         flex: 1,
-                        backgroundColor: '#078A83',
+                        backgroundColor: '#1A56DB',
                         color: '#FFFFFF',
                         padding: '12px 20px',
                         borderRadius: '999px',
@@ -372,7 +346,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                         justifyContent: 'center',
                         gap: '8px',
                         cursor: 'pointer',
-                        boxShadow: '0 6px 16px rgba(7, 138, 131, 0.3)',
+                        boxShadow: '0 6px 16px rgba(26, 86, 219, 0.3)',
                       }}
                     >
                       <ShoppingCart size={16} />

@@ -274,7 +274,7 @@ export default function AdminPage() {
             <motion.button
               type="submit"
               style={{
-                backgroundColor: '#078A83',
+                backgroundColor: '#1A56DB',
                 color: '#FFFFFF',
                 border: 'none',
                 padding: '14px',
@@ -282,7 +282,7 @@ export default function AdminPage() {
                 fontWeight: 700,
                 fontSize: '14.5px',
                 cursor: 'pointer',
-                boxShadow: '0 6px 20px rgba(7, 138, 131, 0.3)',
+                boxShadow: '0 6px 20px rgba(26, 86, 219, 0.3)',
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.96 }}
@@ -442,7 +442,7 @@ export default function AdminPage() {
               href="/"
               target="_blank"
               style={{
-                background: '#078A83',
+                background: '#1A56DB',
                 color: '#FFFFFF',
                 padding: '8px 18px',
                 borderRadius: '10px',
@@ -696,7 +696,7 @@ export default function AdminPage() {
               <motion.button
                 onClick={openAddProduct}
                 style={{
-                  backgroundColor: '#078A83',
+                  backgroundColor: '#1A56DB',
                   color: '#FFFFFF',
                   border: 'none',
                   padding: '10px 20px',
@@ -707,12 +707,12 @@ export default function AdminPage() {
                   alignItems: 'center',
                   gap: '8px',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(7, 138, 131, 0.3)',
+                  boxShadow: '0 4px 14px rgba(26, 86, 219, 0.3)',
                 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.96 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
               >
-                <Plus size={18} />
+                <Plus size={16} />
                 <span>Add New Product</span>
               </motion.button>
             </div>
@@ -1141,7 +1141,7 @@ export default function AdminPage() {
                 <motion.button
                   type="submit"
                   style={{
-                    backgroundColor: '#078A83',
+                    backgroundColor: '#1A56DB',
                     color: '#FFFFFF',
                     border: 'none',
                     padding: '14px 28px',
@@ -1152,13 +1152,13 @@ export default function AdminPage() {
                     alignItems: 'center',
                     gap: '8px',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 14px rgba(7, 138, 131, 0.3)',
+                    boxShadow: '0 4px 14px rgba(26, 86, 219, 0.3)',
                   }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.96 }}
                 >
                   <Save size={18} />
-                  <span>Save Store Settings</span>
+                  <span>Save All Settings</span>
                 </motion.button>
               </div>
             </form>
@@ -1334,7 +1334,7 @@ export default function AdminPage() {
                   </button>
                   <button
                     type="submit"
-                    style={{ backgroundColor: '#078A83', color: '#FFFFFF', border: 'none', padding: '10px 22px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer' }}
+                    style={{ backgroundColor: '#1A56DB', color: '#FFFFFF', border: 'none', padding: '10px 22px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer' }}
                   >
                     Save Product
                   </button>

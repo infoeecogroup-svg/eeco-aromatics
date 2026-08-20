@@ -68,24 +68,25 @@ export default function AboutPage() {
         {/* Hero Section */}
         <AnimatedSection
           style={{
-            background: 'linear-gradient(135deg, #06666B 0%, #078A83 50%, #03393C 100%)',
+            background: 'linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #065F46 100%)',
             color: '#FFFFFF',
             borderRadius: '28px',
             padding: '60px 48px',
             marginBottom: '60px',
-            boxShadow: '0 20px 50px rgba(7, 138, 131, 0.25)',
+            boxShadow: '0 20px 50px rgba(15, 23, 42, 0.35)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: '40px',
             flexWrap: 'wrap',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
           }}
         >
           <div style={{ maxWidth: '640px' }}>
             <span
               style={{
-                background: 'var(--accent-yellow)',
-                color: '#111827',
+                background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                color: '#FFFFFF',
                 padding: '4px 14px',
                 borderRadius: '999px',
                 fontSize: '12px',
@@ -94,6 +95,7 @@ export default function AboutPage() {
                 textTransform: 'uppercase',
                 display: 'inline-block',
                 marginBottom: '16px',
+                boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
               }}
             >
               OUR HERITAGE &amp; MISSION
@@ -101,7 +103,7 @@ export default function AboutPage() {
             <h1 style={{ fontSize: '40px', fontWeight: 800, lineHeight: 1.2, marginBottom: '16px' }}>
               Sri Lanka's Trusted Name in Natural Home Fragrance
             </h1>
-            <p style={{ fontSize: '16px', lineHeight: 1.6, opacity: 0.95, marginBottom: '24px' }}>
+            <p style={{ fontSize: '16px', lineHeight: 1.6, opacity: 0.95, marginBottom: '24px', color: '#E2E8F0' }}>
               Welcome to <strong>{settings.storeName}</strong>. We are passionate about enriching households with natural, therapeutic, and traditional aromatic creations.
             </p>
             <motion.a
@@ -142,7 +144,7 @@ export default function AboutPage() {
           >
             <img src="/eeco_logo.png" alt="EECO Logo" style={{ width: '100px', height: '100px', objectFit: 'contain', margin: '0 auto 16px auto' }} />
             <h3 style={{ fontSize: '20px', fontWeight: 800 }}>{settings.storeName}</h3>
-            <p style={{ fontSize: '13px', color: '#FFE76A', fontWeight: 700, marginTop: '4px' }}>"{settings.storeSlogan}"</p>
+            <p style={{ fontSize: '13px', color: '#FBBF24', fontWeight: 700, marginTop: '4px' }}>"{settings.storeSlogan}"</p>
           </div>
         </AnimatedSection>
 
@@ -172,15 +174,15 @@ export default function AboutPage() {
                     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
                   }}
                   variants={fadeUpVariant}
-                  whileHover={{ y: -6, borderColor: '#078A83' }}
+                  whileHover={{ y: -6, borderColor: '#1A56DB' }}
                 >
                   <div
                     style={{
                       width: '56px',
                       height: '56px',
                       borderRadius: '50%',
-                      background: '#F0FDF4',
-                      color: '#078A83',
+                      background: '#EFF6FF',
+                      color: '#1A56DB',
                       display: 'grid',
                       placeItems: 'center',
                       margin: '0 auto 20px auto',
@@ -203,8 +205,8 @@ export default function AboutPage() {
         {/* Company Registration & Facility */}
         <AnimatedSection
           style={{
-            background: '#F8FAF9',
-            border: '1px solid #E5E7EB',
+            background: '#F8FAFC',
+            border: '1px solid #E2E8F0',
             borderRadius: '24px',
             padding: '40px',
             display: 'flex',
@@ -221,7 +223,7 @@ export default function AboutPage() {
             <p style={{ fontSize: '14.5px', color: '#4B5563', lineHeight: 1.6, marginBottom: '16px' }}>
               Operating from our dedicated dispatch hub at <strong>222/3, 3rd Lane, Colombo Road, Gampaha (WP 11000)</strong>, we ship swiftly across all 25 districts with reliable Cash on Delivery service.
             </p>
-            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', fontSize: '13.5px', fontWeight: 700, color: '#078A83' }}>
+            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', fontSize: '13.5px', fontWeight: 700, color: '#1A56DB' }}>
               <span>✔ Fast Islandwide Courier Delivery</span>
               <span>✔ Cash on Delivery Available</span>
               <span>✔ 24/7 WhatsApp Hotline</span>

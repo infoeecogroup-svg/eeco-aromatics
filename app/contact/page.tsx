@@ -166,7 +166,7 @@ export default function ContactPage() {
             variants={fadeUpVariant}
             whileHover={{ y: -4 }}
           >
-            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F0FDF4', color: '#078A83', display: 'grid', placeItems: 'center', marginBottom: '16px' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#EFF6FF', color: '#1A56DB', display: 'grid', placeItems: 'center', marginBottom: '16px' }}>
               <MapPin size={24} />
             </div>
             <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#111827', marginBottom: '6px' }}>Headquarters &amp; Dispatch</h3>
@@ -187,7 +187,7 @@ export default function ContactPage() {
             variants={fadeUpVariant}
             whileHover={{ y: -4 }}
           >
-            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F0FDF4', color: '#078A83', display: 'grid', placeItems: 'center', marginBottom: '16px' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#EFF6FF', color: '#1A56DB', display: 'grid', placeItems: 'center', marginBottom: '16px' }}>
               <Clock size={24} />
             </div>
             <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#111827', marginBottom: '6px' }}>Dispatch Hours</h3>
@@ -305,7 +305,7 @@ export default function ContactPage() {
           {/* Right: FAQ Accordion */}
           <div id="faq">
             <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#111827', marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <HelpCircle size={22} color="#078A83" />
+              <HelpCircle size={22} color="#1A56DB" />
               <span>Frequently Asked Questions</span>
             </h2>
 
@@ -339,7 +339,7 @@ export default function ContactPage() {
                   >
                     <span>{faq.q}</span>
                     <motion.div animate={{ rotate: openFaq === idx ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                      <ChevronDown size={16} color="#078A83" />
+                      <ChevronDown size={16} color="#1A56DB" />
                     </motion.div>
                   </button>
 

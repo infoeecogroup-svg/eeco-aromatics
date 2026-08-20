@@ -233,17 +233,17 @@ export const ToastContainer: React.FC<{ toasts: ToastMessage[]; onDismiss: (id: 
             transition={SPRING_SMOOTH}
             style={{
               pointerEvents: 'auto',
-              background: 'linear-gradient(135deg, #078A83 0%, #06666B 100%)',
+              background: 'linear-gradient(135deg, #1A56DB 0%, #059669 100%)',
               color: '#FFFFFF',
               padding: '12px 20px',
               borderRadius: '999px',
-              boxShadow: '0 12px 30px rgba(7, 138, 131, 0.35)',
+              boxShadow: '0 12px 30px rgba(26, 86, 219, 0.35)',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
               fontWeight: 700,
               fontSize: '13.5px',
-              border: '1px solid rgba(255, 231, 106, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
               backdropFilter: 'blur(8px)',
             }}
           >

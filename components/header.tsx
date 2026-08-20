@@ -112,7 +112,7 @@ export const Header: React.FC<{ onOpenCart: () => void }> = ({ onOpenCart }) => 
                     className="account-dropdown-item"
                     onClick={() => setAccountOpen(false)}
                   >
-                    <Package size={16} color="#078A83" />
+                    <Package size={16} color="#1A56DB" />
                     <span>Track My Order</span>
                   </Link>
 
@@ -121,7 +121,7 @@ export const Header: React.FC<{ onOpenCart: () => void }> = ({ onOpenCart }) => 
                     className="account-dropdown-item"
                     onClick={() => setAccountOpen(false)}
                   >
-                    <Heart size={16} color="#D9003B" />
+                    <Heart size={16} color="#E11D48" />
                     <span>Wishlist ({wishlist.length})</span>
                   </Link>
 
@@ -132,7 +132,7 @@ export const Header: React.FC<{ onOpenCart: () => void }> = ({ onOpenCart }) => 
                     className="account-dropdown-item"
                     onClick={() => setAccountOpen(false)}
                   >
-                    <MessageCircle size={16} color="#078A83" />
+                    <MessageCircle size={16} color="#25D366" />
                     <span>WhatsApp Helpdesk</span>
                   </a>
 

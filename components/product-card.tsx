@@ -39,15 +39,15 @@ export function ProductCard({
   const getProductIcon = (type: Product['iconType']) => {
     switch (type) {
       case 'flame':
-        return <Flame size={32} color="#078A83" />;
+        return <Flame size={32} color="#059669" />;
       case 'sparkles':
-        return <Sparkles size={32} color="#D9003B" />;
+        return <Sparkles size={32} color="#E11D48" />;
       case 'wind':
-        return <Wind size={32} color="#06666B" />;
+        return <Wind size={32} color="#1A56DB" />;
       case 'droplets':
-        return <Droplets size={32} color="#078A83" />;
+        return <Droplets size={32} color="#A855F7" />;
       default:
-        return <Sparkles size={32} color="#078A83" />;
+        return <Sparkles size={32} color="#1A56DB" />;
     }
   };
 
@@ -95,8 +95,8 @@ export function ProductCard({
           >
             <Heart
               size={15}
-              fill={isWishlisted ? '#D9003B' : 'none'}
-              color={isWishlisted ? '#D9003B' : '#435467'}
+              fill={isWishlisted ? '#E11D48' : 'none'}
+              color={isWishlisted ? '#E11D48' : '#435467'}
             />
           </button>
           <button
@@ -138,8 +138,8 @@ export function ProductCard({
               <Star
                 key={i}
                 size={13}
-                fill={i < product.rating ? '#FFB800' : '#C7CDD3'}
-                color={i < product.rating ? '#FFB800' : '#C7CDD3'}
+                fill={i < product.rating ? '#F59E0B' : '#CBD5E1'}
+                color={i < product.rating ? '#F59E0B' : '#CBD5E1'}
               />
             ))}
           </div>

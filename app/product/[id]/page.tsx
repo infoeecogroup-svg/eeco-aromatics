@@ -45,7 +45,7 @@ export default function ProductDetailPage() {
     return (
       <div style={{ padding: '80px', textAlign: 'center' }}>
         <h2>Product not found</h2>
-        <Link href="/shop" style={{ color: '#078A83', fontWeight: 700 }}>Return to Shop</Link>
+        <Link href="/shop" style={{ color: '#1A56DB', fontWeight: 700 }}>Return to Shop</Link>
       </div>
     );
   }
@@ -54,11 +54,11 @@ export default function ProductDetailPage() {
 
   const getProductIcon = (type: Product['iconType']) => {
     switch (type) {
-      case 'flame': return <Flame size={48} color="#078A83" />;
-      case 'sparkles': return <Sparkles size={48} color="#D9003B" />;
-      case 'wind': return <Wind size={48} color="#06666B" />;
-      case 'droplets': return <Droplets size={48} color="#078A83" />;
-      default: return <Sparkles size={48} color="#078A83" />;
+      case 'flame': return <Flame size={48} color="#059669" />;
+      case 'sparkles': return <Sparkles size={48} color="#E11D48" />;
+      case 'wind': return <Wind size={48} color="#1A56DB" />;
+      case 'droplets': return <Droplets size={48} color="#A855F7" />;
+      default: return <Sparkles size={48} color="#1A56DB" />;
     }
   };
 
@@ -101,7 +101,7 @@ export default function ProductDetailPage() {
                     position: 'absolute',
                     top: '20px',
                     left: '20px',
-                    background: '#D9003B',
+                    background: '#E11D48',
                     color: '#FFFFFF',
                     fontWeight: 800,
                     fontSize: '13px',
@@ -117,23 +117,23 @@ export default function ProductDetailPage() {
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   {getProductIcon(product.iconType)}
-                  <h4 style={{ marginTop: '12px', color: '#078A83', fontWeight: 700 }}>{product.category}</h4>
+                  <h4 style={{ marginTop: '12px', color: '#1A56DB', fontWeight: 700 }}>{product.category}</h4>
                 </div>
               )}
             </div>
 
             {/* Purity Guarantee Badges */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginTop: '20px' }}>
-              <div style={{ background: '#F8FAF9', border: '1px solid #E5E7EB', padding: '12px', borderRadius: '12px', textAlign: 'center' }}>
-                <ShieldCheck size={20} color="#078A83" style={{ margin: '0 auto 4px auto' }} />
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '12px', borderRadius: '12px', textAlign: 'center' }}>
+                <ShieldCheck size={20} color="#059669" style={{ margin: '0 auto 4px auto' }} />
                 <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#374151', display: 'block' }}>100% Herbal Purity</span>
               </div>
-              <div style={{ background: '#F8FAF9', border: '1px solid #E5E7EB', padding: '12px', borderRadius: '12px', textAlign: 'center' }}>
-                <Truck size={20} color="#078A83" style={{ margin: '0 auto 4px auto' }} />
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '12px', borderRadius: '12px', textAlign: 'center' }}>
+                <Truck size={20} color="#1A56DB" style={{ margin: '0 auto 4px auto' }} />
                 <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#374151', display: 'block' }}>Cash on Delivery</span>
               </div>
-              <div style={{ background: '#F8FAF9', border: '1px solid #E5E7EB', padding: '12px', borderRadius: '12px', textAlign: 'center' }}>
-                <RotateCcw size={20} color="#078A83" style={{ margin: '0 auto 4px auto' }} />
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '12px', borderRadius: '12px', textAlign: 'center' }}>
+                <RotateCcw size={20} color="#059669" style={{ margin: '0 auto 4px auto' }} />
                 <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#374151', display: 'block' }}>Govt. Registered</span>
               </div>
             </div>
@@ -141,7 +141,7 @@ export default function ProductDetailPage() {
 
           {/* Right Column: Product Specs & Actions */}
           <div>
-            <span style={{ fontSize: '12px', fontWeight: 800, color: '#078A83', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            <span style={{ fontSize: '12px', fontWeight: 800, color: '#1A56DB', textTransform: 'uppercase', letterSpacing: '1px' }}>
               {product.category} • {settings.storeName}
             </span>
 
@@ -151,7 +151,7 @@ export default function ProductDetailPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', gap: '2px' }}>
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={17} fill="#FFB800" color="#FFB800" />
+                  <Star key={i} size={17} fill="#F59E0B" color="#F59E0B" />
                 ))}
               </div>
               <span style={{ fontSize: '13.5px', fontWeight: 700, color: '#111827' }}>5.0</span>
@@ -163,7 +163,7 @@ export default function ProductDetailPage() {
               <span className="product-info-current-price">{product.price}</span>
               <del style={{ fontSize: '18px', color: '#9CA3AF' }}>{product.originalPrice}</del>
               {product.discountText && (
-                <span style={{ background: '#FEE2E2', color: '#D9003B', fontSize: '12px', fontWeight: 800, padding: '4px 10px', borderRadius: '999px' }}>
+                <span style={{ background: '#FEE2E2', color: '#E11D48', fontSize: '12px', fontWeight: 800, padding: '4px 10px', borderRadius: '999px' }}>
                   {product.discountText}
                 </span>
               )}
@@ -191,7 +191,7 @@ export default function ProductDetailPage() {
             {/* Burning Duration */}
             {product.burnTime && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13.5px', color: '#374151', marginBottom: '24px' }}>
-                <Sparkles size={16} color="#078A83" />
+                <Sparkles size={16} color="#1A56DB" />
                 <span>Duration / Specifications: <strong>{product.burnTime}</strong></span>
               </div>
             )}
