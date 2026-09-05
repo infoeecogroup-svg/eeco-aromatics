@@ -3695,23 +3695,23 @@ a {
   animation: spin 1s linear infinite;
 }
 
-/* ================= 19. HIDDEN BUSINESS LINKS (WHITE THEME / LUXURY STYLE) ================= */
+/* ================= 19. HIDDEN BUSINESS LINKS (MODERN BENTO HUB / WHITE THEME) ================= */
 .linktree-main-container {
   min-height: 100vh;
   width: 100%;
   background: #F8FAFC;
   background-image: 
-    radial-gradient(at 15% 10%, rgba(16, 185, 129, 0.07) 0px, transparent 45%),
-    radial-gradient(at 85% 15%, rgba(245, 158, 11, 0.07) 0px, transparent 45%),
-    radial-gradient(at 50% 90%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
-    linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 45%, #F1F5F9 100%);
+    radial-gradient(at 10% 10%, rgba(16, 185, 129, 0.08) 0px, transparent 45%),
+    radial-gradient(at 90% 12%, rgba(245, 158, 11, 0.08) 0px, transparent 45%),
+    radial-gradient(at 50% 90%, rgba(37, 99, 235, 0.06) 0px, transparent 50%),
+    linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
   color: #0F172A;
   position: relative;
   overflow-x: hidden;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 40px 18px 64px;
+  padding: 40px 16px 64px;
 }
 
 .linktree-bg-gradient {
@@ -3721,70 +3721,124 @@ a {
   right: 0;
   bottom: 0;
   background-image: 
-    radial-gradient(rgba(15, 23, 42, 0.035) 1.2px, transparent 1.2px);
+    radial-gradient(rgba(15, 23, 42, 0.04) 1.2px, transparent 1.2px);
   background-size: 28px 28px;
-  opacity: 0.9;
+  opacity: 0.85;
   pointer-events: none;
 }
 
 .linktree-ambient-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(85px);
+  filter: blur(90px);
   pointer-events: none;
   z-index: 1;
 }
 
 .linktree-ambient-orb.orb-top {
-  width: 380px;
-  height: 380px;
-  background: rgba(16, 185, 129, 0.08);
-  top: -90px;
+  width: 420px;
+  height: 420px;
+  background: rgba(16, 185, 129, 0.09);
+  top: -120px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .linktree-ambient-orb.orb-bottom {
-  width: 340px;
-  height: 340px;
-  background: rgba(245, 158, 11, 0.07);
+  width: 360px;
+  height: 360px;
+  background: rgba(245, 158, 11, 0.08);
   bottom: 40px;
-  right: 6%;
+  right: 8%;
 }
 
-.linktree-card-wrapper {
+/* Central Bento Glass Canvas */
+.linktree-glass-canvas {
   width: 100%;
-  max-width: 520px;
+  max-width: 580px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 32px;
+  box-shadow: 
+    0 25px 60px -15px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(226, 232, 240, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  padding: 32px 28px 28px;
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
-.linktree-top-actions {
-  width: 100%;
+/* Top Bar: Live status + Quick actions */
+.linktree-top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
 }
 
+.linktree-live-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 13px;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #047857;
+  letter-spacing: 0.02em;
+}
+
+.linktree-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: livePulse 2s infinite;
+}
+
+@keyframes livePulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.linktree-top-action-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .linktree-share-btn,
 .linktree-copy-btn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 15px;
+  gap: 6px;
+  padding: 6px 13px;
   background: #FFFFFF;
-  border: 1px solid rgba(226, 232, 240, 0.9);
+  border: 1px solid #E2E8F0;
   border-radius: 999px;
   color: #334155;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+  transition: all 0.2s ease;
 }
 
 .linktree-share-btn:hover,
@@ -3792,38 +3846,39 @@ a {
   background: #F8FAFC;
   border-color: #CBD5E1;
   color: #0F172A;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
   transform: translateY(-1px);
 }
 
-.linktree-header {
+/* Profile / Brand Header */
+.linktree-profile-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 26px;
 }
 
-.linktree-logo-wrapper {
+.linktree-avatar-wrap {
   position: relative;
   width: 96px;
   height: 96px;
   margin-bottom: 16px;
 }
 
-.linktree-logo-img {
+.linktree-avatar-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
   border: 3.5px solid #FFFFFF;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
   position: relative;
   z-index: 2;
   background: #FFFFFF;
 }
 
-.linktree-logo-ring {
+.linktree-avatar-ring {
   position: absolute;
   top: -4px;
   left: -4px;
@@ -3836,14 +3891,7 @@ a {
   opacity: 0.85;
 }
 
-.linktree-title-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.linktree-business-name {
+.linktree-brand-title {
   font-size: 24px;
   font-weight: 800;
   color: #0F172A;
@@ -3859,173 +3907,259 @@ a {
   fill: #E0F2FE;
 }
 
-.linktree-tagline {
-  font-size: 13px;
-  font-weight: 700;
+.linktree-tagline-badge {
+  font-size: 11.5px;
+  font-weight: 800;
   color: #B45309;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   background: #FEF3C7;
   border: 1px solid #FDE68A;
   padding: 4px 14px;
   border-radius: 999px;
-  margin-top: 4px;
+  margin: 6px 0 10px;
   display: inline-block;
 }
 
-.linktree-description {
-  font-size: 14px;
+.linktree-brand-desc {
+  font-size: 13.5px;
   line-height: 1.55;
-  color: #475569;
+  color: #64748B;
   max-width: 440px;
-  margin: 12px 0 14px;
+  margin: 0 0 14px;
 }
 
-.linktree-location-pill {
+/* Trust metric chips */
+.linktree-trust-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.linktree-trust-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 14px;
-  background: #ECFDF5;
-  border: 1px solid #A7F3D0;
+  gap: 5px;
+  padding: 4px 11px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
-  color: #047857;
+  color: #334155;
 }
 
-.linktree-links-stack {
+/* Bento Stack */
+.linktree-bento-stack {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 26px;
 }
 
-.linktree-btn-link {
-  text-decoration: none;
-  width: 100%;
-  display: block;
-}
-
-.linktree-btn-card {
+/* Hero Bento Card (Store & WhatsApp) */
+.linktree-hero-bento-card {
   width: 100%;
   background: #FFFFFF;
   border: 1px solid rgba(226, 232, 240, 0.95);
-  border-radius: 16px;
-  padding: 13px 18px;
+  border-radius: 20px;
+  padding: 16px 18px;
   display: flex;
   align-items: center;
-  box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.02);
+  gap: 14px;
+  box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+
+.linktree-hero-bento-card:hover {
+  background: #FFFFFF;
+  border-color: #3B82F6;
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.09);
+  transform: translateY(-2px);
+}
+
+.linktree-hero-bento-card.highlighted {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F0FDF4 100%);
+  border: 1.5px solid #86EFAC;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.12);
+  animation: whiteHighlightPulse 3s ease-in-out infinite;
+}
+
+.linktree-hero-bento-card.highlighted:hover {
+  border-color: #10B981;
+  box-shadow: 0 14px 30px rgba(16, 185, 129, 0.22);
+}
+
+.linktree-hero-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.linktree-hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.linktree-hero-title {
+  font-size: 15.5px;
+  font-weight: 750;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+}
+
+.linktree-hero-subtitle {
+  font-size: 12.5px;
+  color: #64748B;
+  line-height: 1.4;
+}
+
+.linktree-hero-action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.linktree-hero-bento-card:hover .linktree-hero-action-btn {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+  transform: scale(1.05);
+}
+
+.linktree-hero-bento-card.highlighted:hover .linktree-hero-action-btn {
+  background: #059669;
+  color: #FFFFFF;
+  border-color: #059669;
+}
+
+/* 2x2 Social Media Bento Grid */
+.linktree-social-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin: 2px 0;
+}
+
+.linktree-social-tile {
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 18px;
+  padding: 14px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  color: inherit;
   cursor: pointer;
   position: relative;
   overflow: hidden;
 }
 
-.linktree-btn-card:hover {
+.linktree-social-tile:hover {
   background: #FFFFFF;
   border-color: #3B82F6;
-  box-shadow: 0 12px 24px -4px rgba(15, 23, 42, 0.09), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
+  box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.08);
   transform: translateY(-2px);
 }
 
-.linktree-btn-card.highlighted {
-  background: linear-gradient(135deg, #FFFFFF 0%, #F0FDF4 100%);
-  border: 1.5px solid #10B981;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.12), 0 1px 3px rgba(16, 185, 129, 0.06);
-  animation: whiteHighlightPulse 3s ease-in-out infinite;
-}
-
-@keyframes whiteHighlightPulse {
-  0%, 100% { box-shadow: 0 4px 16px rgba(16, 185, 129, 0.12); border-color: #10B981; }
-  50%       { box-shadow: 0 6px 24px rgba(16, 185, 129, 0.25); border-color: #059669; }
-}
-
-.linktree-btn-card.highlighted:hover {
-  background: linear-gradient(135deg, #FFFFFF 0%, #DCFCE7 100%);
-  border-color: #059669;
-  box-shadow: 0 14px 30px rgba(16, 185, 129, 0.22);
-}
-
-/* Delicate shimmer sweep on hover */
-.linktree-btn-shimmer {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.8) 50%,
-    transparent 100%
-  );
-  transition: left 0.55s ease;
-  pointer-events: none;
-}
-
-.linktree-btn-card:hover .linktree-btn-shimmer {
-  left: 160%;
-}
-
-.linktree-btn-inner {
+.linktree-social-tile-top {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  position: relative;
 }
 
-.linktree-btn-icon-wrap {
-  position: absolute;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.linktree-btn-title {
-  flex: 1;
-  text-align: center;
-  font-size: 15px;
-  font-weight: 700;
-  color: #0F172A;
-  letter-spacing: -0.01em;
-  padding: 0 40px;
-}
-
-.linktree-btn-arrow-wrap {
-  position: absolute;
-  right: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.linktree-social-tile-arrow {
   color: #94A3B8;
   transition: all 0.2s ease;
 }
 
-.linktree-btn-card:hover .linktree-btn-arrow-wrap {
+.linktree-social-tile:hover .linktree-social-tile-arrow {
   color: #0F172A;
-  transform: translateX(3px);
+  transform: translate(2px, -2px);
 }
 
-.linktree-btn-badge {
-  font-size: 10.5px;
-  font-weight: 800;
-  color: #059669;
-  background: #ECFDF5;
-  border: 1px solid #A7F3D0;
-  padding: 3px 8px;
-  border-radius: 999px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+.linktree-social-tile-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.linktree-social-tile-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.linktree-social-tile-sub {
+  font-size: 11.5px;
+  color: #64748B;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Quick Contact Strip */
+.linktree-contact-strip {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.linktree-contact-pill-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  color: #1E293B;
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+  transition: all 0.2s ease;
+}
+
+.linktree-contact-pill-btn:hover {
+  border-color: #059669;
+  color: #059669;
+  background: #F0FDF4;
+  transform: translateY(-1px);
+}
+
+/* Icon Bubbles */
 .linktree-icon-bubble {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4070,6 +4204,41 @@ a {
   background: linear-gradient(135deg, #6366F1, #4F46E5);
 }
 
+.linktree-btn-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #059669;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Delicate shimmer sweep on hover */
+.linktree-btn-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    transparent 100%
+  );
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+
+.linktree-hero-bento-card:hover .linktree-btn-shimmer,
+.linktree-social-tile:hover .linktree-btn-shimmer {
+  left: 160%;
+}
+
 .linktree-guarantee-box {
   width: 100%;
   display: flex;
@@ -4084,7 +4253,7 @@ a {
   font-weight: 600;
   color: #166534;
   text-align: center;
-  margin-bottom: 24px;
+  margin: 18px 0 14px;
   box-shadow: 0 1px 3px rgba(16, 185, 129, 0.05);
 }
 
@@ -4095,33 +4264,35 @@ a {
   gap: 8px;
   font-size: 12px;
   color: #94A3B8;
+  margin-top: 6px;
 }
 
 .linktree-footer-divider {
   color: #CBD5E1;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 540px) {
   .linktree-main-container {
-    padding: 24px 14px 48px;
+    padding: 16px 10px 48px;
   }
-  .linktree-business-name {
+  .linktree-glass-canvas {
+    padding: 24px 16px 20px;
+    border-radius: 24px;
+  }
+  .linktree-brand-title {
     font-size: 20px;
   }
-  .linktree-description {
-    font-size: 13px;
+  .linktree-social-bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
-  .linktree-btn-card {
-    padding: 12px 14px;
-    border-radius: 14px;
+  .linktree-social-tile {
+    padding: 12px 12px;
+    border-radius: 15px;
   }
-  .linktree-icon-bubble {
-    width: 36px;
-    height: 36px;
-  }
-  .linktree-btn-title {
-    font-size: 14px;
-    padding: 0 34px;
+  .linktree-hero-bento-card {
+    padding: 14px 14px;
+    border-radius: 16px;
   }
 }
 
