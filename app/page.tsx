@@ -201,10 +201,8 @@ export default function Home() {
   );
 
   const displayWholesaleProducts =
-    wholesaleProductsList.length >= 8
+    wholesaleProductsList.length > 0
       ? wholesaleProductsList
-      : wholesaleProductsList.length > 0
-      ? [...wholesaleProductsList, ...wholesaleProductsList]
       : visibleProducts;
 
   return (

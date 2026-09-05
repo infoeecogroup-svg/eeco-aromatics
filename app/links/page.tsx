@@ -196,7 +196,7 @@ export default function HiddenLinksPage() {
           <div className="linktree-title-group">
             <h1 className="linktree-business-name">
               {businessProfile?.businessName || settings?.storeName || 'EECO AROMATICS'}
-              <CheckCircle2 size={18} className="linktree-verified-badge" title="Official Verified Business" />
+              <CheckCircle2 size={18} className="linktree-verified-badge" />
             </h1>
             <p className="linktree-tagline">
               {settings?.storeSlogan || 'We Care About You'}

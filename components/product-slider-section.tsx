@@ -184,9 +184,9 @@ export function ProductSliderSection({
             transition: 'transform 500ms cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          {products.map((product) => (
+          {products.map((product, idx) => (
             <div
-              key={product.id}
+              key={`${product.id}-${idx}`}
               className="slider-card-cell"
               style={{
                 flex: `0 0 ${cardWidthPercent}%`,
