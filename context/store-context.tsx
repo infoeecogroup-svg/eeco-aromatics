@@ -10,6 +10,8 @@ import {
   SectionVisibility,
   PageVisibility,
   StoreSettings,
+  BusinessLink,
+  BusinessProfile,
   INITIAL_PRODUCTS,
   INITIAL_HERO_SLIDES,
   INITIAL_COMBOS,
@@ -18,9 +20,11 @@ import {
   INITIAL_SECTION_VISIBILITY,
   INITIAL_PAGE_VISIBILITY,
   INITIAL_SETTINGS,
+  INITIAL_BUSINESS_PROFILE,
+  INITIAL_BUSINESS_LINKS,
 } from '@/lib/types';
 
-export type { Product, HeroSlide, ComboBundle, FaqItem, BenefitCard, SectionVisibility, PageVisibility, StoreSettings };
+export type { Product, HeroSlide, ComboBundle, FaqItem, BenefitCard, SectionVisibility, PageVisibility, StoreSettings, BusinessLink, BusinessProfile };
 
 export interface CartItem {
   id: number;
@@ -39,6 +43,8 @@ interface StoreContextType {
   sectionVisibility: SectionVisibility;
   pageVisibility: PageVisibility;
   settings: StoreSettings;
+  businessProfile: BusinessProfile;
+  businessLinks: BusinessLink[];
   cart: CartItem[];
   wishlist: number[];
   toasts: { id: string; text: string }[];
@@ -66,6 +72,11 @@ interface StoreContextType {
   updateFaq: (id: number, faqFields: Partial<FaqItem>) => Promise<void>;
   deleteFaq: (id: number) => Promise<void>;
   saveBenefits: (newBenefits: BenefitCard[]) => Promise<void>;
+  addBusinessLink: (link: Omit<BusinessLink, 'id'>) => Promise<void>;
+  updateBusinessLink: (id: string, updates: Partial<BusinessLink>) => Promise<void>;
+  deleteBusinessLink: (id: string) => Promise<void>;
+  saveBusinessLinks: (links: BusinessLink[], profile?: BusinessProfile) => Promise<void>;
+  updateBusinessProfile: (profile: Partial<BusinessProfile>) => Promise<void>;
   updateSectionVisibility: (section: keyof SectionVisibility, visible: boolean) => Promise<void>;
   updatePageVisibility: (page: keyof PageVisibility, visible: boolean) => Promise<void>;
   updateSettings: (newSettings: Partial<StoreSettings>) => Promise<void>;
@@ -83,6 +94,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [sectionVisibility, setSectionVisibility] = useState<SectionVisibility>(INITIAL_SECTION_VISIBILITY);
   const [pageVisibility, setPageVisibility] = useState<PageVisibility>(INITIAL_PAGE_VISIBILITY);
   const [settings, setSettings] = useState<StoreSettings>(INITIAL_SETTINGS);
+  const [businessProfile, setBusinessProfile] = useState<BusinessProfile>(INITIAL_BUSINESS_PROFILE);
+  const [businessLinks, setBusinessLinks] = useState<BusinessLink[]>(INITIAL_BUSINESS_LINKS);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<number[]>([1, 6]);
   const [toasts, setToasts] = useState<{ id: string; text: string }[]>([]);
@@ -121,6 +134,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           if (Array.isArray(data.combos)) setCombos(data.combos);
           if (Array.isArray(data.faqs)) setFaqs(data.faqs);
           if (Array.isArray(data.benefits)) setBenefits(data.benefits);
+          if (data.businessProfile) setBusinessProfile(data.businessProfile);
+          if (Array.isArray(data.businessLinks)) setBusinessLinks(data.businessLinks);
           if (data.sectionVisibility) setSectionVisibility(data.sectionVisibility);
           if (data.pageVisibility) setPageVisibility(data.pageVisibility);
           if (data.settings) setSettings(data.settings);
@@ -617,6 +632,122 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Business Links (Hidden Linktree Page) CRUD
+  const addBusinessLink = async (link: Omit<BusinessLink, 'id'>) => {
+    try {
+      const res = await fetch('/api/links', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
+        body: JSON.stringify(link),
+      });
+      if (res.ok) {
+        const newLink = await res.json();
+        setBusinessLinks((prev) => [...prev, newLink]);
+        showToast('Business link created and saved to Database!');
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    const fallbackLink: BusinessLink = { ...link, id: `link-${Date.now()}` };
+    setBusinessLinks((prev) => [...prev, fallbackLink]);
+    showToast('Link added locally.');
+  };
+
+  const updateBusinessLink = async (id: string, updates: Partial<BusinessLink>) => {
+    try {
+      const res = await fetch('/api/links', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
+        body: JSON.stringify({ id, updates }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setBusinessLinks((prev) => prev.map((l) => (l.id === id ? updated : l)));
+        showToast('Business link updated!');
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setBusinessLinks((prev) => prev.map((l) => (l.id === id ? { ...l, ...updates } : l)));
+    showToast('Link updated locally.');
+  };
+
+  const deleteBusinessLink = async (id: string) => {
+    try {
+      const res = await fetch(`/api/links?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'x-admin-pin': getAdminPin(),
+        },
+      });
+      if (res.ok) {
+        setBusinessLinks((prev) => prev.filter((l) => l.id !== id));
+        showToast('Business link removed.');
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setBusinessLinks((prev) => prev.filter((l) => l.id !== id));
+    showToast('Business link removed.');
+  };
+
+  const saveBusinessLinks = async (links: BusinessLink[], profile?: BusinessProfile) => {
+    try {
+      const res = await fetch('/api/links', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
+        body: JSON.stringify({ action: 'save_all', links, profile }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.links)) setBusinessLinks(data.links);
+        if (data.profile) setBusinessProfile(data.profile);
+        showToast('All business links saved to Database!');
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setBusinessLinks(links);
+    if (profile) setBusinessProfile(profile);
+    showToast('Business links saved.');
+  };
+
+  const updateBusinessProfile = async (profileUpdates: Partial<BusinessProfile>) => {
+    try {
+      const res = await fetch('/api/links', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-pin': getAdminPin(),
+        },
+        body: JSON.stringify({ action: 'update_profile', profile: profileUpdates }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.profile) setBusinessProfile(data.profile);
+        showToast('Business profile details updated!');
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setBusinessProfile((prev) => ({ ...prev, ...profileUpdates }));
+    showToast('Business profile updated.');
+  };
+
   const resetToDefaults = async () => {
     try {
       const res = await fetch('/api/reset', {
@@ -635,6 +766,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setSectionVisibility(data.sectionVisibility);
         setPageVisibility(data.pageVisibility);
         setSettings(data.settings);
+        setBusinessProfile(data.businessProfile || INITIAL_BUSINESS_PROFILE);
+        setBusinessLinks(data.businessLinks || INITIAL_BUSINESS_LINKS);
         showToast('Database reset to defaults.');
         return;
       }
@@ -649,6 +782,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setSectionVisibility(INITIAL_SECTION_VISIBILITY);
     setPageVisibility(INITIAL_PAGE_VISIBILITY);
     setSettings(INITIAL_SETTINGS);
+    setBusinessProfile(INITIAL_BUSINESS_PROFILE);
+    setBusinessLinks(INITIAL_BUSINESS_LINKS);
     showToast('Reset all data to default template.');
   };
 
@@ -663,6 +798,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         sectionVisibility,
         pageVisibility,
         settings,
+        businessProfile,
+        businessLinks,
         cart,
         wishlist,
         toasts,
@@ -690,6 +827,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updateFaq,
         deleteFaq,
         saveBenefits,
+        addBusinessLink,
+        updateBusinessLink,
+        deleteBusinessLink,
+        saveBusinessLinks,
+        updateBusinessProfile,
         updateSectionVisibility,
         updatePageVisibility,
         updateSettings,

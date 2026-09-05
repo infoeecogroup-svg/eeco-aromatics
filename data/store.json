@@ -470,5 +470,91 @@
       "description": "Direct customer assistance and instant order booking",
       "icon": "Headphones"
     }
+  ],
+  "businessProfile": {
+    "businessName": "EECO AROMATICS",
+    "description": "Sri Lanka’s premier brand for 100% pure Ayurvedic herbal incense sticks, dhoop powder, aroma room diffusers & air fresheners.",
+    "logo": "/eeco_logo.png",
+    "location": "Colombo & Gampaha, Sri Lanka",
+    "verified": true
+  },
+  "businessLinks": [
+    {
+      "id": "link-website",
+      "title": "Official Online Store",
+      "url": "/",
+      "icon": "website",
+      "subtitle": "Browse catalog, combo bundles & order online",
+      "badge": "STORE",
+      "isActive": true,
+      "order": 1,
+      "highlight": true
+    },
+    {
+      "id": "link-whatsapp",
+      "title": "WhatsApp Hotline & Orders",
+      "url": "https://wa.me/94762051906?text=Hi%20EECO%20AROMATICS,%20I%20would%20like%20to%20place%20an%20order!",
+      "icon": "whatsapp",
+      "subtitle": "+94 76 205 1906 • 24/7 Islandwide Cash on Delivery",
+      "badge": "FAST COD",
+      "isActive": true,
+      "order": 2,
+      "highlight": false
+    },
+    {
+      "id": "link-facebook",
+      "title": "Facebook Page & Community",
+      "url": "https://web.facebook.com/EECOSL",
+      "icon": "facebook",
+      "subtitle": "@EECOSL • Daily posts, customer reviews & offers",
+      "badge": "COMMUNITY",
+      "isActive": true,
+      "order": 3,
+      "highlight": false
+    },
+    {
+      "id": "link-instagram",
+      "title": "Instagram",
+      "url": "https://www.instagram.com/eeco.aromatics",
+      "icon": "instagram",
+      "subtitle": "@eeco.aromatics • Aesthetic reels & aroma inspiration",
+      "badge": "",
+      "isActive": true,
+      "order": 4,
+      "highlight": false
+    },
+    {
+      "id": "link-youtube",
+      "title": "YouTube Channel",
+      "url": "https://www.youtube.com/@EECOAromatics",
+      "icon": "youtube",
+      "subtitle": "Fragrance reviews, burning tips & unboxings",
+      "badge": "",
+      "isActive": true,
+      "order": 5,
+      "highlight": false
+    },
+    {
+      "id": "link-tiktok",
+      "title": "TikTok",
+      "url": "https://www.tiktok.com/@eeco_aromatics",
+      "icon": "tiktok",
+      "subtitle": "@eeco_aromatics • Viral aromas & behind the scenes",
+      "badge": "",
+      "isActive": true,
+      "order": 6,
+      "highlight": false
+    },
+    {
+      "id": "link-gmail",
+      "title": "Email Us (Gmail)",
+      "url": "mailto:info.eecogroup@gmail.com",
+      "icon": "gmail",
+      "subtitle": "info.eecogroup@gmail.com • Inquiries & Support",
+      "badge": "",
+      "isActive": true,
+      "order": 7,
+      "highlight": false
+    }
   ]
 }

@@ -40,6 +40,15 @@ import {
   HelpCircle as FaqIcon,
   Award,
   Headphones,
+  Link2 as LinkIcon,
+  Globe,
+  Share2,
+  Copy,
+  Check,
+  ArrowUp,
+  ArrowDown,
+  MessageSquare,
+  Mail,
 } from 'lucide-react';
 import {
   useStore,
@@ -51,6 +60,8 @@ import {
   SectionVisibility,
   PageVisibility,
   StoreSettings,
+  BusinessLink,
+  BusinessProfile,
 } from '../../context/store-context';
 
 export default function AdminPage() {
@@ -63,6 +74,8 @@ export default function AdminPage() {
     sectionVisibility,
     pageVisibility,
     settings,
+    businessProfile,
+    businessLinks,
     lastUpdatedTime,
     addProduct,
     updateProduct,
@@ -78,6 +91,11 @@ export default function AdminPage() {
     updateFaq,
     deleteFaq,
     saveBenefits,
+    addBusinessLink,
+    updateBusinessLink,
+    deleteBusinessLink,
+    saveBusinessLinks,
+    updateBusinessProfile,
     updateSectionVisibility,
     updatePageVisibility,
     updateSettings,
@@ -93,7 +111,7 @@ export default function AdminPage() {
 
   // Active Navigation Tab
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'products' | 'banners' | 'combos' | 'faqs' | 'benefits' | 'visibility' | 'settings' | 'danger'
+    'overview' | 'products' | 'banners' | 'combos' | 'links' | 'faqs' | 'benefits' | 'visibility' | 'settings' | 'danger'
   >('overview');
 
   // Filters & Search for Products
@@ -167,6 +185,44 @@ export default function AdminPage() {
     a: '',
     category: 'General',
   });
+
+  // Business Links (Linktree) Modal & Profile State
+  const [linkModalOpen, setLinkModalOpen] = useState(false);
+  const [editingLink, setEditingLink] = useState<BusinessLink | null>(null);
+  const [linkForm, setLinkForm] = useState<{
+    title: string;
+    url: string;
+    subtitle: string;
+    badge: string;
+    icon: string;
+    highlight: boolean;
+    isActive: boolean;
+    order: number;
+  }>({
+    title: '',
+    url: '',
+    subtitle: '',
+    badge: '',
+    icon: 'website',
+    highlight: false,
+    isActive: true,
+    order: 1,
+  });
+
+  const [profileForm, setProfileForm] = useState<BusinessProfile>(
+    businessProfile || {
+      businessName: 'EECO AROMATICS',
+      description: '',
+      logo: '/eeco_logo.png',
+      location: 'Sri Lanka',
+      verified: true,
+    }
+  );
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+
+  useEffect(() => {
+    if (businessProfile) setProfileForm(businessProfile);
+  }, [businessProfile]);
 
   // Benefits Form State (4 cards)
   const [benefitsForm, setBenefitsForm] = useState<BenefitCard[]>(benefits);
@@ -395,6 +451,103 @@ export default function AdminPage() {
     setFaqModalOpen(false);
   };
 
+  // Business Links (Linktree) CRUD Handlers
+  const handleOpenAddLinkModal = () => {
+    setEditingLink(null);
+    setLinkForm({
+      title: '',
+      url: '',
+      subtitle: '',
+      badge: '',
+      icon: 'website',
+      highlight: false,
+      isActive: true,
+      order: (businessLinks?.length || 0) + 1,
+    });
+    setLinkModalOpen(true);
+  };
+
+  const handleOpenEditLinkModal = (link: BusinessLink) => {
+    setEditingLink(link);
+    setLinkForm({
+      title: link.title || '',
+      url: link.url || '',
+      subtitle: link.subtitle || '',
+      badge: link.badge || '',
+      icon: link.icon || 'website',
+      highlight: link.highlight || false,
+      isActive: link.isActive !== undefined ? link.isActive : true,
+      order: link.order || 1,
+    });
+    setLinkModalOpen(true);
+  };
+
+  const handleSaveLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!linkForm.title || !linkForm.url) {
+      showToast('Please provide both a Title and a URL for the button.');
+      return;
+    }
+
+    if (editingLink) {
+      await updateBusinessLink(editingLink.id, linkForm);
+      showToast('Button link updated successfully!');
+    } else {
+      await addBusinessLink(linkForm);
+      showToast('New button link added successfully!');
+    }
+    setLinkModalOpen(false);
+  };
+
+  const handleDeleteLink = async (id: string) => {
+    if (confirm('Are you sure you want to delete this link button?')) {
+      await deleteBusinessLink(id);
+      showToast('Link button removed.');
+    }
+  };
+
+  const handleToggleLinkActive = async (link: BusinessLink) => {
+    await updateBusinessLink(link.id, { isActive: !link.isActive });
+    showToast(`Link button ${!link.isActive ? 'activated' : 'hidden'}.`);
+  };
+
+  const handleMoveLink = async (index: number, direction: 'up' | 'down') => {
+    const newLinks = [...(businessLinks || [])];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newLinks.length) return;
+
+    const temp = newLinks[index];
+    newLinks[index] = newLinks[targetIndex];
+    newLinks[targetIndex] = temp;
+
+    const reordered = newLinks.map((item, idx) => ({ ...item, order: idx + 1 }));
+    await saveBusinessLinks(reordered);
+    showToast('Button order updated!');
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setIsUploadingLogo(true);
+      const url = await uploadImage(file);
+      setProfileForm((prev) => ({ ...prev, logo: url }));
+      await updateBusinessProfile({ logo: url });
+      showToast('Business logo uploaded and saved to Database!');
+    } catch (err: any) {
+      showToast(err?.message || 'Logo upload failed');
+    } finally {
+      setIsUploadingLogo(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await updateBusinessProfile(profileForm);
+    showToast('Business profile details saved to Database!');
+  };
+
   // Filtered Products list
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
@@ -577,6 +730,7 @@ export default function AdminPage() {
               { id: 'products', name: 'Products Catalog', icon: Package, badge: products.length },
               { id: 'banners', name: 'Hero Banners CMS', icon: Sliders, badge: heroSlides.length },
               { id: 'combos', name: 'Combo Bundles CMS', icon: Gift, badge: combos.length },
+              { id: 'links', name: 'Hidden Links (Linktree)', icon: LinkIcon, badge: businessLinks?.length },
               { id: 'faqs', name: 'Customer FAQs CMS', icon: FaqIcon, badge: faqs.length },
               { id: 'benefits', name: 'Service Benefits CMS', icon: Award },
               { id: 'visibility', name: 'Section & Page Visibility', icon: Layers },
@@ -632,6 +786,30 @@ export default function AdminPage() {
 
         {/* Footer Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          {/* Dedicated 'View Hidden Links Page' Button in Admin Panel Only */}
+          <Link
+            href="/links"
+            target="_blank"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '11px 12px',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, rgba(26,86,219,0.22), rgba(16,185,129,0.22))',
+              border: '1px solid rgba(56,189,248,0.4)',
+              color: '#38BDF8',
+              textDecoration: 'none',
+              fontSize: '13px',
+              fontWeight: 700,
+              boxShadow: '0 4px 14px rgba(26, 86, 219, 0.15)',
+            }}
+          >
+            <span>🔗 View Hidden Links Page</span>
+            <ExternalLink size={14} />
+          </Link>
+
           <Link
             href="/"
             target="_blank"
@@ -671,7 +849,7 @@ export default function AdminPage() {
             }}
           >
             <LogOut size={14} />
-            <span>Logout</span>
+            <span>Logout PIN</span>
           </button>
         </div>
       </aside>
@@ -695,6 +873,7 @@ export default function AdminPage() {
               {activeTab === 'products' && 'Products Catalog Management'}
               {activeTab === 'banners' && 'Hero Slider & Promotional Banners'}
               {activeTab === 'combos' && 'Combo Bundles & Gift Sets'}
+              {activeTab === 'links' && 'Hidden Business Links Page (Linktree)'}
               {activeTab === 'faqs' && 'Customer FAQs & Support'}
               {activeTab === 'benefits' && 'Service Benefits & Guarantee Cards'}
               {activeTab === 'visibility' && 'Granular Section & Page Visibility'}
@@ -707,6 +886,52 @@ export default function AdminPage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {activeTab === 'links' && (
+              <>
+                <Link
+                  href="/links"
+                  target="_blank"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                    border: '1px solid rgba(56, 189, 248, 0.4)',
+                    color: '#38BDF8',
+                    padding: '11px 18px',
+                    borderRadius: '12px',
+                    fontSize: '13.5px',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                  }}
+                >
+                  <ExternalLink size={16} />
+                  <span>View Hidden Links Page</span>
+                </Link>
+
+                <button
+                  onClick={handleOpenAddLinkModal}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    backgroundColor: '#1A56DB',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    padding: '11px 20px',
+                    borderRadius: '12px',
+                    fontSize: '13.5px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 14px rgba(26, 86, 219, 0.4)',
+                  }}
+                >
+                  <Plus size={16} />
+                  <span>Add New Button</span>
+                </button>
+              </>
+            )}
+
             {activeTab === 'products' && (
               <button
                 onClick={handleOpenNewProduct}
@@ -1300,6 +1525,430 @@ export default function AdminPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* ================= TAB 4.5: HIDDEN BUSINESS LINKS (LINKTREE) CMS ================= */}
+        {activeTab === 'links' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+            {/* Info Banner */}
+            <div
+              style={{
+                background: 'linear-gradient(135deg, rgba(26, 86, 219, 0.12) 0%, rgba(16, 185, 129, 0.12) 100%)',
+                border: '1px solid rgba(56, 189, 248, 0.25)',
+                borderRadius: '16px',
+                padding: '18px 24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '16px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '12px',
+                    background: '#1A56DB',
+                    display: 'grid',
+                    placeItems: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <LinkIcon size={22} color="#FFFFFF" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '15.5px', fontWeight: 800, color: '#FFFFFF', marginBottom: '3px' }}>
+                    Hidden Business Links Page (Linktree Style)
+                  </h3>
+                  <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>
+                    This page is isolated from main navigation, menus, and footer. It is only accessible via direct URL (<code style={{ color: '#38BDF8', background: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px' }}>/links</code>).
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <Link
+                  href="/links"
+                  target="_blank"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    background: '#1A56DB',
+                    color: '#FFFFFF',
+                    padding: '10px 18px',
+                    borderRadius: '10px',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 12px rgba(26, 86, 219, 0.3)',
+                  }}
+                >
+                  <span>View Hidden Page</span>
+                  <ExternalLink size={14} />
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      navigator.clipboard.writeText(`${window.location.origin}/links`);
+                      showToast('Copied hidden page link to clipboard!');
+                    }
+                  }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#E2E8F0',
+                    padding: '10px 16px',
+                    borderRadius: '10px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Copy size={14} />
+                  <span>Copy URL</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Profile & Bio Section */}
+            <div className="admin-card" style={{ background: '#111C2A', borderRadius: '20px', padding: '28px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF' }}>Business Profile & Bio Customizer</h3>
+                <span style={{ fontSize: '12px', color: '#94A3B8' }}>Changes reflect immediately on /links</span>
+              </div>
+
+              <form onSubmit={handleSaveProfile}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px', marginBottom: '18px' }}>
+                  <div>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>Business Name</label>
+                    <input
+                      type="text"
+                      value={profileForm.businessName}
+                      onChange={(e) => setProfileForm({ ...profileForm, businessName: e.target.value })}
+                      className="admin-input"
+                      placeholder="e.g. EECO AROMATICS"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>Location / City Badge</label>
+                    <input
+                      type="text"
+                      value={profileForm.location || ''}
+                      onChange={(e) => setProfileForm({ ...profileForm, location: e.target.value })}
+                      className="admin-input"
+                      placeholder="e.g. Colombo & Gampaha, Sri Lanka"
+                    />
+                  </div>
+
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>Business Bio / Short Description</label>
+                    <textarea
+                      rows={2}
+                      value={profileForm.description}
+                      onChange={(e) => setProfileForm({ ...profileForm, description: e.target.value })}
+                      className="admin-input"
+                      placeholder="Enter business bio, introduction, or key specialties..."
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <img
+                      src={profileForm.logo || '/eeco_logo.png'}
+                      alt="Logo"
+                      style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', background: '#FFFFFF', border: '2px solid #38BDF8' }}
+                    />
+                    <div>
+                      <span style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>Business Logo Image</span>
+                      <label
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          background: 'rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(255, 255, 255, 0.15)',
+                          color: '#FFFFFF',
+                          padding: '6px 14px',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          cursor: isUploadingLogo ? 'wait' : 'pointer',
+                        }}
+                      >
+                        {isUploadingLogo ? <Loader2 size={13} className="spin" /> : <Upload size={13} />}
+                        <span>{isUploadingLogo ? 'Uploading...' : 'Upload New Logo'}</span>
+                        <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} disabled={isUploadingLogo} />
+                      </label>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: '#059669',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      padding: '10px 22px',
+                      borderRadius: '10px',
+                      fontSize: '13.5px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Save size={15} />
+                    <span>Save Profile Details</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Link Buttons Manager */}
+            <div className="admin-card" style={{ background: '#111C2A', borderRadius: '20px', padding: '28px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', marginBottom: '4px' }}>
+                    Business Action Buttons ({businessLinks?.length || 0})
+                  </h3>
+                  <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>
+                    Rearrange, edit, toggle visibility, or add new custom buttons for your hidden links page.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleOpenAddLinkModal}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    backgroundColor: '#1A56DB',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    padding: '10px 18px',
+                    borderRadius: '10px',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(26, 86, 219, 0.3)',
+                  }}
+                >
+                  <Plus size={15} />
+                  <span>Add New Button</span>
+                </button>
+              </div>
+
+              {/* Links List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {(businessLinks || []).map((link, idx) => (
+                  <div
+                    key={link.id || idx}
+                    style={{
+                      background: '#0D1522',
+                      border: link.highlight ? '1.5px solid rgba(56, 189, 248, 0.45)' : '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '16px',
+                      padding: '16px 20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '14px',
+                      opacity: link.isActive ? 1 : 0.6,
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {/* Left info */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, minWidth: '260px' }}>
+                      <div
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '10px',
+                          background:
+                            link.icon === 'whatsapp'
+                              ? '#25D366'
+                              : link.icon === 'facebook'
+                              ? '#1877F2'
+                              : link.icon === 'instagram'
+                              ? 'linear-gradient(45deg, #F58529, #DD2A7B, #8134AF)'
+                              : link.icon === 'youtube'
+                              ? '#FF0000'
+                              : link.icon === 'tiktok'
+                              ? '#000000'
+                              : link.icon === 'gmail'
+                              ? '#EA4335'
+                              : '#1A56DB',
+                          display: 'grid',
+                          placeItems: 'center',
+                          color: '#FFFFFF',
+                          flexShrink: 0,
+                          border: link.icon === 'tiktok' ? '1px solid rgba(255,255,255,0.2)' : 'none',
+                        }}
+                      >
+                        {link.icon === 'website' && <Globe size={18} />}
+                        {link.icon === 'whatsapp' && <MessageSquare size={18} />}
+                        {link.icon === 'facebook' && <span style={{ fontWeight: 800, fontSize: '16px' }}>f</span>}
+                        {link.icon === 'instagram' && <span style={{ fontWeight: 800, fontSize: '14px' }}>IG</span>}
+                        {link.icon === 'youtube' && <span style={{ fontWeight: 800, fontSize: '13px' }}>YT</span>}
+                        {link.icon === 'tiktok' && <span style={{ fontWeight: 800, fontSize: '13px' }}>TT</span>}
+                        {link.icon === 'gmail' && <Mail size={18} />}
+                        {!['website', 'whatsapp', 'facebook', 'instagram', 'youtube', 'tiktok', 'gmail'].includes(link.icon) && (
+                          <Sparkles size={18} />
+                        )}
+                      </div>
+
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF' }}>{link.title}</span>
+                          {link.badge && (
+                            <span
+                              style={{
+                                background: link.highlight ? 'linear-gradient(135deg, #FFBE00, #F59E0B)' : 'rgba(255, 255, 255, 0.15)',
+                                color: link.highlight ? '#111827' : '#FFFFFF',
+                                fontSize: '10.5px',
+                                fontWeight: 800,
+                                padding: '2px 8px',
+                                borderRadius: '999px',
+                              }}
+                            >
+                              {link.badge}
+                            </span>
+                          )}
+                          {link.highlight && (
+                            <span style={{ fontSize: '11px', color: '#38BDF8', fontWeight: 700 }}>★ Highlighted</span>
+                          )}
+                        </div>
+
+                        {link.subtitle && (
+                          <span style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginTop: '2px' }}>
+                            {link.subtitle}
+                          </span>
+                        )}
+
+                        <span style={{ fontSize: '12px', color: '#60A5FA', display: 'block', marginTop: '2px', wordBreak: 'break-all' }}>
+                          {link.url}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Right actions */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {/* Move Up/Down buttons */}
+                      <button
+                        type="button"
+                        onClick={() => handleMoveLink(idx, 'up')}
+                        disabled={idx === 0}
+                        title="Move Up"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          border: 'none',
+                          color: idx === 0 ? '#475569' : '#94A3B8',
+                          padding: '7px',
+                          borderRadius: '8px',
+                          cursor: idx === 0 ? 'not-allowed' : 'pointer',
+                        }}
+                      >
+                        <ArrowUp size={15} />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleMoveLink(idx, 'down')}
+                        disabled={idx === (businessLinks?.length || 0) - 1}
+                        title="Move Down"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          border: 'none',
+                          color: idx === (businessLinks?.length || 0) - 1 ? '#475569' : '#94A3B8',
+                          padding: '7px',
+                          borderRadius: '8px',
+                          cursor: idx === (businessLinks?.length || 0) - 1 ? 'not-allowed' : 'pointer',
+                        }}
+                      >
+                        <ArrowDown size={15} />
+                      </button>
+
+                      {/* Active Toggle */}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleLinkActive(link)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          background: link.isActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                          border: `1px solid ${link.isActive ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                          color: link.isActive ? '#10B981' : '#F87171',
+                          padding: '6px 12px',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {link.isActive ? <Eye size={13} /> : <EyeOff size={13} />}
+                        <span>{link.isActive ? 'Active' : 'Hidden'}</span>
+                      </button>
+
+                      {/* Edit Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditLinkModal(link)}
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.08)',
+                          border: 'none',
+                          color: '#60A5FA',
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          fontSize: '12.5px',
+                          fontWeight: 600,
+                        }}
+                      >
+                        <Edit size={14} />
+                        <span>Edit</span>
+                      </button>
+
+                      {/* Delete Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteLink(link.id)}
+                        style={{
+                          background: 'rgba(239, 68, 68, 0.1)',
+                          border: 'none',
+                          color: '#F87171',
+                          padding: '8px 10px',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -2200,6 +2849,217 @@ export default function AdminPage() {
                     style={{ backgroundColor: '#1A56DB', color: '#FFFFFF', border: 'none', padding: '10px 22px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer' }}
                   >
                     Save FAQ
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ================= LINKTREE BUTTON MODAL ================= */}
+      <AnimatePresence>
+        {linkModalOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 1000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              style={{
+                background: '#111C2A',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '24px',
+                padding: '32px',
+                width: '100%',
+                maxWidth: '560px',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                color: '#FFFFFF',
+              }}
+            >
+              <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '6px' }}>
+                {editingLink ? 'Edit Link Button' : 'Add New Link Button'}
+              </h3>
+              <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '20px' }}>
+                Customize button details, icon, badges, and target URL for the hidden links page.
+              </p>
+
+              <form onSubmit={handleSaveLink} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>
+                    Button Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={linkForm.title}
+                    onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
+                    className="admin-input"
+                    placeholder="e.g. WhatsApp Hotline, Official Online Store, Facebook"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>
+                    Target URL / Link * (Use &apos;/&apos; for Homepage, or https:// / mailto:)
+                  </label>
+                  <input
+                    type="text"
+                    value={linkForm.url}
+                    onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
+                    className="admin-input"
+                    placeholder="e.g. / or https://wa.me/94762051906 or mailto:info.eecogroup@gmail.com"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>
+                    Subtitle / Helper Text (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={linkForm.subtitle}
+                    onChange={(e) => setLinkForm({ ...linkForm, subtitle: e.target.value })}
+                    className="admin-input"
+                    placeholder="e.g. +94 76 205 1906 • 24/7 Islandwide Delivery"
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>
+                      Badge Tag (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={linkForm.badge}
+                      onChange={(e) => setLinkForm({ ...linkForm, badge: e.target.value })}
+                      className="admin-input"
+                      placeholder="e.g. STORE, HOT, COD"
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12.5px', color: '#94A3B8', display: 'block', marginBottom: '4px' }}>
+                      Brand Icon Type
+                    </label>
+                    <select
+                      value={linkForm.icon}
+                      onChange={(e) => setLinkForm({ ...linkForm, icon: e.target.value })}
+                      className="admin-input"
+                    >
+                      <option value="website">Website / Store (Globe)</option>
+                      <option value="whatsapp">WhatsApp (Chat)</option>
+                      <option value="facebook">Facebook</option>
+                      <option value="instagram">Instagram</option>
+                      <option value="youtube">YouTube</option>
+                      <option value="tiktok">TikTok</option>
+                      <option value="gmail">Gmail / Email</option>
+                      <option value="phone">Phone / Hotline</option>
+                      <option value="map">Map / Location</option>
+                      <option value="custom">Custom / Star</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', paddingTop: '6px' }}>
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      background: '#0B131E',
+                      padding: '12px 14px',
+                      borderRadius: '12px',
+                      cursor: 'pointer',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={linkForm.highlight}
+                      onChange={(e) => setLinkForm({ ...linkForm, highlight: e.target.checked })}
+                      style={{ width: '18px', height: '18px', accentColor: '#38BDF8', cursor: 'pointer' }}
+                    />
+                    <div>
+                      <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF', display: 'block' }}>
+                        Highlight Button
+                      </span>
+                      <span style={{ fontSize: '11px', color: '#94A3B8' }}>Glow &amp; gold accent</span>
+                    </div>
+                  </label>
+
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      background: '#0B131E',
+                      padding: '12px 14px',
+                      borderRadius: '12px',
+                      cursor: 'pointer',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={linkForm.isActive}
+                      onChange={(e) => setLinkForm({ ...linkForm, isActive: e.target.checked })}
+                      style={{ width: '18px', height: '18px', accentColor: '#10B981', cursor: 'pointer' }}
+                    />
+                    <div>
+                      <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF', display: 'block' }}>
+                        Active &amp; Visible
+                      </span>
+                      <span style={{ fontSize: '11px', color: '#94A3B8' }}>Show on hidden page</span>
+                    </div>
+                  </label>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setLinkModalOpen(false)}
+                    style={{
+                      background: 'none',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: '#FFFFFF',
+                      padding: '10px 18px',
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      backgroundColor: '#1A56DB',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      padding: '10px 22px',
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      boxShadow: '0 4px 14px rgba(26, 86, 219, 0.4)',
+                    }}
+                  >
+                    {editingLink ? 'Save Button Changes' : 'Create Button'}
                   </button>
                 </div>
               </form>

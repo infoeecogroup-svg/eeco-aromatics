@@ -1,16 +1,54 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ChevronRight, MapPin, Mail, MessageSquare, ShieldCheck, Heart, Sparkles, Phone } from 'lucide-react';
 import { useStore } from '../context/store-context';
 
 export const Footer: React.FC = () => {
-  const { settings } = useStore();
+  const { settings, sectionVisibility } = useStore();
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
+
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newsletterEmail.includes('@')) {
+      setNewsletterSubscribed(true);
+      setNewsletterEmail('');
+      setTimeout(() => setNewsletterSubscribed(false), 4000);
+    }
+  };
+
+  const showNewsletterBezel = sectionVisibility?.newsletter !== false;
 
   return (
-    <footer className="sellzy-main-footer">
+    <footer className={`sellzy-main-footer ${showNewsletterBezel ? 'has-newsletter-bezel' : ''}`}>
+      {/* White Rounded Bezel Container (Cutout like Best Selling Products title) */}
+      {showNewsletterBezel && (
+        <div className="footer-newsletter-cutout">
+          <form className="footer-newsletter-form" onSubmit={handleNewsletterSubmit}>
+            <Mail size={18} color="#516477" style={{ flexShrink: 0 }} />
+            <input
+              type="email"
+              placeholder="Enter your email address"
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
+              required
+              className="footer-newsletter-input"
+            />
+            <motion.button
+              type="submit"
+              className="btn-newsletter-subscribe"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
+            >
+              {newsletterSubscribed ? 'Subscribed!' : 'Subscribe'}
+            </motion.button>
+          </form>
+        </div>
+      )}
+
       <div className="footer-5col-grid layout-max-width">
         {/* Column 1: Brand & Bio */}
         <div className="footer-brand-col">

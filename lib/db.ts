@@ -9,6 +9,8 @@ import {
   SectionVisibility,
   PageVisibility,
   StoreSettings,
+  BusinessLink,
+  BusinessProfile,
   StoreDatabaseData,
   INITIAL_PRODUCTS,
   INITIAL_HERO_SLIDES,
@@ -18,7 +20,9 @@ import {
   INITIAL_SECTION_VISIBILITY,
   INITIAL_PAGE_VISIBILITY,
   INITIAL_SETTINGS,
-} from '@/lib/types';
+  INITIAL_BUSINESS_PROFILE,
+  INITIAL_BUSINESS_LINKS,
+} from './types';
 
 export type {
   Product,
@@ -29,6 +33,8 @@ export type {
   SectionVisibility,
   PageVisibility,
   StoreSettings,
+  BusinessLink,
+  BusinessProfile,
   StoreDatabaseData,
 };
 
@@ -50,6 +56,8 @@ function ensureDbFile(): StoreDatabaseData {
       sectionVisibility: INITIAL_SECTION_VISIBILITY,
       pageVisibility: INITIAL_PAGE_VISIBILITY,
       settings: INITIAL_SETTINGS,
+      businessProfile: INITIAL_BUSINESS_PROFILE,
+      businessLinks: INITIAL_BUSINESS_LINKS,
       updatedAt: new Date().toISOString(),
     };
     fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
@@ -73,6 +81,14 @@ function ensureDbFile(): StoreDatabaseData {
       data.benefits = INITIAL_BENEFITS;
       modified = true;
     }
+    if (!data.businessProfile) {
+      data.businessProfile = INITIAL_BUSINESS_PROFILE;
+      modified = true;
+    }
+    if (!Array.isArray(data.businessLinks)) {
+      data.businessLinks = INITIAL_BUSINESS_LINKS;
+      modified = true;
+    }
     if (modified) {
       fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
     }
@@ -88,6 +104,8 @@ function ensureDbFile(): StoreDatabaseData {
       sectionVisibility: INITIAL_SECTION_VISIBILITY,
       pageVisibility: INITIAL_PAGE_VISIBILITY,
       settings: INITIAL_SETTINGS,
+      businessProfile: INITIAL_BUSINESS_PROFILE,
+      businessLinks: INITIAL_BUSINESS_LINKS,
       updatedAt: new Date().toISOString(),
     };
     fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
@@ -266,6 +284,79 @@ export function updateSettings(updates: Partial<StoreSettings>): StoreSettings {
   return db.settings;
 }
 
+// Business Links & Profile (Hidden Linktree Page)
+export function getBusinessLinks(): { profile: BusinessProfile; links: BusinessLink[] } {
+  const db = ensureDbFile();
+  return {
+    profile: db.businessProfile || INITIAL_BUSINESS_PROFILE,
+    links: db.businessLinks || INITIAL_BUSINESS_LINKS,
+  };
+}
+
+export function addBusinessLink(linkData: Omit<BusinessLink, 'id'>): BusinessLink {
+  const db = ensureDbFile();
+  const newId = `link-${Date.now()}`;
+  const maxOrder = (db.businessLinks || []).reduce((max, l) => Math.max(max, l.order || 0), 0);
+  const newLink: BusinessLink = {
+    ...linkData,
+    id: newId,
+    order: linkData.order ?? maxOrder + 1,
+  };
+  db.businessLinks = [...(db.businessLinks || []), newLink];
+  saveDbFile(db);
+  return newLink;
+}
+
+export function updateBusinessLink(id: string, updates: Partial<BusinessLink>): BusinessLink | null {
+  const db = ensureDbFile();
+  const links = db.businessLinks || [];
+  const index = links.findIndex((l) => l.id === id);
+  if (index === -1) return null;
+  links[index] = { ...links[index], ...updates, id };
+  db.businessLinks = links;
+  saveDbFile(db);
+  return links[index];
+}
+
+export function deleteBusinessLink(id: string): boolean {
+  const db = ensureDbFile();
+  const initialLen = (db.businessLinks || []).length;
+  db.businessLinks = (db.businessLinks || []).filter((l) => l.id !== id);
+  if (db.businessLinks.length === initialLen) return false;
+  saveDbFile(db);
+  return true;
+}
+
+export function reorderBusinessLinks(links: BusinessLink[]): BusinessLink[] {
+  const db = ensureDbFile();
+  db.businessLinks = links;
+  saveDbFile(db);
+  return db.businessLinks;
+}
+
+export function updateBusinessProfile(updates: Partial<BusinessProfile>): BusinessProfile {
+  const db = ensureDbFile();
+  db.businessProfile = { ...(db.businessProfile || INITIAL_BUSINESS_PROFILE), ...updates };
+  saveDbFile(db);
+  return db.businessProfile;
+}
+
+export function saveAllBusinessLinks(
+  links: BusinessLink[],
+  profile?: BusinessProfile
+): { profile: BusinessProfile; links: BusinessLink[] } {
+  const db = ensureDbFile();
+  db.businessLinks = links;
+  if (profile) {
+    db.businessProfile = profile;
+  }
+  saveDbFile(db);
+  return {
+    profile: db.businessProfile || INITIAL_BUSINESS_PROFILE,
+    links: db.businessLinks || INITIAL_BUSINESS_LINKS,
+  };
+}
+
 export function resetToDefaults(): StoreDatabaseData {
   const initialData: StoreDatabaseData = {
     products: INITIAL_PRODUCTS,
@@ -276,6 +367,8 @@ export function resetToDefaults(): StoreDatabaseData {
     sectionVisibility: INITIAL_SECTION_VISIBILITY,
     pageVisibility: INITIAL_PAGE_VISIBILITY,
     settings: INITIAL_SETTINGS,
+    businessProfile: INITIAL_BUSINESS_PROFILE,
+    businessLinks: INITIAL_BUSINESS_LINKS,
     updatedAt: new Date().toISOString(),
   };
   saveDbFile(initialData);

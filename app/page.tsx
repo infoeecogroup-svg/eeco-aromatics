@@ -638,26 +638,6 @@ export default function Home() {
           <p className="newsletter-subtitle">
             Stay updated! Subscribe to our mailing list for news, fragrance launches, and exclusive offers.
           </p>
-
-          <form className="newsletter-form-box" onSubmit={handleNewsletterSubmit}>
-            <Mail size={20} color="#516477" style={{ marginRight: '10px' }} />
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              value={newsletterEmail}
-              onChange={(e) => setNewsletterEmail(e.target.value)}
-              required
-            />
-            <motion.button
-              type="submit"
-              className="btn-newsletter-subscribe"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.96 }}
-            >
-              {newsletterSubscribed ? 'Subscribed!' : 'Subscribe'}
-            </motion.button>
-          </form>
-          <div className="newsletter-concave-cutout"></div>
         </AnimatedSection>
       )}
 
