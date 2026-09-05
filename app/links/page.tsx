@@ -250,6 +250,7 @@ export default function HiddenLinksPage() {
         <div className="linktree-bento-stack">
           {/* 1. Hero Primary Links (Full-Width Bento Cards with rich info) */}
           {heroLinks.map((link, index) => {
+            const isWhatsapp = (link.icon || '').toLowerCase() === 'whatsapp';
             const isInternal = link.url.startsWith('/') && !link.url.startsWith('//');
             const cardContent = (
               <motion.div
@@ -258,7 +259,13 @@ export default function HiddenLinksPage() {
                 transition={{ duration: 0.4, delay: index * 0.08 }}
                 whileHover={{ scale: 1.015, y: -2 }}
                 whileTap={{ scale: 0.985 }}
-                className={`linktree-hero-bento-card ${link.highlight ? 'highlighted' : ''}`}
+                className={`linktree-hero-bento-card ${
+                  link.highlight
+                    ? isWhatsapp
+                      ? 'whatsapp-highlighted highlighted'
+                      : 'highlighted'
+                    : ''
+                }`}
               >
                 {renderLinkIcon(link.icon, 20)}
                 <div className="linktree-hero-info">
