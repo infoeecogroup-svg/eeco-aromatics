@@ -15,6 +15,7 @@ import {
   Mail,
   Phone,
   ShieldCheck,
+  ChevronRight,
 } from 'lucide-react';
 import { useStore, BusinessLink } from '@/context/store-context';
 
@@ -199,7 +200,7 @@ export default function HiddenLinksPage() {
               <CheckCircle2 size={18} className="linktree-verified-badge" />
             </h1>
             <p className="linktree-tagline">
-              {settings?.storeSlogan || 'We Care About You'}
+              We Care About You
             </p>
           </div>
 
@@ -230,13 +231,20 @@ export default function HiddenLinksPage() {
                   delay: index * 0.07,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                whileHover={{ scale: 1.03, y: -3 }}
-                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.025, y: -2 }}
+                whileTap={{ scale: 0.98 }}
                 className={`linktree-btn-card ${link.highlight ? 'highlighted' : ''}`}
               >
                 <div className="linktree-btn-inner">
                   <div className="linktree-btn-icon-wrap">{renderLinkIcon(link.icon)}</div>
                   <span className="linktree-btn-title">{link.title}</span>
+                  <div className="linktree-btn-arrow-wrap">
+                    {link.badge ? (
+                      <span className="linktree-btn-badge">{link.badge}</span>
+                    ) : (
+                      <ChevronRight size={18} />
+                    )}
+                  </div>
                 </div>
                 <div className="linktree-btn-shimmer" />
               </motion.div>
