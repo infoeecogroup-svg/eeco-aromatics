@@ -4317,28 +4317,97 @@ a {
   color: #CBD5E1;
 }
 
-@media (max-width: 540px) {
+@media (max-width: 680px) {
   .linktree-main-container {
-    padding: 16px 10px 48px;
+    padding: 18px 12px 48px;
   }
   .linktree-glass-canvas {
-    padding: 24px 16px 20px;
-    border-radius: 24px;
+    padding: 22px 14px 22px;
+    border-radius: 26px;
+    box-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(226, 232, 240, 0.7);
+  }
+  /* Hide "Islandwide Delivery Active" on mobile as requested */
+  .linktree-live-status-pill {
+    display: none !important;
+  }
+  .linktree-top-bar {
+    justify-content: flex-end;
+    margin-bottom: 14px;
+  }
+  .linktree-top-action-group {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .linktree-avatar-wrap {
+    width: 86px;
+    height: 86px;
+    margin-bottom: 12px;
   }
   .linktree-brand-title {
-    font-size: 20px;
+    font-size: 21px;
+  }
+  .linktree-tagline-badge {
+    font-size: 11px;
+    padding: 3px 12px;
+    margin: 4px 0 8px;
+  }
+  .linktree-brand-desc {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .linktree-trust-strip {
+    gap: 6px;
+  }
+  .linktree-trust-chip {
+    font-size: 11px;
+    padding: 3.5px 9px;
+  }
+  .linktree-bento-stack {
+    gap: 10px;
+  }
+  .linktree-hero-bento-card {
+    padding: 13px 14px;
+    border-radius: 16px;
+    gap: 12px;
+  }
+  .linktree-hero-title {
+    font-size: 14.5px;
+  }
+  .linktree-hero-subtitle {
+    font-size: 11.5px;
+    line-height: 1.35;
+  }
+  .linktree-hero-action-btn {
+    width: 32px;
+    height: 32px;
   }
   .linktree-social-bento-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+    margin: 2px 0;
   }
   .linktree-social-tile {
-    padding: 12px 12px;
+    padding: 11px 12px;
     border-radius: 15px;
+    gap: 8px;
   }
-  .linktree-hero-bento-card {
-    padding: 14px 14px;
-    border-radius: 16px;
+  .linktree-social-tile-title {
+    font-size: 13px;
+  }
+  .linktree-social-tile-sub {
+    font-size: 10.5px;
+  }
+  .linktree-contact-pill-btn {
+    padding: 11px 12px;
+    font-size: 12px;
+    border-radius: 13px;
+  }
+  .linktree-guarantee-box {
+    padding: 10px 12px;
+    font-size: 11px;
+    margin: 14px 0 10px;
+    border-radius: 12px;
   }
 }
 

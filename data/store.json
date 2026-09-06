@@ -371,7 +371,7 @@
     "deliveryFee": 350,
     "adminPin": "admin123"
   },
-  "updatedAt": "2026-08-20T17:53:45.464Z",
+  "updatedAt": "2026-09-06T05:05:13.429Z",
   "combos": [
     {
       "id": 1,
@@ -473,7 +473,7 @@
   ],
   "businessProfile": {
     "businessName": "EECO AROMATICS",
-    "description": "Sri Lanka’s premier brand for 100% pure Ayurvedic herbal incense sticks, dhoop powder, aroma room diffusers & air fresheners.",
+    "description": "Sri Lanka’s premier brand for 100% pure Natural herbal incense sticks, dhoop powder, aroma room diffusers & air fresheners.",
     "logo": "/eeco_logo.png",
     "location": "Colombo & Gampaha, Sri Lanka",
     "verified": true
@@ -484,7 +484,7 @@
       "title": "WhatsApp Hotline & Orders",
       "url": "https://wa.me/94762051906?text=Hi%20EECO%20AROMATICS,%20I%20would%20like%20to%20place%20an%20order!",
       "icon": "whatsapp",
-      "subtitle": "+94 76 205 1906 • 24/7 Islandwide Cash on Delivery",
+      "subtitle": "24/7 Islandwide Cash on Delivery",
       "badge": "⚡ FAST 24/7 ORDERS",
       "isActive": true,
       "order": 1,

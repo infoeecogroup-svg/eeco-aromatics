@@ -226,14 +226,14 @@ export default function HiddenLinksPage() {
 
           <p className="linktree-brand-desc">
             {businessProfile?.description ||
-              'Sri Lanka’s premier brand for 100% pure Ayurvedic herbal incense sticks, dhoop powder, aroma room diffusers & air fresheners.'}
+              'Sri Lanka’s premier brand for 100% pure natural herbal incense sticks, dhoop powder, aroma room diffusers & air fresheners.'}
           </p>
 
           {/* Trust Metric Chips */}
           <div className="linktree-trust-strip">
             <span className="linktree-trust-chip">
               <Leaf size={12} color="#059669" />
-              100% Ayurvedic
+              100% Natural
             </span>
             <span className="linktree-trust-chip">
               <Truck size={12} color="#2563EB" />

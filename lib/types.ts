@@ -560,7 +560,7 @@ export const INITIAL_SETTINGS: StoreSettings = {
 
 export const INITIAL_BUSINESS_PROFILE: BusinessProfile = {
   businessName: 'EECO AROMATICS',
-  description: 'Sri Lanka’s premier brand for 100% pure Ayurvedic herbal incense sticks, dhoop powder, aroma room diffusers & air fresheners.',
+  description: 'Sri Lanka’s premier brand for 100% pure natural herbal incense sticks, dhoop powder, aroma room diffusers & air fresheners.',
   logo: '/eeco_logo.png',
   location: 'Colombo & Gampaha, Sri Lanka',
   verified: true,
